@@ -12,7 +12,7 @@ router.get(adminPage.login.path,controller.loginPage);
 router.get(adminPage.logout.path,controller.logoutPage)
 
 
-router.post(adminApi.login.path,controller.memberLogin)
+router.post(adminApi.login.path,controller.adminLogin)
 
 // 导出
 module.exports = router;

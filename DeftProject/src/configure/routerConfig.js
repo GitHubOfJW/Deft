@@ -29,13 +29,18 @@ const adminPage = {
     path:'/logout',
     desc:'退出登录',
     selected:true
+  },
+  adminList:{
+    path:'/admin/list',
+    desc:'会员列表',
+    selected:false
   }
 }
 
 // 调用api接口的路由
 const adminApi = {
   login:{
-    path:'/api/memberLogin',
+    path:'/api/adminLogin',
     desc:'登录请求',
     selected:true
   },
@@ -43,6 +48,11 @@ const adminApi = {
     path:'/api/index',
     desc:'登录请求',
     selected:true
+  },
+  adminlist:{
+    path:'/admin/list',
+    desc:'获取会员列表',
+    selected:false,
   }
 }
 

@@ -1,11 +1,6 @@
 // 引入BaseController 
 const BaseController = require('./BaseController')
 
-
-// 引入文件读取
-const fse = require('fs-extra')
-const path = require('path')
-
 class IndexController extends BaseController {
 
   // 跳转到首页

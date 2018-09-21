@@ -1,12 +1,8 @@
 // 引入BaseController 
 const BaseController = require('./BaseController')
 // 引入会员model
-const members = require('../models/userManager/mebers')
+const admins = require('../models/adminManager/Admin')
 
-
-// 引入文件读取
-const fse = require('fs-extra')
-const path = require('path')
 
 class LoginController extends BaseController {
 
@@ -22,13 +18,13 @@ class LoginController extends BaseController {
   }
 
   // 登录
-  async memberLogin(req,res){
+  async adminLogin(req,res){
     // 获取登录数据
     if(req.body && req.body.username && req.body.password){
-      const model = await members.memberLogin(req.body.username,req.body.password);
+      const model = await admins.adminLogin(req.body.username,req.body.password);
       console.log(model)
       if(model){
-        res.json(super.handlerResponseData(1,{member:model},"登录成功"));
+        res.json(super.handlerResponseData(1,{admin:model},"登录成功"));
       }else{
         res.json(super.handlerResponseData(0,{},"账号或密码不存在"));
       }

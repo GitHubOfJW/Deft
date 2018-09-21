@@ -1,11 +1,11 @@
 const { sequelize, Sequelize } = require('../../utils/Squelize')
 
 
-class Members {
+class Admins {
   
   //配置映射
    constructor(){
-      this.instance = sequelize.define('tbl_members', {
+      this.instance = sequelize.define('tbl_admins', {
         account: { 
           type: Sequelize.STRING(20),
           allowNull: false,
@@ -55,13 +55,10 @@ class Members {
           comment: '删除'
         }
       },{
-        engine: 'MYISAM',
-        createdAt: false,
-        updatedAt: false
+        engine: 'Innodb'//如果要createAt 和updateAt 不能用MYISAM
       })
        
-      this.instance.sync({ force: false }).then(()=>{
-        console.log("创建成功")
+      this.instance.sync({ force: true }).then(()=>{
         return this.instance.create({
           account: 'zhujianwei',
           name: '朱建伟',
@@ -77,14 +74,29 @@ class Members {
    }
 
    // 获取数据
-  list(){
-    let data = this.instance.findAll();
+  list(page = 1,pagesize = 20,others = {}){
+    const conditions = {};
+    // 分页
+    if(page && pagesize){
+      if(page <= 0){
+        page = 1;
+      }
+      conditions.offset =  (page - 1) * pagesize;
+      conditions.limit = pagesize;
+    }
+
+    const data = this.instance.findAll(conditions);
     return data;
   }
+
+  totalCount(reqCondition={}){
+    const count =  this.instance.count();
+    return count;
+  }
    
-  memberLogin(account,password){
-    // 查询member
-    let member =  this.instance.findOne({
+  adminLogin(account,password){
+    // 查询admin
+    let admin =  this.instance.findOne({
       attributes:{ exclude:['password'] },
       where:{
         [Sequelize.Op.or]:{
@@ -96,9 +108,9 @@ class Members {
       }
     });
 
-    return member;
+    return admin;
   }
 }
 
 
-module.exports = new Members();
+module.exports = new Admins();

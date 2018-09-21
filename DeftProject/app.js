@@ -7,11 +7,12 @@ const appConfigure = require('./src/utils/AppConfigure')
 appConfigure.configApp(app);
 
 // 路由
-const indexRouter = require('./src/router/index')
+const indexRouter = require('./src/router/index');
 app.use(indexRouter);
-const loginRouter = require('./src/router/login')
+const loginRouter = require('./src/router/login');
 app.use(loginRouter);
-
+const adminRouer =  require('./src/router/admin');
+app.use(adminRouer);
 
 // 异常处理
 appConfigure.errorHander(app);
