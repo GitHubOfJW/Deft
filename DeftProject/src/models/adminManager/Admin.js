@@ -58,7 +58,7 @@ class Admins {
         engine: 'Innodb'//如果要createAt 和updateAt 不能用MYISAM
       })
        
-      this.instance.sync({ force: true }).then(()=>{
+      this.instance.sync({ force: false }).then(()=>{
         return this.instance.create({
           account: 'zhujianwei',
           name: '朱建伟',

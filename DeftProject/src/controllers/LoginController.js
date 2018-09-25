@@ -22,7 +22,6 @@ class LoginController extends BaseController {
     // 获取登录数据
     if(req.body && req.body.username && req.body.password){
       const model = await admins.adminLogin(req.body.username,req.body.password);
-      console.log(model)
       if(model){
         res.json(super.handlerResponseData(1,{admin:model},"登录成功"));
       }else{

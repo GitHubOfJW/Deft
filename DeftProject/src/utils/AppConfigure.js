@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const methodOverride = require('method-override');
 const express = require('express');
 const path =  require('path');
+const template = require('art-template')
 
 class AppConfigure {
 
@@ -18,6 +19,13 @@ class AppConfigure {
           debug: process.env.NOE_ENV !== 'production'
       });
 
+      // 修改定界符
+      const rule = template.defaults.rules[0];
+      rule.test = new RegExp(rule.test.source.replace('<%', '<\\\?').replace('%>', '\\\?>'));
+
+      const rule1 = template.defaults.rules[1];
+      rule1.test = new RegExp(rule1.test.source.replace('{{', '\\\[{').replace('}}', '}\\\]'));
+      
 
       // 静态资源文件
       const options = {

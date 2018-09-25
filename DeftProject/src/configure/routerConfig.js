@@ -49,8 +49,8 @@ const adminApi = {
     desc:'登录请求',
     selected:true
   },
-  adminlist:{
-    path:'/admin/list',
+  adminList:{
+    path:'/api/admin/list',
     desc:'获取会员列表',
     selected:false,
   }

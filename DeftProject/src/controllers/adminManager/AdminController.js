@@ -6,18 +6,25 @@ const adminModel =  require('../../models/adminManager/Admin')
 class AdminController extends BaseController {
   
   //管理员列表页面
-  async adminListPage(req,res){
+  adminListPage(req,res){
      
     super.setHtmlHeader(res);
+   
+    res.render('admin/admin-list.html');
+  }
+
+  //管理管理员列表请求
+  async adminList(req,res){
     const page = req.body.page | 1;
-    const pageSize = req.body.pageSize | 20;
+    const pageSize = req.body.pageSize | 1;
     
     const count = await adminModel.totalCount();
+
     // 计算页数
     const totalPage = (count +  pageSize - 1) / pageSize;
 
     // 遍历
-    const pagination =  [];
+    let pagination =  [];
     const start = page - 2 > 0 ? page - 2 : 1;
     const end = page + 2 > totalPage ? totalPage : page + 2;
     for(let i = start; i <= end;i++){
@@ -25,23 +32,19 @@ class AdminController extends BaseController {
         page:i
       })
     }
-
-    console.log(pagination)
     
     const list = await adminModel.list(page,pageSize)
-    res.render('admin/admin-list.html',{
+
+    const data =  {
       list:list,
-      adminCount:count,
+      totalCount:count,
       pagination:pagination,
       conditions:{
         page:page
       }
-    });
-  }
-
-  //管理管理员列表请求
-  adminList(req,res){
-
+    }
+    const result = super.handlerResponseData(1,data,'获取成功')
+    res.json(result);
   }
 }
 

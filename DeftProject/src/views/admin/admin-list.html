@@ -13,6 +13,7 @@
     <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="/public/lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="/public/js/xadmin.js"></script>
+    <script type="text/javascript" src="/public/js/template-web.js"></script>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
       <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -61,50 +62,88 @@
             <th>操作</th>
         </thead>
         <tbody>
-          {{each list admin i}}
-          <tr>
-            <td>
-              <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='2'><i class="layui-icon">&#xe605;</i></div>
-            </td>
-            <td>{{admin.id}}</td>
-            <td>{{admin.account}}</td>
-            <td>{{admin.mobile}}</td>
-            <td>{{admin.email}}</td>
-            <td>{{if admin.is_admin}}超级管理员{{else}}普通管理员{{/if}}</td>
-            <td>{{admin.createdAt}}</td>
-            <td class="td-status">
-              <span class="layui-btn layui-btn-normal layui-btn-mini">已启用</span></td>
-            <td class="td-manage">
-              <a onclick="member_stop(this,'10001')" href="javascript:;"  title="启用">
-                <i class="layui-icon">&#xe601;</i>
-              </a>
-              <a title="编辑"  onclick="x_admin_show('编辑','admin-edit.html')" href="javascript:;">
-                <i class="layui-icon">&#xe642;</i>
-              </a>
-              <a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;">
-                <i class="layui-icon">&#xe640;</i>
-              </a>
-            </td>
-          </tr>
-          {{/each}}
+        
         </tbody>
       </table>
       <div class="page">
         <div>
           <a class="prev" href="">&lt;&lt;</a>
-          {{each pagination pageItem index}}
-           {{if pageItem.page == page}}
+          {{each pagination as pageItem i}} 
+            {{if pageItem.page == conditions.page}}
              <span class="current">{{pageItem.page}}</span>
-           {{else}}
+            {{else}}
              <a class="num" href="">{{pageItem.page}}</a>
-           {{/if}}
-          {{/each}
+            {{/if}}
+          {{/each}}
           <a class="next" href="">&gt;&gt;</a>
         </div>
       </div>
 
     </div>
+
+    <script id="pageContent" type="text/html">
+      {{each list  admin i}}
+            <tr>
+              <td>
+                <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='2'><i class="layui-icon">&#xe605;</i></div>
+              </td>
+              <td>{{admin.id}}</td>
+              <td>{{admin.account}}</td>
+              <td>{{admin.mobile}}</td>
+              <td>{{admin.email}}</td>
+              <td>{{if admin.is_admin}}超级管理员{{else}}普通管理员{{/if}}</td>
+              <td>{{admin.createdAt}}</td>
+              <td class="td-status">
+                <span class="layui-btn layui-btn-normal layui-btn-mini">已启用</span></td>
+              <td class="td-manage">
+                <a onclick="member_stop(this,'10001')" href="javascript:;"  title="启用">
+                  <i class="layui-icon">&#xe601;</i>
+                </a>
+                <a title="编辑"  onclick="x_admin_show('编辑','admin-edit.html')" href="javascript:;">
+                  <i class="layui-icon">&#xe642;</i>
+                </a>
+                <a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;">
+                  <i class="layui-icon">&#xe640;</i>
+                </a>
+              </td>
+            </tr>
+            {{/each}}
+  </script>
+    <script id="pagination" type="text/html"></script>
     <script>
+
+      function requestList(data){
+        // 发送请求
+        $.ajax({
+              url:'/api/admin/list',
+              data:data,
+              method:'POST',
+              type:'json',
+              success: function(data){              
+                  if(data.status){
+                    const html = template('pageContent',{list:data.list})
+                  }else{
+                    layer.msg(data.message,{type:5,shade:0.2});
+                  }
+              },
+              error: function(err){
+                  layer.msg('服务器开小差了',{type:5,shade:0.2});
+              }
+          })
+      }
+      
+      layui.use('form', function(){
+        var form = layui.form;
+        
+        //监听提交
+        form.on('submit(sreach)', function(data){
+          // 发送请求
+          requestList(data.field)
+          
+          return false;
+        });
+      });
+      
       layui.use('laydate', function(){
         var laydate = layui.laydate;
         
@@ -118,6 +157,7 @@
           elem: '#end' //指定元素
         });
       });
+      
 
        /*用户-停用*/
       function member_stop(obj,id){
@@ -172,5 +212,4 @@
         s.parentNode.insertBefore(hm, s);
       })();</script>
   </body>
-
 </html>
