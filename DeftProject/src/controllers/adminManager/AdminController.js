@@ -53,9 +53,14 @@ class AdminController extends BaseController {
     if(req.params.id){
 
       const data = await adminModel.update(req.body,req.params.id);
-      console.log("执行更新："+data);
-      const result = super.handlerResponseData(1,{},'修改成功');
-      res.json(result);
+      if(data){
+        const result = super.handlerResponseData(1,data,'修改成功');
+        res.json(result);
+      }else{
+        const result = super.handlerResponseData(1,data,'修改失败');
+        res.json(result);
+      }
+      
     }else{
       const result = super.handlerResponseData(0,{},'修改失败，缺少唯一标识');
       res.json(result);
