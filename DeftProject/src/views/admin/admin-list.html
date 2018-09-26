@@ -34,11 +34,11 @@
     </div>
     <div class="x-body">
       <div class="layui-row">
-        <form class="layui-form layui-col-md12 x-so">
+        <form class="layui-form layui-col-md12 x-so" action="/api/admin/list" method="POST">
           <input class="layui-input" placeholder="开始日" name="start" id="start">
           <input class="layui-input" placeholder="截止日" name="end" id="end">
           <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
-          <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+          <button class="layui-btn" id="formSearch" lay-submit lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
         </form>
       </div>
       <xblock>
@@ -65,24 +65,15 @@
         
         </tbody>
       </table>
+      <!-- 分页 -->
       <div class="page">
-        <div>
-          <a class="prev" href="">&lt;&lt;</a>
-          {{each pagination as pageItem i}} 
-            {{if pageItem.page == conditions.page}}
-             <span class="current">{{pageItem.page}}</span>
-            {{else}}
-             <a class="num" href="">{{pageItem.page}}</a>
-            {{/if}}
-          {{/each}}
-          <a class="next" href="">&gt;&gt;</a>
-        </div>
+       
       </div>
 
     </div>
-
+    <!-- 列表 -->
     <script id="pageContent" type="text/html">
-      {{each list  admin i}}
+      {{each list admin i}}
             <tr>
               <td>
                 <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='2'><i class="layui-icon">&#xe605;</i></div>
@@ -109,27 +100,55 @@
             </tr>
             {{/each}}
   </script>
-    <script id="pagination" type="text/html"></script>
+  <!-- 分页模版 -->
+  <script id="pagination" type="text/html"> <div>
+      <a class="prev" href="">&lt;&lt;</a>
+      <% for(let i = pagination.start;i <= pagination.end;i++) {
+      %> 
+        <% if(i == conditions.page){ %>
+         <span class="current"><%= i %></span>
+        <% }else{ %>
+         <a class="num" href="javascript:;" onclick="pageHander(this,<%= i %>)" data-set="<%= conditions %>"><%= i %></a>
+        <% } %>
+      <% } %>
+      <a class="next" href="">&gt;&gt;</a>
+    </div>
+  </script>
+    
+   
     <script>
 
-      function requestList(data){
+
+      function request(url,data,page=1){
+        console.log(data)
         // 发送请求
+        data['nextpage'] =  page;
         $.ajax({
-              url:'/api/admin/list',
-              data:data,
-              method:'POST',
-              type:'json',
-              success: function(data){              
-                  if(data.status){
-                    const html = template('pageContent',{list:data.list})
-                  }else{
-                    layer.msg(data.message,{type:5,shade:0.2});
+                  url:url,
+                  data:data,
+                  method:'POST',
+                  type:'json',
+                  success: function(data){              
+                      if(data.status){
+                        const trList = template("pageContent",data.data)
+                        $("tbody").html(trList);
+                        const pagination =  template("pagination",data.data)
+                        $(".page").html(pagination);
+                      }else{
+                        layer.msg(data.message,{type:5,shade:0.2});
+                      }
+                  },
+                  error: function(err){
+                      layer.msg('服务器开小差了',{type:5,shade:0.2});
                   }
-              },
-              error: function(err){
-                  layer.msg('服务器开小差了',{type:5,shade:0.2});
-              }
-          })
+              })
+      }
+
+      request('/api/admin/list',{})
+
+      // 添加分页方法
+      function pageHander(ele,page){
+        request('/api/admin/list',JSON.parse(ele.dataset.set),page);
       }
       
       layui.use('form', function(){
@@ -137,13 +156,12 @@
         
         //监听提交
         form.on('submit(sreach)', function(data){
-          // 发送请求
-          requestList(data.field)
-          
+          request(data.form.action,data.field);
           return false;
         });
       });
-      
+ 
+
       layui.use('laydate', function(){
         var laydate = layui.laydate;
         
