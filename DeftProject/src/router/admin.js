@@ -8,8 +8,12 @@ const controller = require('../controllers/adminManager/AdminController');
 const { adminApi, adminPage } = require('../configure/routerConfig')
 
 
-router.post(adminApi.adminList.path, controller.adminList)
+router.get(adminApi.adminList.path, controller.adminList)
 
 router.get(adminPage.adminList.path, controller.adminListPage);
+
+router.post(adminApi.adminDelete.path, controller.adminUpate);
+
+router.post(adminApi.adminStatus.path, controller.adminUpate);
 
 module.exports =  router;

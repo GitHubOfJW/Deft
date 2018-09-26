@@ -58,23 +58,26 @@ class Admins {
         engine: 'Innodb'//如果要createAt 和updateAt 不能用MYISAM
       })
        
-      this.instance.sync({ force: false }).then(()=>{
-        return this.instance.create({
-          account: 'zhujianwei',
-          name: '朱建伟',
-          password: 'zhujianwei',
-          mobile: '13311255165',
-          email: '1284627282@qq.com',
-          role_id: null,
-          is_admin: true,
-          enable: true,
-          is_delete: false
+      this.instance.sync({ force: false }).then((data)=>{
+        this.instance.count().then(count => {
+          if(count > 0) return;
+          this.instance.create({
+            account: 'zhujianwei',
+            name: '朱建伟',
+            password: 'zhujianwei',
+            mobile: '13311255165',
+            email: '1284627282@qq.com',
+            role_id: null,
+            is_admin: true,
+            enable: true,
+            is_delete: false
+          })
         })
       })
    }
 
    // 获取数据
-  list(page = 1,pagesize = 20,others = {}){
+  list(page = 1,pagesize = 20,others = {},is_delete = false){
     const conditions = {};
     // 分页
     if(page && pagesize){
@@ -85,10 +88,24 @@ class Admins {
       conditions.limit = pagesize;
     }
 
+    conditions.where = {
+      is_delete:is_delete
+    }
+
     const data = this.instance.findAll(conditions);
     return data;
   }
 
+  // 更新各状态
+  update(values,id){
+   return this.instance.update(values || {} ,{
+      where:{
+        id:id
+      }
+    })
+  }
+
+  // 获取总数
   totalCount(reqCondition={}){
     const count =  this.instance.count();
     return count;

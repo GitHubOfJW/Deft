@@ -16,25 +16,19 @@ class AdminController extends BaseController {
   //管理管理员列表请求
   async adminList(req,res){
     const start = req.body.start;
-    const end = req.body.end;
-    const username = req.body.username;
-    const page = req.body.nextpage | 1;
-    const prePage =  req.body.page | 1;
-    const pageSize = req.body.pageSize | 8;
+    const end = req.body.end || '';
+    const username = req.body.username || '';
+    const page = req.body.nextpage || 1;
+    const prePage =  req.body.page || 1;
+    const pageSize = req.body.pageSize || 8;
     
     const count = await adminModel.totalCount();
 
-    console.log(page);
-
     // 计算页数
-    const totalPage = (count +  pageSize - 1) / pageSize;
-
-    // 遍历
-    let pagination =  [];
-
-    let startPage = page - 2 > 0 ? page - 2 : 1;
-    let endPage =  startPage + 4 > totalPage ? totalPage : startPage + 4;
-    
+    const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
+ 
+    let pagination = super.pagination(page,totalPage);
+      
     const conditions = {
       page:page,
       start:start,
@@ -46,14 +40,26 @@ class AdminController extends BaseController {
     const data =  {
       list:list,
       totalCount:count,
-      pagination:{
-        start:startPage,
-        end:endPage
-      },
+      totalPage:totalPage,
+      pagination:pagination,
       conditions:conditions
     }
     const result = super.handlerResponseData(1,data,'获取成功')
     res.json(result);
+  }
+
+  // 状态更新
+  async adminUpate(req,res){
+    if(req.params.id){
+
+      const data = await adminModel.update(req.body,req.params.id);
+      console.log("执行更新："+data);
+      const result = super.handlerResponseData(1,{},'修改成功');
+      res.json(result);
+    }else{
+      const result = super.handlerResponseData(0,{},'修改失败，缺少唯一标识');
+      res.json(result);
+    }
   }
 }
 

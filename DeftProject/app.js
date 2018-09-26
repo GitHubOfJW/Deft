@@ -17,7 +17,7 @@ app.use(adminRouer);
 // 异常处理
 appConfigure.errorHander(app);
 
-let server = app.listen(8080 ,() => {
+let server = app.listen(3000 ,() => {
   let host = server.address().address;
   let port = server.address().port;
   console.log("应用实例，访问地址为 http://%s:%s", host, port)

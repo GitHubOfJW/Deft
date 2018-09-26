@@ -53,6 +53,21 @@ const adminApi = {
     path:'/api/admin/list',
     desc:'获取会员列表',
     selected:false,
+  },
+  adminDelete:{
+    path:'/api/admin/delete/:id',
+    desc:'删除管理员',
+    selected:false,
+  },
+  adminStatus:{
+    path:'/api/admin/status/:id',
+    desc:'启用/禁用管理员',
+    selected:false,
+  },
+  adminRemove:{
+    path:'/api/admin/remove/:id',
+    desc:'彻底删除管理员',
+    selected:false
   }
 }
 
