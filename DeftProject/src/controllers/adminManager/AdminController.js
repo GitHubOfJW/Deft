@@ -15,12 +15,13 @@ class AdminController extends BaseController {
 
   //管理管理员列表请求
   async adminList(req,res){
-    const start = req.body.start;
-    const end = req.body.end || '';
-    const username = req.body.username || '';
-    const page = req.body.nextpage || 1;
-    const prePage =  req.body.page || 1;
-    const pageSize = req.body.pageSize || 8;
+    const start = req.query.start || '';
+    const end = req.query.end || '';
+    const username = req.query.username || '';
+    const contact = req.query.contact || '';
+    const page = req.query.nextpage || 1;
+    const prePage =  req.query.page || 1;
+    const pageSize = req.query.pageSize || 8;
     
     const count = await adminModel.totalCount();
 
@@ -33,7 +34,8 @@ class AdminController extends BaseController {
       page:page,
       start:start,
       end:end,
-      username:username
+      username:username,
+      contact:contact
     };
     const list = await adminModel.list(page,pageSize,conditions)
 
@@ -65,6 +67,14 @@ class AdminController extends BaseController {
       const result = super.handlerResponseData(0,{},'修改失败，缺少唯一标识');
       res.json(result);
     }
+  }
+
+  // 添加管理员页
+  adminAddPage(req,res){
+
+    super.setHtmlHeader(res);
+   
+    res.render('admin/admin-add.html');
   }
 }
 

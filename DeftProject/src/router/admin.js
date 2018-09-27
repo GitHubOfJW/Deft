@@ -16,4 +16,6 @@ router.post(adminApi.adminDelete.path, controller.adminUpate);
 
 router.post(adminApi.adminStatus.path, controller.adminUpate);
 
+router.get(adminPage.adminAdd.path, controller.adminAddPage);
+
 module.exports =  router;

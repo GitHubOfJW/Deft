@@ -32,7 +32,12 @@ const adminPage = {
   },
   adminList:{
     path:'/admin/list',
-    desc:'会员列表',
+    desc:'管理员列表',
+    selected:false
+  },
+  adminAdd:{
+    path:'/admin/add',
+    desc:'添加管理员页',
     selected:false
   }
 }
@@ -51,7 +56,7 @@ const adminApi = {
   },
   adminList:{
     path:'/api/admin/list',
-    desc:'获取会员列表',
+    desc:'获取会员列表请求',
     selected:false,
   },
   adminDelete:{

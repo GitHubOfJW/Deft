@@ -34,16 +34,17 @@
     </div>
     <div class="x-body">
       <div class="layui-row">
-        <form class="layui-form layui-col-md12 x-so" action="/api/admin/list" method="GEt">
+        <form class="layui-form layui-col-md12 x-so" method="GET">
           <input class="layui-input" placeholder="开始日" name="start" id="start">
           <input class="layui-input" placeholder="截止日" name="end" id="end">
           <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
+          <input type="text" name="contact"  placeholder="请输入手机/邮箱" autocomplete="off" class="layui-input">
           <button class="layui-btn" id="formSearch" lay-submit lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
         </form>
       </div>
       <xblock>
         <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
-        <button class="layui-btn" onclick="x_admin_show('添加用户','./admin-add.html')"><i class="layui-icon"></i>添加</button>
+        <button class="layui-btn" onclick="x_admin_show('添加用户','/admin/add')"><i class="layui-icon"></i>添加</button>
         <span class="x-right" id="totalcount" style="line-height:40px">共有数据：88 条</span>
       </xblock>
       <table class="layui-table">
@@ -93,14 +94,17 @@
               </td>
 
               <td class="td-manage">
-                {{if admin.enable }}
-                <a onclick="member_stop(this,{{admin.id}})" href="javascript:;"  title="禁用">
-                  <i class="layui-icon">&#xe601;</i>
-                </a>
+                {{if admin.enable}}
+                <!-- 管理员不让禁用自己 -->
+                  {{ if !admin.is_admin }}
+                    <a onclick="member_stop(this,{{admin.id}})" href="javascript:;"  title="禁用">
+                      <i class="layui-icon">&#xe601;</i>
+                    </a>
+                  {{/if}}
                 {{else}}
-                <a onclick="member_stop(this,{{admin.id}})" href="javascript:;"  title="启用">
-                    <i class="layui-icon">&#xe62f;</i>
-                </a>
+                  <a onclick="member_stop(this,{{admin.id}})" href="javascript:;"  title="启用">
+                      <i class="layui-icon">&#xe62f;</i>
+                  </a>
                 {{/if}}
                 <a title="编辑"  onclick="x_admin_show('编辑','admin-edit.html')" href="javascript:;">
                   <i class="layui-icon">&#xe642;</i>
@@ -167,7 +171,7 @@
         
         //监听提交
         form.on('submit(sreach)', function(data){
-          request(data.form.action,data.field);
+          request('/api/admin/list',data.field);
           return false;
         });
       });
