@@ -71,10 +71,15 @@ class AdminController extends BaseController {
 
   // 添加管理员页
   adminAddPage(req,res){
-
     super.setHtmlHeader(res);
-   
     res.render('admin/admin-add.html');
+  }
+
+
+  // 规则管理
+  authListPage(req,res){
+    super.setHtmlHeader(res);
+    res.render('admin/admin-rule.html');
   }
 }
 

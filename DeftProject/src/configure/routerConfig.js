@@ -66,6 +66,13 @@ const adminPage = {
       method:'adminAddPage',
       type:GET,
       selected:false
+    },
+    authList:{
+      path:'/auth/list',
+      desc:'权限列表',
+      method:'authListPage',
+      type:GET,
+      selected:false
     }
   }
 }
