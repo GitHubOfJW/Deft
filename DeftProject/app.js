@@ -3,7 +3,7 @@ const express = require('express');
 
 const app = express();
 
-const appConfigure = require('./src/utils/AppConfigure')
+const appConfigure = require('./src/utils/AppDelegate')
 appConfigure.configApp(app);
 
 // 路由
