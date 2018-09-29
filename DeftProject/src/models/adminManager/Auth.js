@@ -108,23 +108,7 @@ class Auth {
     const count =  this.instance.count();
     return count;
   }
-   
-  adminLogin(account,password){
-    // 查询admin
-    let admin =  this.instance.findOne({
-      attributes:{ exclude:['password'] },
-      where:{
-        [Sequelize.Op.or]:{
-          account: account,
-          mobile: account,
-          email: account
-        },
-        password:password
-      }
-    });
-
-    return admin;
-  }
+  
 }
 
 

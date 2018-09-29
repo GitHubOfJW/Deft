@@ -130,6 +130,20 @@ const adminApi = {
       method:'adminAddPage',
       type:POST,
       selected:false
+    },
+    cateList:{
+      path:'/api/cate/list',
+      desc:'权限分类列表',
+      method:'cateList',
+      type:GET,
+      selected:false,
+    },
+    cateAdd:{
+      path:'/api/cate/add',
+      desc:'添加权限分类',
+      method:'cateAdd',
+      type:POST,
+      selected:false
     }
   }
 }

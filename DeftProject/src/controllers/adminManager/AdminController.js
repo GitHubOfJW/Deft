@@ -3,6 +3,8 @@ const BaseController = require('../BaseController');
 
 const adminModel =  require('../../models/adminManager/Admin')
 
+const authCateModel =  require('../../models/adminManager/AuthCate')
+
 const { adminApi, adminPage } = require('../../configure/routerConfig')
  
 class AdminController extends BaseController {
@@ -133,6 +135,56 @@ class AdminController extends BaseController {
   cateListPage(req,res){
     super.setHtmlHeader(res)
     res.render('admin/admin-cate.html');
+  }
+
+   //权限分类列表请求
+   async cateList(req,res){
+    const page = req.query.nextpage || 1;
+    const prePage =  req.query.page || 1;
+    const pageSize = req.query.pageSize || 8;
+    
+    const count = await authCateModel.totalCount();
+
+    // 计算页数
+    const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
+ 
+    let pagination = super.pagination(page,totalPage);
+      
+    const conditions = {
+      page:page
+    };
+
+    const list = await authCateModel.list(page,pageSize,conditions)
+
+    const data =  {
+      list:list,
+      totalCount:count,
+      totalPage:totalPage,
+      pagination:pagination,
+      conditions:conditions
+    }
+    const result = super.handlerResponseData(1,data,'获取成功')
+    res.json(result);
+  }
+
+  // 添加权限分类
+  async cateAdd(req,res){
+    if(req.body.name){
+      const result = await authCateModel.insert({
+        name: req.body.name
+      })
+
+      if(result){
+        const result = super.handlerResponseData(1,{},'添加成功！');
+        res.json(result); 
+      }else{
+        const result = super.handlerResponseData(0,{},'缺少分类名称');
+        res.json(result);
+      }
+    }else{
+      const result = super.handlerResponseData(0,{},'缺少分类名称');
+      res.json(result);
+    }
   }
 }
 

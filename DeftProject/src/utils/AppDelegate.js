@@ -104,7 +104,6 @@ class AppDelegate {
           ]
  
          let routerPath =  req.originalUrl;
-        //  console.log(routerPath)
          if(!req.session.user && !exclude.some(path => path === routerPath)){
             if(routerPath.indexOf('/api')>=0){
                res.json({
