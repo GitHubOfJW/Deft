@@ -2,6 +2,8 @@
 const BaseController = require('../BaseController');
 
 const adminModel =  require('../../models/adminManager/Admin')
+
+const { adminApi, adminPage } = require('../../configure/routerConfig')
  
 class AdminController extends BaseController {
   
@@ -80,6 +82,57 @@ class AdminController extends BaseController {
   authListPage(req,res){
     super.setHtmlHeader(res);
     res.render('admin/admin-rule.html');
+  }
+
+  // 权限添加
+  authAddPage(req,res){
+    super.setHtmlHeader(res);
+    const authMap = {}
+    for(let controllerKey of Object.keys(adminPage)){
+       if(!authMap[controllerKey]){
+        authMap[controllerKey] = {
+            api:[],
+            page:[]
+          }
+       }
+       for(let routerKey of Object.keys(adminPage[controllerKey])){
+         if(!adminPage[controllerKey][routerKey].selected){
+          authMap[controllerKey].page.push(adminPage[controllerKey][routerKey]);
+         }
+       }
+    }
+
+    for(let controllerKey of Object.keys(adminApi)){
+      if(!authMap[controllerKey]){
+        authMap[controllerKey] = {
+           api:[],
+           page:[]
+         }
+      }
+      for(let routerKey of Object.keys(adminApi[controllerKey])){
+        if(!adminApi[controllerKey][routerKey].selected){
+          authMap[controllerKey].api.push(adminApi[controllerKey][routerKey]);
+        }
+      }
+    }
+    
+    const authList = []
+    for(let controllerKey of Object.keys(authMap)){
+        authList.push({
+          key:controllerKey,
+          controller:authMap[controllerKey]
+        })
+    }
+
+    res.render('admin/auth-add.html',{
+      authList
+    });
+  }
+
+  // 分类
+  cateListPage(req,res){
+    super.setHtmlHeader(res)
+    res.render('admin/admin-cate.html');
   }
 }
 

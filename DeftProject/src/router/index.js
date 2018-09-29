@@ -3,7 +3,14 @@ const router = express.Router()
  
 
 // 引入路由配置文件
-const { adminApi, adminPage,controllers ,requestType} = require('../configure/routerConfig')
+const { adminApi, adminPage ,requestType} = require('../configure/routerConfig')
+
+// 执行功能的控制器
+const controllers = {
+  IndexController:require('../controllers/IndexController'),
+  AdminController:require('../controllers/adminManager/AdminController'),
+  LoginController:require('../controllers/LoginController')
+}
 
 // 取出所有的控制器配置
 const totalConfigControllers = [];

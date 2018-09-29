@@ -87,9 +87,9 @@ class AppDelegate {
 
   // 异常处理
   errorHander(app){
-    app.use(function(error,req,res,next){
-      res.end(JSON.stringify({message:"出现错误",error:error}))
-    })
+    // app.use(function(error,req,res,next){
+    //   res.end(JSON.stringify({message:"出现错误",error:error}))
+    // })
   }
 
 

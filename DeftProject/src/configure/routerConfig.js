@@ -13,6 +13,22 @@ const GET = 'get'
 
 // 跳转页面的路由
 const adminPage = {
+  LoginController:{
+    login:{
+      path:'/login',
+      desc:'后台登录',
+      method:'loginPage',
+      type:GET,
+      selected:true
+    },
+    logout:{
+      path:'/logout',
+      desc:'退出登录',
+      method:'logoutPage',
+      type:GET,
+      selected:true
+    }
+  },
   IndexController:{
     default:{
       path:'/',
@@ -36,22 +52,6 @@ const adminPage = {
       selected:true
     },
   },
-  LoginController:{
-    login:{
-      path:'/login',
-      desc:'后台登录',
-      method:'loginPage',
-      type:GET,
-      selected:true
-    },
-    logout:{
-      path:'/logout',
-      desc:'退出登录',
-      method:'logoutPage',
-      type:GET,
-      selected:true
-    }
-  },
   AdminController:{
     adminList:{
       path:'/admin/list',
@@ -62,7 +62,7 @@ const adminPage = {
     },
     adminAdd:{
       path:'/admin/add',
-      desc:'添加管理员页',
+      desc:'添加管理员',
       method:'adminAddPage',
       type:GET,
       selected:false
@@ -71,6 +71,20 @@ const adminPage = {
       path:'/auth/list',
       desc:'权限列表',
       method:'authListPage',
+      type:GET,
+      selected:false
+    },
+    authAdd:{
+      path:'/auth/add',
+      desc:'权限添加',
+      method:'authAddPage',
+      type:GET,
+      selected:false
+    },
+    cateList:{
+      path:'/cate/list',
+      desc:'分类列表',
+      method:'cateListPage',
       type:GET,
       selected:false
     }
@@ -119,19 +133,12 @@ const adminApi = {
     }
   }
 }
-// 执行功能的控制器
-const controllers = {
-  IndexController:require('../controllers/IndexController'),
-  AdminController:require('../controllers/adminManager/AdminController'),
-  LoginController:require('../controllers/LoginController')
-}
 
 
 // 导出
 module.exports = {
   adminApi,
   adminPage,
-  controllers,
   requestType:{
     POST,
     PATCH,
