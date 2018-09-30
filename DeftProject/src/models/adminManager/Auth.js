@@ -12,23 +12,18 @@ class Auth {
           allowNull: false,
           comment: '权限名称'
         },
-        path: {
-          type: Sequelize.STRING(20),
+        rules: {
+          type: Sequelize.TEXT,
           allowNull: false,
-          comment: '路径'
-        },
-        method: {
-          type: Sequelize.STRING(11),
-          allowNull: false,
-          comment: '方法'
-        },
-        controller: {
-          type:Sequelize.STRING(30),
-          allowNull: true,
-          comment: '控制器'
+          comment: '规则'
         },
         cate_id: {
           type:Sequelize.INTEGER,
+          allowNull: false,
+          comment: '权限分类'
+        },
+        remark: {
+          type:Sequelize.TEXT,
           allowNull: true,
           comment: '权限分类'
         }
@@ -45,7 +40,7 @@ class Auth {
   list(page = 1,pagesize = 20,others = {},is_delete = false){
     const conditions = {};
     // 分页
-    if(page && pagesize){
+    if(page > 0 && pagesize > 0){
       if(page <= 0){
         page = 1;
       }
@@ -53,30 +48,7 @@ class Auth {
       conditions.limit = pagesize;
     }
     // where条件
-    conditions.where = {
-      is_delete:is_delete,
-      [Sequelize.Op.and]:[{
-        [Sequelize.Op.or]:{
-          mobile:{
-            [Sequelize.Op.like]:`%${others.contact}%`
-          },
-          email:{
-            [Sequelize.Op.like]:`%${others.contact}%`
-          }
-        }
-      },
-      {
-        [Sequelize.Op.or]:{
-          name:{
-            [Sequelize.Op.like]:`%${others.username}%`
-          },
-          account:{
-            [Sequelize.Op.like]:`%${others.username}%`
-          }
-        }
-      }]
-    }
-    
+
     // 时间约束
     if(others.start && others.start.trim().length && moment(others.start).isValid()){
       conditions.where.createdAt = {
@@ -109,6 +81,10 @@ class Auth {
     return count;
   }
   
+  // 添加权限
+  insert(values){
+    return this.instance.create(values)
+  }
 }
 
 

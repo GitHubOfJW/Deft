@@ -66,7 +66,9 @@ const adminPage = {
       method:'adminAddPage',
       type:GET,
       selected:false
-    },
+    }
+  },
+  AuthController:{
     authList:{
       path:'/auth/list',
       desc:'权限列表',
@@ -80,7 +82,9 @@ const adminPage = {
       method:'authAddPage',
       type:GET,
       selected:false
-    },
+    }
+  },
+  CateController:{
     cateList:{
       path:'/cate/list',
       desc:'分类列表',
@@ -105,7 +109,7 @@ const adminApi = {
   AdminController:{
     adminList:{
       path:'/api/admin/list',
-      desc:'获取会员列表请求',
+      desc:'获取会员列表',
       method:'adminList',
       type:GET,
       selected:false,
@@ -131,6 +135,8 @@ const adminApi = {
       type:POST,
       selected:false
     },
+  },
+  CateController:{
     cateList:{
       path:'/api/cate/list',
       desc:'权限分类列表',
@@ -143,6 +149,22 @@ const adminApi = {
       desc:'添加权限分类',
       method:'cateAdd',
       type:POST,
+      selected:false
+    }
+  },
+  AuthController:{
+    authAdd:{
+      path:'/api/auth/add',
+      desc:'添加选前规则',
+      method:'authAdd',
+      type:POST,
+      selected:false
+    },
+    authList:{
+      path:'/api/auth/list',
+      desc:'权限列表',
+      method:'authList',
+      type:GET,
       selected:false
     }
   }

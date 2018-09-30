@@ -81,7 +81,7 @@ class Admins {
   list(page = 1,pagesize = 20,others = {},is_delete = false){
     const conditions = {};
     // 分页
-    if(page && pagesize){
+    if(page > 0 && pagesize > 0){
       if(page <= 0){
         page = 1;
       }

@@ -7,9 +7,11 @@ const { adminApi, adminPage ,requestType} = require('../configure/routerConfig')
 
 // 执行功能的控制器
 const controllers = {
+  LoginController:require('../controllers/LoginController'),
   IndexController:require('../controllers/IndexController'),
   AdminController:require('../controllers/adminManager/AdminController'),
-  LoginController:require('../controllers/LoginController')
+  CateController:require('../controllers/adminManager/CateController'),
+  AuthController:require('../controllers/adminManager/AuthController'),
 }
 
 // 取出所有的控制器配置

@@ -41,21 +41,21 @@
                             [{each authList item index}]
                                     [{if item.controller.page.length > 0 || item.controller.api.length > 0}]
                                     <tr>
-                                        <td>
-                                            <input type="checkbox" name="like1[write]" lay-skin="primary" title="[{item.key}]">
+                                        <td style="width:160px;">
+                                            [{item.key}]
                                         </td>
                                         <td>
                                             [{if item.controller.page.length > 0}]
                                             <div class="layui-input-block">
                                                 [{each item.controller.page pageItem pageIdx}]
-                                                <input name="id[]" lay-skin="primary" type="checkbox" title="[{pageItem.desc}]" alt="[{pageItem.path}]" value="[{pageItem.path}]">
+                                                <input name="rules[]" lay-skin="primary" type="checkbox" title="[{pageItem.desc}]" alt="[{pageItem.path}]" value="[{pageItem.path}]">
                                                 [{/each}]
                                             </div>
                                             [{/if}]
                                             [{if item.controller.api.length > 0}]
                                             <div class="layui-input-block">
                                                 [{each item.controller.api apiItem apiIdx}]
-                                                <input name="id[]" lay-skin="primary" type="checkbox" title="[{apiItem.desc}]" alt="[{apiItem.path}]" value="[{apiItem.path}]">
+                                                <input name="rules[]" lay-skin="primary" type="checkbox" title="[{apiItem.desc}]" alt="[{apiItem.path}]" value="[{apiItem.path}]">
                                                 [{/each}]
                                             </div>
                                             [{/if}]
@@ -71,32 +71,16 @@
                             所属分类
                         </label>
                         <table  class="layui-table layui-input-block">
-                            <tbody>
-                                [{each authList item index}]
-                                    [{if item.controller.page.length > 0 || item.controller.api.length > 0}]
+                            <tbody> 
                                     <tr>
                                         <td>
-                                            <input type="checkbox" name="like1[write]" lay-skin="primary" title="[{item.key}]">
-                                        </td>
-                                        <td>
-                                            [{if item.controller.page.length > 0}]
                                             <div class="layui-input-block">
-                                                [{each item.controller.page pageItem pageIdx}]
-                                                <input name="id[]" lay-skin="primary" type="checkbox" title="[{pageItem.desc}]" alt="[{pageItem.path}]" value="[{pageItem.path}]">
+                                                [{each cateList cateItem idx}]
+                                                <input name="cateId" lay-skin="primary" type="radio" title="[{cateItem.name}]"  value="[{cateItem.id}]">
                                                 [{/each}]
                                             </div>
-                                            [{/if}]
-                                            [{if item.controller.api.length > 0}]
-                                            <div class="layui-input-block">
-                                                [{each item.controller.api apiItem apiIdx}]
-                                                <input name="id[]" lay-skin="primary" type="checkbox" title="[{apiItem.desc}]" alt="[{apiItem.path}]" value="[{apiItem.path}]">
-                                                [{/each}]
-                                            </div>
-                                            [{/if}]
                                         </td>
                                     </tr>
-                                    [{/if}]
-                                [{/each}]
                             </tbody>
                         </table>
                     </div>
@@ -121,33 +105,68 @@
         
           //自定义验证规则
           form.verify({
-            nikename: function(value){
+            name: function(value){
               if(value.length < 5){
-                return '昵称至少得5个字符啊';
+                return '名称至少得4个字符啊';
               }
-            }
-            ,pass: [/(.+){6,12}$/, '密码必须6到12位']
-            ,repass: function(value){
-                if($('#L_pass').val()!=$('#L_repass').val()){
-                    return '两次密码不一致';
-                }
             }
           });
 
+
           //监听提交
           form.on('submit(add)', function(data){
-            console.log(data);
-            //发异步，把数据提交给php
-            layer.alert("增加成功", {icon: 6},function () {
-                // 获得frame索引
-                var index = parent.layer.getFrameIndex(window.name);
-                //关闭当前frame
-                parent.layer.close(index);
-            });
+            // 弹出提示
+            let index = null;
+            const id = setTimeout(() => {
+                clearTimeout(id);
+                if(!index){
+                    index = layer.msg('玩命卖萌中...',{type:1,shade:0.5,time:0});
+                }
+            }, 1000);
+            
+            const rules = []
+
+            for(let key of Object.keys(data.field)){
+                if(key.indexOf('rules') >= 0){
+                    rules.push(data.field[key]);
+                }
+            }
+            $.ajax({
+                url:'/api/auth/add',
+                traditional:true,
+                data:{
+                    name:data.field.name,
+                    cateId:data.field.cateId,
+                    desc:data.field.desc,
+                    rules:rules
+                },
+                method:'POST',
+                type:'json',
+                success:function(data){
+                    layer.close(index);
+                    index = " ";
+                    //发异步，把数据提交给php
+                    if(!data.status){
+                        layer.msg(data.message,{icon:2,shade:0.2,time:1000});
+                        return;
+                    }
+
+                    layer.alert(data.message, {icon: 6},function () {
+                        // 获得frame索引
+                        var index = parent.layer.getFrameIndex(window.name);
+                        //关闭当前frame
+                        parent.layer.close(index);
+                    });
+                },
+                error:function(err){
+                    layer.msg('服务器开小差了',{icon:2,shade:0.2,time:1000});
+                    layer.close(index);
+                    index = " ";
+                }
+            })
+            
             return false;
           });
-          
-          
         });
     </script>
     <script>var _hmt = _hmt || []; (function() {
