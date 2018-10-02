@@ -28,7 +28,7 @@
                         <span class="x-red">*</span>权限名称
                     </label>
                     <div class="layui-input-inline">
-                        <input type="text" id="name" name="name" required="" lay-verify="required"
+                        <input type="text" id="name" name="name" value="[{auth.name}]" required="" lay-verify="required"
                         autocomplete="off" class="layui-input">
                     </div>
                 </div>
@@ -48,14 +48,14 @@
                                             [{if item.controller.page.length > 0}]
                                             <div class="layui-input-block">
                                                 [{each item.controller.page pageItem pageIdx}]
-                                                <input name="rules[]" lay-skin="primary" type="checkbox" title="[{pageItem.desc}]" alt="[{pageItem.path}]" value="[{pageItem.path}]">
+                                                <input name="rules[]" lay-skin="primary" type="checkbox" [{ if auth.rules.indexOf(pageItem.path) >= 0 }] checked [{/if}] title="[{pageItem.desc}]" alt="[{pageItem.path}]" value="[{pageItem.path}]">
                                                 [{/each}]
                                             </div>
                                             [{/if}]
                                             [{if item.controller.api.length > 0}]
                                             <div class="layui-input-block">
                                                 [{each item.controller.api apiItem apiIdx}]
-                                                <input name="rules[]" lay-skin="primary" type="checkbox" title="[{apiItem.desc}]" alt="[{apiItem.path}]" value="[{apiItem.path}]">
+                                                <input name="rules[]" lay-skin="primary" type="checkbox" [{ if auth.rules.indexOf(apiItem.path) >= 0 }] checked [{/if}] title="[{apiItem.desc}]" alt="[{apiItem.path}]" value="[{apiItem.path}]">
                                                 [{/each}]
                                             </div>
                                             [{/if}]
@@ -76,7 +76,7 @@
                                         <td>
                                             <div class="layui-input-block">
                                                 [{each cateList cateItem idx}]
-                                                <input name="cateId" lay-skin="primary" type="radio" title="[{cateItem.name}]"  value="[{cateItem.id}]">
+                                                <input name="cateId" lay-skin="primary" [{ if auth.authCate.id == cateItem.id }] checked [{ /if }] type="radio" title="[{cateItem.name}]"  value="[{cateItem.id}]">
                                                 [{/each}]
                                             </div>
                                         </td>
@@ -89,11 +89,11 @@
                         描述
                     </label>
                     <div class="layui-input-block">
-                        <textarea placeholder="请输入内容" id="desc" name="desc" class="layui-textarea"></textarea>
+                        <textarea placeholder="请输入内容" id="desc" name="remark" class="layui-textarea">[{auth.remark}]</textarea>
                     </div>
                 </div>
                 <div class="layui-form-item">
-                <button class="layui-btn" lay-submit="" lay-filter="add">增加</button>
+                <button class="layui-btn" lay-submit="" lay-filter="edit">修改</button>
               </div>
             </form>
     </div>
@@ -114,7 +114,7 @@
 
 
           //监听提交
-          form.on('submit(add)', function(data){
+          form.on('submit(edit)', function(data){
             // 弹出提示
             let index = null;
             const id = setTimeout(() => {
@@ -132,12 +132,12 @@
                 }
             }
             $.ajax({
-                url:'/api/auth/add',
+                url:'/api/auth/edit/'+[{auth.id}],
                 traditional:true,
                 data:{
                     name:data.field.name,
                     cateId:data.field.cateId,
-                    desc:data.field.desc,
+                    remark:data.field.remark,
                     rules:rules
                 },
                 method:'POST',

@@ -65,8 +65,13 @@ class AuthModel {
   // 查询
   findOne(id){
     return Auth.findOne({ where:{
-      id:id
-      }
+      id:id,
+      },include:[{
+        model:AuthCate,
+        where:{
+          id:Sequelize.col('auths.authCateId')
+        }
+      }]
     })
   }
 }

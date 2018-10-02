@@ -84,7 +84,7 @@ const adminPage = {
       selected:false
     },
     authEdit:{
-      path:'/auth/edit',
+      path:'/auth/edit/:id',
       desc:'修改权限',
       method:'authEditPage',
       type:GET,
@@ -175,9 +175,9 @@ const adminApi = {
       selected:false
     },
     authEdit:{
-      path:'/api/auth/edit',
+      path:'/api/auth/edit/:id',
       desc:'保存修改权限',
-      method:'authUpate',
+      method:'authEdit',
       type:POST,
       selected:false
     }

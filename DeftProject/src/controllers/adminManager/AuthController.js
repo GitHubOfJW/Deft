@@ -136,11 +136,17 @@ class AuthController extends BaseController {
      
   }
 
+  // 修改请求
+  authEdit(req,res){
+    req.body.rules = (req.body.rules || []).join(',');
+    (new AuthController()).authUpate(req,res)
+  }
+
   // 编辑页面
   async authEditPage(req,res){
     super.setHtmlHeader(res);
 
-    if(!req.body.id){
+    if(!req.params.id){
       const result = super.handlerResponseData(0,{},'未获取到对应的id');
       res.json(result);
       return;
@@ -185,7 +191,7 @@ class AuthController extends BaseController {
 
 
     const cateList  = await authCateModel.list(-1,-1);
-    const auth =  await authModel.findOne(req.body.id)
+    const auth =  await authModel.findOne(req.params.id)
     res.render('admin/auth-edit.html',{
       authList,
       cateList,

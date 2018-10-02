@@ -10,7 +10,7 @@ const { adminApi, adminPage } = require('../../configure/routerConfig')
 class AdminController extends BaseController {
   
   //管理员列表页面
-  adminListPage(req,res){
+ adminListPage(req,res){
      
     super.setHtmlHeader(res);
    
