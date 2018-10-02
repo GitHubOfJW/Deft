@@ -45,7 +45,7 @@
       <xblock>
         <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
         <button class="layui-btn" onclick="x_admin_show('添加用户','/admin/add')"><i class="layui-icon"></i>添加</button>
-        <span class="x-right" id="totalcount" style="line-height:40px">共有数据：88 条</span>
+        <span class="x-right" id="totalcount" style="line-height:40px"></span>
       </xblock>
       <table class="layui-table">
         <thead>
@@ -184,12 +184,14 @@
         
         //执行一个laydate实例
         laydate.render({
-          elem: '#start' //指定元素
+          elem: '#start', //指定元素
+          type: 'datetime'
         });
 
         //执行一个laydate实例
         laydate.render({
-          elem: '#end' //指定元素
+          elem: '#end', //指定元素
+          type: 'datetime'
         });
       });
       
