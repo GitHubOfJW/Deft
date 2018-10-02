@@ -14,6 +14,8 @@ const controllers = {
   AuthController:require('../controllers/adminManager/AuthController'),
 }
 
+console.log(controllers)
+
 // 取出所有的控制器配置
 const totalConfigControllers = [];
 for(let controllerKey of Object.keys(adminPage)){

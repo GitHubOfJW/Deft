@@ -6,20 +6,20 @@ const admins = require('../models/adminManager/Admin')
 class LoginController extends BaseController {
 
   // 跳转到首页
-  loginPage(req,res){
+  static loginPage(req,res){
     super.setHtmlHeader(res)
     res.render('login.html');
   }
 
   // 退出登录
-  logoutPage(req,res){
+  static logoutPage(req,res){
     // 删除用户信息
      delete req.session.user;
      res.redirect('/login');
   }
 
   // 登录
-  async adminLogin(req,res){
+  static async adminLogin(req,res){
     // 获取登录数据
     if(req.body && req.body.username && req.body.password){
       const model = await admins.adminLogin(req.body.username,req.body.password);
@@ -37,4 +37,4 @@ class LoginController extends BaseController {
 }
 
 
-module.exports =  new LoginController()
+module.exports = LoginController

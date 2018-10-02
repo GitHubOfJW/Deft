@@ -10,7 +10,7 @@ const { adminApi, adminPage } = require('../../configure/routerConfig')
 class AdminController extends BaseController {
   
   //管理员列表页面
- adminListPage(req,res){
+  static adminListPage(req,res){
      
     super.setHtmlHeader(res);
    
@@ -18,7 +18,7 @@ class AdminController extends BaseController {
   }
 
   //管理管理员列表请求
-  async adminList(req,res){
+  static async adminList(req,res){
     const start = req.query.start || '';
     const end = req.query.end || '';
     const username = req.query.username || '';
@@ -55,7 +55,7 @@ class AdminController extends BaseController {
   }
 
   // 状态更新
-  async adminUpate(req,res){
+  static async adminUpate(req,res){
     if(req.params.id){
       const data = await adminModel.update(req.body,req.params.id);
       if(data){
@@ -73,10 +73,10 @@ class AdminController extends BaseController {
   }
 
   // 添加管理员页
-  adminAddPage(req,res){
+  static adminAddPage(req,res){
     super.setHtmlHeader(res);
     res.render('admin/admin-add.html');
   }
 }
 
-module.exports =  new AdminController();
+module.exports = AdminController

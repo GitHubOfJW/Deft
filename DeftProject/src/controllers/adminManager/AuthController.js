@@ -11,7 +11,7 @@ const { adminApi, adminPage } = require('../../configure/routerConfig')
 class AuthController extends BaseController {
    
   // 状态更新
-  async authUpate(req,res){
+  static async authUpate(req,res){
     if(req.params.id){
 
       const data = await authModel.update(req.body,req.params.id);
@@ -30,7 +30,7 @@ class AuthController extends BaseController {
   }
 
   //权限分类列表请求
-  async authList(req,res){
+  static async authList(req,res){
     const page = req.query.nextpage || 1;
     const prePage =  req.query.page || 1;
     const pageSize = req.query.pageSize || 8;
@@ -60,52 +60,18 @@ class AuthController extends BaseController {
   }
 
   // 规则管理
-  authListPage(req,res){
+  static authListPage(req,res){
     super.setHtmlHeader(res);
     res.render('admin/admin-rule.html');
   }
 
   // 权限添加
-  async authAddPage(req,res){
+  static async authAddPage(req,res){
     super.setHtmlHeader(res);
   
     const cateList  = await authCateModel.list(-1,-1);
-    const authMap = {}
-    for(let controllerKey of Object.keys(adminPage)){
-       if(!authMap[controllerKey]){
-        authMap[controllerKey] = {
-            api:[],
-            page:[]
-          }
-       }
-       for(let routerKey of Object.keys(adminPage[controllerKey])){
-         if(!adminPage[controllerKey][routerKey].selected){
-          authMap[controllerKey].page.push(adminPage[controllerKey][routerKey]);
-         }
-       }
-    }
-
-    for(let controllerKey of Object.keys(adminApi)){
-      if(!authMap[controllerKey]){
-        authMap[controllerKey] = {
-           api:[],
-           page:[]
-         }
-      }
-      for(let routerKey of Object.keys(adminApi[controllerKey])){
-        if(!adminApi[controllerKey][routerKey].selected){
-          authMap[controllerKey].api.push(adminApi[controllerKey][routerKey]);
-        }
-      }
-    }
-    
-    const authList = []
-    for(let controllerKey of Object.keys(authMap)){
-        authList.push({
-          key:controllerKey,
-          controller:authMap[controllerKey]
-        })
-    }
+   
+    const authList = AuthController.configAuthList()
 
     res.render('admin/auth-add.html',{
       authList,
@@ -114,7 +80,7 @@ class AuthController extends BaseController {
   }
  
   // 添加权限请求
-  async authAdd(req,res){
+  static async authAdd(req,res){
     if(req.body.name && req.body.rules && req.body.rules.length && req.body.cateId){
       const data =  authModel.insert({
         name:req.body.name,
@@ -137,13 +103,13 @@ class AuthController extends BaseController {
   }
 
   // 修改请求
-  authEdit(req,res){
+  static authEdit(req,res){
     req.body.rules = (req.body.rules || []).join(',');
-    (new AuthController()).authUpate(req,res)
+    AuthController.authUpate(req,res)
   }
 
   // 编辑页面
-  async authEditPage(req,res){
+  static async authEditPage(req,res){
     super.setHtmlHeader(res);
 
     if(!req.params.id){
@@ -152,6 +118,20 @@ class AuthController extends BaseController {
       return;
     }
     
+   
+
+    const authList = AuthController.configAuthList()
+    const cateList  = await authCateModel.list(-1,-1);
+    const auth =  await authModel.findOne(req.params.id)
+    res.render('admin/auth-edit.html',{
+      authList,
+      cateList,
+      auth
+    });
+  }
+
+
+  static configAuthList(){
     const authMap = {}
     for(let controllerKey of Object.keys(adminPage)){
        if(!authMap[controllerKey]){
@@ -189,15 +169,8 @@ class AuthController extends BaseController {
         })
     }
 
-
-    const cateList  = await authCateModel.list(-1,-1);
-    const auth =  await authModel.findOne(req.params.id)
-    res.render('admin/auth-edit.html',{
-      authList,
-      cateList,
-      auth
-    });
+    return authList;
   }
 }
 
-module.exports =  new AuthController();
+module.exports = AuthController

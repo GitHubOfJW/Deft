@@ -10,7 +10,7 @@ const { adminApi, adminPage } = require('../../configure/routerConfig')
 class CateController extends BaseController {
   
    // 状态更新
-  async cateUpate(req,res){
+  static async cateUpate(req,res){
     if(req.params.id){
 
       const data = await adminModel.update(req.body,req.params.id);
@@ -29,13 +29,13 @@ class CateController extends BaseController {
   }
 
   // 分类
-  cateListPage(req,res){
+  static cateListPage(req,res){
     super.setHtmlHeader(res)
     res.render('admin/admin-cate.html');
   }
 
    //权限分类列表请求
-   async cateList(req,res){
+  static async cateList(req,res){
     const page = req.query.nextpage || 1;
     const prePage =  req.query.page || 1;
     const pageSize = req.query.pageSize || 8;
@@ -65,7 +65,7 @@ class CateController extends BaseController {
   }
 
   // 添加权限分类
-  async cateAdd(req,res){
+  static async cateAdd(req,res){
     if(req.body.name){
       const result = await authCateModel.insert({
         name: req.body.name
@@ -85,4 +85,4 @@ class CateController extends BaseController {
   }
 }
 
-module.exports =  new CateController();
+module.exports =  CateController
