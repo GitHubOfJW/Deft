@@ -82,6 +82,13 @@ const adminPage = {
       method:'authAddPage',
       type:GET,
       selected:false
+    },
+    authEdit:{
+      path:'/auth/edit',
+      desc:'修改权限',
+      method:'authEditPage',
+      type:GET,
+      selected:false
     }
   },
   CateController:{
@@ -155,16 +162,23 @@ const adminApi = {
   AuthController:{
     authAdd:{
       path:'/api/auth/add',
-      desc:'添加选前规则',
+      desc:'添加权限规则',
       method:'authAdd',
       type:POST,
       selected:false
     },
     authList:{
       path:'/api/auth/list',
-      desc:'权限列表',
+      desc:'获取权限列表',
       method:'authList',
       type:GET,
+      selected:false
+    },
+    authEdit:{
+      path:'/api/auth/edit',
+      desc:'保存修改权限',
+      method:'authUpate',
+      type:POST,
       selected:false
     }
   }

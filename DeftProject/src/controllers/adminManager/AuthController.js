@@ -68,6 +68,8 @@ class AuthController extends BaseController {
   // 权限添加
   async authAddPage(req,res){
     super.setHtmlHeader(res);
+  
+    const cateList  = await authCateModel.list(-1,-1);
     const authMap = {}
     for(let controllerKey of Object.keys(adminPage)){
        if(!authMap[controllerKey]){
@@ -105,8 +107,6 @@ class AuthController extends BaseController {
         })
     }
 
-    const cateList  = await authCateModel.list(-1,-1);
-
     res.render('admin/auth-add.html',{
       authList,
       cateList
@@ -134,6 +134,63 @@ class AuthController extends BaseController {
       res.json(result);
     }
      
+  }
+
+  // 编辑页面
+  async authEditPage(req,res){
+    super.setHtmlHeader(res);
+
+    if(!req.body.id){
+      const result = super.handlerResponseData(0,{},'未获取到对应的id');
+      res.json(result);
+      return;
+    }
+    
+    const authMap = {}
+    for(let controllerKey of Object.keys(adminPage)){
+       if(!authMap[controllerKey]){
+        authMap[controllerKey] = {
+            api:[],
+            page:[]
+          }
+       }
+       for(let routerKey of Object.keys(adminPage[controllerKey])){
+         if(!adminPage[controllerKey][routerKey].selected){
+          authMap[controllerKey].page.push(adminPage[controllerKey][routerKey]);
+         }
+       }
+    }
+
+    for(let controllerKey of Object.keys(adminApi)){
+      if(!authMap[controllerKey]){
+        authMap[controllerKey] = {
+           api:[],
+           page:[]
+         }
+      }
+      for(let routerKey of Object.keys(adminApi[controllerKey])){
+        if(!adminApi[controllerKey][routerKey].selected){
+          authMap[controllerKey].api.push(adminApi[controllerKey][routerKey]);
+        }
+      }
+    }
+    
+    const authList = []
+    for(let controllerKey of Object.keys(authMap)){
+        authList.push({
+          key:controllerKey,
+          controller:authMap[controllerKey]
+        })
+    }
+
+
+    const cateList  = await authCateModel.list(-1,-1);
+    const auth =  await authModel.findOne(req.body.id)
+    res.render('admin/auth-edit.html',{
+      authList,
+      cateList,
+      auth
+    });
   }
 }
 

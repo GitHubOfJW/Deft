@@ -60,6 +60,15 @@ class AuthModel {
   insert(values){
     return Auth.create(values)
   }
+
+
+  // 查询
+  findOne(id){
+    return Auth.findOne({ where:{
+      id:id
+      }
+    })
+  }
 }
 
 
