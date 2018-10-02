@@ -1,41 +1,9 @@
-const { sequelize, Sequelize } = require('../../utils/Squelize')
-
 const moment =  require('moment')
 
-class Auth {
-  
-  //配置映射
-   constructor(){
-      this.instance = sequelize.define('tbl_auth', {
-        name: {
-          type: Sequelize.STRING(10),
-          allowNull: false,
-          comment: '权限名称'
-        },
-        rules: {
-          type: Sequelize.TEXT,
-          allowNull: false,
-          comment: '规则'
-        },
-        cate_id: {
-          type:Sequelize.INTEGER,
-          allowNull: false,
-          comment: '权限分类'
-        },
-        remark: {
-          type:Sequelize.TEXT,
-          allowNull: true,
-          comment: '权限分类'
-        }
-      },{
-        engine: 'Innodb',//如果要createAt 和updateAt 不能用MYISAM
-        createdAt:false,
-        updatedAt:false
-      })
-       
-      this.instance.sync({ force: false })
-   }
+const { Auth, AuthCate ,Sequelize} = require('../../migrations/migration')
 
+class AuthModel {
+  
    // 获取数据
   list(page = 1,pagesize = 20,others = {},is_delete = false){
     const conditions = {};
@@ -61,14 +29,21 @@ class Auth {
       }
     }
 
+    conditions.include = [{
+      model:AuthCate,
+      where:{
+        id:Sequelize.col('auths.authCateId')
+      }
+    }]
+    
 
-    const data = this.instance.findAll(conditions);
+    const data = Auth.findAll(conditions);
     return data;
   }
 
   // 更新各状态
   update(values,id){
-   return this.instance.update(values || {} ,{
+   return Auth.update(values || {} ,{
       where:{
         id:id
       }
@@ -77,15 +52,15 @@ class Auth {
 
   // 获取总数
   totalCount(reqCondition={}){
-    const count =  this.instance.count();
+    const count =  Auth.count();
     return count;
   }
   
   // 添加权限
   insert(values){
-    return this.instance.create(values)
+    return Auth.create(values)
   }
 }
 
 
-module.exports = new Auth();
+module.exports = new AuthModel();

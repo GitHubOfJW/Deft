@@ -119,7 +119,7 @@ class AuthController extends BaseController {
       const data =  authModel.insert({
         name:req.body.name,
         rules:req.body.rules.join(','),
-        cate_id:req.body.cateId,
+        authCateId:req.body.cateId,
         remark:req.body.remark
       })
       if(data){

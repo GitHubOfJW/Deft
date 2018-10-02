@@ -1,82 +1,9 @@
-const { sequelize, Sequelize } = require('../../utils/Squelize')
+const { Admin ,Sequelize } = require('../../migrations/migration')
 
 const moment =  require('moment')
 
-class Admins {
+class AdminModel {
   
-  //配置映射
-   constructor(){
-      this.instance = sequelize.define('tbl_admins', {
-        account: { 
-          type: Sequelize.STRING(20),
-          allowNull: false,
-          comment: '账户名'
-        },
-        name: {
-          type: Sequelize.STRING(10),
-          allowNull: false,
-          comment: '真实姓名'
-        },
-        password: {
-          type: Sequelize.STRING(20),
-          allowNull: false,
-          comment: '密码'
-        },
-        mobile: {
-          type: Sequelize.STRING(11),
-          allowNull: false,
-          comment: '手机号'
-        },
-        email: {
-          type:Sequelize.STRING(30),
-          allowNull: true,
-          comment: '邮箱'
-        },
-        role_id: {
-          type:Sequelize.INTEGER,
-          allowNull: true,
-          comment: '角色'
-        },
-        is_admin: {
-          type:Sequelize.BOOLEAN,
-          allowNull: false,
-          defaultValue:false,
-          comment: '超级管理员'
-        },
-        enable: {
-          type:Sequelize.BOOLEAN,
-          allowNull: false,
-          defaultValue: true,
-          comment: '启用/禁用'
-        },
-        is_delete: {
-          type:Sequelize.BOOLEAN,
-          allowNull: false,
-          defaultValue: false,
-          comment: '删除'
-        }
-      },{
-        engine: 'Innodb'//如果要createAt 和updateAt 不能用MYISAM
-      })
-       
-      this.instance.sync({ force: false }).then((data)=>{
-        this.instance.count().then(count => {
-          if(count > 0) return;
-          this.instance.create({
-            account: 'zhujianwei',
-            name: '朱建伟',
-            password: 'zhujianwei',
-            mobile: '13311255165',
-            email: '1284627282@qq.com',
-            role_id: null,
-            is_admin: true,
-            enable: true,
-            is_delete: false
-          })
-        })
-      })
-   }
-
    // 获取数据
   list(page = 1,pagesize = 20,others = {},is_delete = false){
     const conditions = {};
@@ -126,13 +53,13 @@ class Admins {
     }
 
 
-    const data = this.instance.findAll(conditions);
+    const data = Admin.findAll(conditions);
     return data;
   }
 
   // 更新各状态
   update(values,id){
-   return this.instance.update(values || {} ,{
+   return Admin.update(values || {} ,{
       where:{
         id:id
       }
@@ -141,13 +68,13 @@ class Admins {
 
   // 获取总数
   totalCount(reqCondition={}){
-    const count =  this.instance.count();
+    const count =  Admin.count();
     return count;
   }
    
   adminLogin(account,password){
     // 查询admin
-    let admin =  this.instance.findOne({
+    let admin =  Admin.findOne({
       attributes:{ exclude:['password'] },
       where:{
         [Sequelize.Op.or]:{
@@ -164,4 +91,4 @@ class Admins {
 }
 
 
-module.exports = new Admins();
+module.exports = new AdminModel();
