@@ -15,7 +15,27 @@ class AuthModel {
       conditions.offset =  (page - 1) * pagesize;
       conditions.limit = pagesize;
     }
+
+    conditions.include = [{
+      model:AuthCate,
+      where:{
+        id:Sequelize.col('auths.authCateId')
+      }
+    }]
+
     // where条件
+    conditions.where = {}
+    if(others.cateId){
+        conditions.where.authCateId =  others.cateId;
+    }
+    conditions.where[Sequelize.Op.or] = {
+      name:{
+        [Sequelize.Op.like]:`%${others.cateName}%`
+      },
+      rules:{
+        [Sequelize.Op.like]:`%${others.cateName}%`
+      }
+    }
 
     // 时间约束
     if(others.start && others.start.trim().length && moment(others.start).isValid()){
@@ -29,12 +49,6 @@ class AuthModel {
       }
     }
 
-    conditions.include = [{
-      model:AuthCate,
-      where:{
-        id:Sequelize.col('auths.authCateId')
-      }
-    }]
     
 
     const data = Auth.findAll(conditions);

@@ -34,6 +34,10 @@ class AuthController extends BaseController {
     const page = req.query.nextpage || 1;
     const prePage =  req.query.page || 1;
     const pageSize = req.query.pageSize || 8;
+    const cateName =  req.query.cateName || '';
+    const cateId =  req.query.cateId || '';
+    const start = req.query.start || '';
+    const end = req.query.end || '';
     
     const count = await authModel.totalCount();
 
@@ -43,7 +47,11 @@ class AuthController extends BaseController {
     let pagination = super.pagination(page,totalPage);
       
     const conditions = {
-      page:page
+      page:page,
+      cateName:cateName,
+      cateId:cateId,
+      start:start,
+      end:end
     };
 
     const list = await authModel.list(page,pageSize,conditions)
@@ -62,7 +70,12 @@ class AuthController extends BaseController {
   // 规则管理
   static authListPage(req,res){
     super.setHtmlHeader(res);
-    res.render('admin/admin-rule.html');
+
+    // 获取权限
+    const cateList = authCateModel.list(-1, -1);
+    res.render('admin/admin-rule.html',{
+      cateList
+    });
   }
 
   // 权限添加

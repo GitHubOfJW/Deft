@@ -35,31 +35,17 @@
     <div class="x-body">
       <div class="layui-row">
         <form class="layui-form layui-col-md12 x-so layui-form-pane">
+          <input class="layui-input" placeholder="开始日" name="start" id="start">
+          <input class="layui-input" placeholder="截止日" name="end" id="end">
           <div class="layui-input-inline">
-            <select name="cateid">
-              <option>规则分类</option>
-              <option>文章</option>
-              <option>会员</option>
-              <option>权限</option>
+            <select name="cateId">
+              <option value="">所属类别</option>
+              [{ each cateList as cateItem}]
+              <option value="[{cateItem.id}]">[{cateItem.name}]</option>
+              [{ /each}]
             </select>
           </div>
-          <div class="layui-input-inline">
-            <select name="contrller">
-              <option>请控制器</option>
-              <option>Index</option>
-              <option>Goods</option>
-              <option>Cate</option>
-            </select>
-          </div>
-          <div class="layui-input-inline">
-            <select name="action" multiple="multiple" size="2">
-              <option>请方法</option>
-              <option>add</option>
-              <option>login</option>
-              <option>checklogin</option>
-            </select>
-          </div>
-          <input class="layui-input" placeholder="权限名" name="cate_name" >
+          <input class="layui-input" placeholder="权限名/规则" name="cateName" >
           <button class="layui-btn" id="formSearch" lay-submit lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
         </form>
       </div>
@@ -78,6 +64,7 @@
             <th>权限规则</th>
             <th>权限名称</th>
             <th>所属分类</th>
+            <th>创建时间</th>
             <th>操作</th>
         </thead>
         <tbody>
@@ -99,6 +86,7 @@
           <td>{{rule.rules}}</td>
           <td>{{rule.name}}</td>
           <td>{{rule.authCate.name}}</td>
+          <td>{{rule.createdAt}}</td>
           <td class="td-manage">
             <a title="编辑"  onclick="x_admin_show('编辑','/auth/edit/{{rule.id}}')" href="javascript:;">
               <i class="layui-icon">&#xe642;</i>
@@ -157,9 +145,18 @@
 
       // 添加分页方法
       function pageHander(ele,page){
-        request('/api/admin/list',JSON.parse(ele.dataset.set),page);
+        request('/api/auth/list',JSON.parse(ele.dataset.set),page);
       }
 
+      layui.use('form', function(){
+        var form = layui.form;
+        
+        //监听提交
+        form.on('submit(sreach)', function(data){
+          request('/api/auth/list',data.field);
+          return false;
+        });
+      });
 
       layui.use('laydate', function(){
         var laydate = layui.laydate;

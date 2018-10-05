@@ -21,9 +21,7 @@ const Auth = sequelize.define('auths', {
     comment: '权限分类'
   }
 },{
-  engine: 'Innodb',//如果要createAt 和updateAt 不能用MYISAM
-  createdAt:false,
-  updatedAt:false
+  engine: 'Innodb'
 })
 
 module.exports = Auth

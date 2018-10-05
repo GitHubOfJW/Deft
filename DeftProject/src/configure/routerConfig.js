@@ -116,7 +116,7 @@ const adminApi = {
   AdminController:{
     adminList:{
       path:'/api/admin/list',
-      desc:'获取会员列表',
+      desc:'管理员列表请求',
       method:'adminList',
       type:GET,
       selected:false,
