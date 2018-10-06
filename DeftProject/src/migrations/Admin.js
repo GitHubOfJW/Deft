@@ -1,4 +1,5 @@
 const { sequelize, Sequelize } = require('../utils/Squelize')
+const moment = require('moment')
 const Admin = sequelize.define('admins', {
   account: { 
     type: Sequelize.STRING(20),
@@ -49,7 +50,17 @@ const Admin = sequelize.define('admins', {
     comment: '删除'
   }
 },{
-  engine: 'Innodb'//如果要createAt 和updateAt 不能用MYISAM
+  getterMethods:{
+    createdTime(){
+      const time =  this.getDataValue('createdAt');
+      return  moment(time).format('YYYY-MM-DD HH:mm:ss');
+    },
+    updatedTime(){
+      const time =  this.getDataValue('updatedAt');
+      return  moment(time).format('YYYY-MM-DD HH:mm:ss');
+    }
+  },
+  engine: 'Innodb',//如果要createAt 和updateAt 不能用MYISAM
 })
 
 module.exports =  Admin

@@ -97,7 +97,7 @@ class AuthController extends BaseController {
     if(req.body.name && req.body.rules && req.body.rules.length && req.body.cateId){
       const data =  authModel.insert({
         name:req.body.name,
-        rules:req.body.rules.join(','),
+        rules:(typeof req.body.rules == 'string')? req.body.rules : req.body.rules.join(','),
         authCateId:req.body.cateId,
         remark:req.body.remark
       })
@@ -117,7 +117,7 @@ class AuthController extends BaseController {
 
   // 修改请求
   static authEdit(req,res){
-    req.body.rules = (req.body.rules || []).join(',');
+    req.body.rules = (typeof req.body.rules == 'string')? req.body.rules : req.body.rules.join(','),
     AuthController.authUpate(req,res)
   }
 

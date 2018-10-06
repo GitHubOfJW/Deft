@@ -70,7 +70,7 @@
             <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='2'><i class="layui-icon">&#xe605;</i></div>
           </td>
           <td>{{cate.id}}</td>
-          <td>{{cate.name}}</td>
+          <td id="td{{cate.id}}" edit="0" ondblClick="dbclick({{cate.id}})">{{cate.name}}</td>
           <td class="td-manage">
             <a title="编辑"  onclick="x_admin_show('编辑','admin-edit.html')" href="javascript:;">
               <i class="layui-icon">&#xe642;</i>
@@ -96,6 +96,26 @@
 </script>
 
     <script>
+
+      function saveChange(input){
+        const tdObj = $('#td'+ input.dataset.td);
+        tdObj.html(input.dataset.content)
+      }
+
+      function dbclick(id){
+        const tdObj = $('#td'+id);
+        const edit = tdObj.attr('edit');
+        if(edit == 1){
+          tdObj.attr('edit','0');
+          const inputObj = tdObj.find('input')
+          saveChange(inputObj[0])
+          return;
+        }
+
+        tdObj.attr('edit','1');
+        const html =  tdObj.html();
+        tdObj.html('<input class="layui-input" placeholder="分类名" data-td="'+id+'" data-content="'+ html +'" onblur="saveChange(this)" value="'+ html +'" name="name">');
+      }
 
       function request(url,data,page=1){
         
