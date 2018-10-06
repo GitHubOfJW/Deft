@@ -98,7 +98,11 @@
     <script>
 
       function saveChange(input){
-        const tdObj = $('#td'+ input.dataset.td);
+        const tdObj = $('#td'+ input.dataset.id);
+        $.ajax({
+          url:'/api/cate/edit/'+input.dataset.id
+        })
+        tdObj.attr('edit','0');
         tdObj.html(input.dataset.content)
       }
 
@@ -106,7 +110,6 @@
         const tdObj = $('#td'+id);
         const edit = tdObj.attr('edit');
         if(edit == 1){
-          tdObj.attr('edit','0');
           const inputObj = tdObj.find('input')
           saveChange(inputObj[0])
           return;
@@ -114,7 +117,7 @@
 
         tdObj.attr('edit','1');
         const html =  tdObj.html();
-        tdObj.html('<input class="layui-input" placeholder="分类名" data-td="'+id+'" data-content="'+ html +'" onblur="saveChange(this)" value="'+ html +'" name="name">');
+        tdObj.html('<input class="layui-input" placeholder="分类名" data-id="'+id+'" data-content="'+ html +'" onblur="saveChange(this)" value="'+ html +'" name="name">');
       }
 
       function request(url,data,page=1){
