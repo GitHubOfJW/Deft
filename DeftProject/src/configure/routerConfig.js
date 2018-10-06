@@ -99,6 +99,22 @@ const adminPage = {
       type:GET,
       selected:false
     }
+  },
+  RoleController:{
+    roleList:{
+      path:'/role/list',
+      desc:'角色列表',
+      method:'roleListPage',
+      type:GET,
+      selected:false
+    },
+    roleAdd:{
+      path:'/role/add',
+      desc:'角色添加',
+      method:'authAddPage',
+      type:GET,
+      selected:false
+    }
   }
 }
 
@@ -157,6 +173,13 @@ const adminApi = {
       method:'cateAdd',
       type:POST,
       selected:false
+    },
+    cateEdit:{
+      path:'/api/cate/edit/:id',
+      desc:'修改权限分类',
+      method:'cateUpdate',
+      type:POST,
+      selected:false
     }
   },
   AuthController:{
@@ -176,7 +199,7 @@ const adminApi = {
     },
     authEdit:{
       path:'/api/auth/edit/:id',
-      desc:'保存修改权限',
+      desc:'修改权限',
       method:'authEdit',
       type:POST,
       selected:false

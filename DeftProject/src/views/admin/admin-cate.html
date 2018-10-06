@@ -72,7 +72,7 @@
           <td>{{cate.id}}</td>
           <td id="td{{cate.id}}" edit="0" ondblClick="dbclick({{cate.id}})">{{cate.name}}</td>
           <td class="td-manage">
-            <a title="编辑"  onclick="x_admin_show('编辑','admin-edit.html')" href="javascript:;">
+            <a title="编辑"  onclick="dbclick({{cate.id}})" href="javascript:;">
               <i class="layui-icon">&#xe642;</i>
             </a>
             <a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;">
@@ -100,10 +100,28 @@
       function saveChange(input){
         const tdObj = $('#td'+ input.dataset.id);
         $.ajax({
-          url:'/api/cate/edit/'+input.dataset.id
+          url:'/api/cate/edit/'+input.dataset.id,
+          method:'POST',
+          data:{
+            name:input.value
+          },
+          type:'json',
+          success:function(resData){
+            console.log(resData.message)
+            if(resData.status){
+               tdObj.attr('edit','0');
+               tdObj.html(input.value)
+            }else{
+               tdObj.attr('edit','1');
+               tdObj.html(input.dataset.content)
+            }
+          },
+          error:function(err){
+            tdObj.attr('edit','1');
+            tdObj.html(input.dataset.content)
+            layer.msg('服务器开小差了',{type:2,shade:0.2,time:1000});
+          }
         })
-        tdObj.attr('edit','0');
-        tdObj.html(input.dataset.content)
       }
 
       function dbclick(id){
@@ -118,6 +136,8 @@
         tdObj.attr('edit','1');
         const html =  tdObj.html();
         tdObj.html('<input class="layui-input" placeholder="分类名" data-id="'+id+'" data-content="'+ html +'" onblur="saveChange(this)" value="'+ html +'" name="name">');
+        const inputObj = tdObj.find('input')
+        inputObj.focus();
       }
 
       function request(url,data,page=1){

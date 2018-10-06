@@ -10,10 +10,10 @@ const { adminApi, adminPage } = require('../../configure/routerConfig')
 class CateController extends BaseController {
   
    // 状态更新
-  static async cateUpate(req,res){
+  static async cateUpdate(req,res){
     if(req.params.id){
 
-      const data = await adminModel.update(req.body,req.params.id);
+      const data = await authCateModel.update(req.body,req.params.id);
       if(data){
         const result = super.handlerResponseData(1,data,'修改成功');
         res.json(result);
