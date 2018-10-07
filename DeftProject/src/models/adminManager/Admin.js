@@ -1,4 +1,4 @@
-const { Admin ,Sequelize } = require('../../migrations/adminManager/migration')
+const { Admin ,Sequelize } = require('../../migrations/migration')
 
 const moment =  require('moment')
 

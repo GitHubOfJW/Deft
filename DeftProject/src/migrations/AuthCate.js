@@ -1,4 +1,4 @@
-const { sequelize, Sequelize } = require('../../utils/Squelize')
+const { sequelize, Sequelize } = require('../utils/Squelize')
 const AuthCate = sequelize.define('authCates', {
   name: {
     type: Sequelize.STRING(10),

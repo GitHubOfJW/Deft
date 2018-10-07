@@ -51,7 +51,7 @@ class CateController extends BaseController {
       page:page
     };
 
-    const list = await authCateModel.list(page,pageSize,conditions)
+    const list = await authCateModel.list(page,pageSize)
 
     const data =  {
       list:list,
