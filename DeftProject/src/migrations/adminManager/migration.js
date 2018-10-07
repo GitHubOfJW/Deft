@@ -41,7 +41,7 @@ Admin.sync({ force: force }).then((data)=>{
 
 
 
-const { sequelize, Sequelize } = require('../utils/Squelize')
+const { sequelize, Sequelize } = require('../../utils/Squelize')
 module.exports = {
   Admin,
   Auth,

@@ -1,4 +1,4 @@
-const { sequelize, Sequelize } = require('../utils/Squelize')
+const { sequelize, Sequelize } = require('../../utils/Squelize')
 const moment = require('moment')
 const Role = sequelize.define('roles', {
   name: {

@@ -1,6 +1,6 @@
 const moment =  require('moment')
 
-const { Auth, AuthCate ,Sequelize} = require('../../migrations/migration')
+const { Auth, AuthCate ,Sequelize} = require('../../migrations/adminManager/migration')
 
 class AuthModel {
   

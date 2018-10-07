@@ -1,4 +1,4 @@
-const { AuthCate, Auth, Sequelize } = require('../../migrations/migration')
+const { AuthCate, Auth, Sequelize } = require('../../migrations/adminManager/migration')
 
 const moment =  require('moment')
 
