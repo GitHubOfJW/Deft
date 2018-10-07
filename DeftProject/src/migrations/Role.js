@@ -1,20 +1,15 @@
 const { sequelize, Sequelize } = require('../utils/Squelize')
 const moment = require('moment')
-const Auth = sequelize.define('auths', {
+const Role = sequelize.define('roles', {
   name: {
     type: Sequelize.STRING(10),
     allowNull: false,
-    comment: '权限名称'
-  },
-  rules: {
-    type: Sequelize.TEXT,
-    allowNull: false,
-    comment: '规则'
+    comment: '角色名称'
   },
   remark: {
     type:Sequelize.TEXT,
     allowNull: true,
-    comment: '备注'
+    comment: '角色备注'
   }
 },{
   getterMethods:{
@@ -30,4 +25,4 @@ const Auth = sequelize.define('auths', {
   engine: 'Innodb'
 })
 
-module.exports = Auth
+module.exports = Role

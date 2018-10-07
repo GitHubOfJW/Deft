@@ -26,11 +26,11 @@ const Admin = sequelize.define('admins', {
     allowNull: true,
     comment: '邮箱'
   },
-  role_id: {
-    type:Sequelize.INTEGER,
-    allowNull: true,
-    comment: '角色'
-  },
+  // role_id: {
+  //   type:Sequelize.INTEGER,
+  //   allowNull: true,
+  //   comment: '角色'
+  // },
   is_admin: {
     type:Sequelize.BOOLEAN,
     allowNull: false,
