@@ -46,5 +46,6 @@ module.exports = {
   Admin,
   Auth,
   AuthCate,
+  AuthRoleRel,
   Sequelize
 }

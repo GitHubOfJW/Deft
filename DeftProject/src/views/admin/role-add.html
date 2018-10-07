@@ -38,39 +38,22 @@
                     </label>
                     <table  class="layui-table layui-input-block">
                         <tbody>
+                            [{each cateList cateItem}]
+                            [{if cateItem.auths && cateItem.auths.length}]
                             <tr>
                                 <td>
-                                    <input type="checkbox" name="like1[write]" lay-skin="primary" title="用户管理">
+                                    <input type="checkbox" name="like1[write]" lay-skin="primary" title="[{cateItem.name}]">
                                 </td>
                                 <td>
                                     <div class="layui-input-block">
-                                        <input name="id[]" lay-skin="primary" type="checkbox" title="用户停用" value="2"> 
-                                        <input name="id[]" lay-skin="primary" type="checkbox" value="2" title="用户删除"> 
-                                        <input name="id[]" lay-skin="primary" type="checkbox" value="2" title="用户修改"> 
-                                        <input name="id[]" lay-skin="primary" type="checkbox" value="2" title="用户改密"> 
-                                        <input name="id[]" lay-skin="primary" type="checkbox" value="2" title="用户列表">
-                                        <input name="id[]" lay-skin="primary" type="checkbox" value="2" title="用户改密"> 
-                                        <input name="id[]" lay-skin="primary" type="checkbox" value="2" title="用户列表">
-                                        <input name="id[]" lay-skin="primary" type="checkbox" value="2" title="用户改密"> 
-                                        <input name="id[]" lay-skin="primary" type="checkbox" value="2" title="用户列表"> 
+                                        [{each cateItem.auths authItem}]
+                                        <input name="id[]" lay-skin="primary" type="checkbox" title="[{authItem.name}]" value="[{authItem.id}]">
+                                        [{/each}]
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>
-                                   
-                                    <input name="id[]" lay-skin="primary" type="checkbox" value="2" title="文章管理">
-                                </td>
-                                <td>
-                                    <div class="layui-input-block">
-                                        <input name="id[]" lay-skin="primary" type="checkbox" value="2" title="文章添加"> 
-                                        <input name="id[]" lay-skin="primary" type="checkbox" value="2" title="文章删除"> 
-                                        <input name="id[]" lay-skin="primary" type="checkbox" value="2" title="文章修改"> 
-                                        <input name="id[]" lay-skin="primary" type="checkbox" value="2" title="文章改密"> 
-                                        <input name="id[]" lay-skin="primary" type="checkbox" value="2" title="文章列表"> 
-                                    </div>
-                                </td>
-                            </tr>
+                            [{/if}]
+                            [{/each}]
                         </tbody>
                     </table>
                 </div>
@@ -95,9 +78,9 @@
         
           //自定义验证规则
           form.verify({
-            nikename: function(value){
-              if(value.length < 5){
-                return '昵称至少得5个字符啊';
+            name: function(value){
+              if(value.length < 2){
+                return '名称不得低于2个字符';
               }
             }
             ,pass: [/(.+){6,12}$/, '密码必须6到12位']

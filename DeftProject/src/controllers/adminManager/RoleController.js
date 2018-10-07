@@ -82,12 +82,9 @@ class AuthController extends BaseController {
   static async authAddPage(req,res){
     super.setHtmlHeader(res);
   
-    const cateList  = await authCateModel.list(-1,-1);
-   
-    const authList = AuthController.configAuthList()
-
+    const cateList  = await authCateModel.list(-1,-1,true);
+  
     res.render('admin/role-add.html',{
-      authList,
       cateList
     });
   }
