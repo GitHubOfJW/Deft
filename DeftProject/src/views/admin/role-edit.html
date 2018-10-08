@@ -28,7 +28,7 @@
                         <span class="x-red">*</span>角色名
                     </label>
                     <div class="layui-input-inline">
-                        <input type="text" id="name" name="name" required="" lay-verify="required"
+                        <input type="text" id="name" name="name" required="" lay-verify="required" value="[{role.name}]"
                         autocomplete="off" class="layui-input">
                     </div>
                 </div>
@@ -42,12 +42,12 @@
                             [{if cateItem.auths && cateItem.auths.length}]
                             <tr>
                                 <td style="width:160px;">
-                                    <input type="checkbox" id="[{cateItem.id}]" data-length="[{cateItem.auths.length}]" lay-skin="primary" title="[{cateItem.name}]">
+                                    <input type="checkbox" id="[{cateItem.id}]" [{ if roleCates[cateItem.id] && roleCates[cateItem.id].auths.length == cateItem.auths.length }] checked [{ /if }] data-length="[{cateItem.auths.length}]" lay-skin="primary" title="[{cateItem.name}]">
                                 </td>
                                 <td>
                                     <div class="layui-input-block">
                                         [{each cateItem.auths authItem}]
-                                        <input name="ids[]" id="auth[{authItem.id}]" lay-skin="primary" type="checkbox" title="[{authItem.name}]" value="[{authItem.id}]">
+                                        <input name="ids[]" id="auth[{authItem.id}]" [{ if roleCates[cateItem.id] && roleCates[cateItem.id].ids.indexOf(authItem.id) >= 0 }] checked [{ /if }] lay-skin="primary" type="checkbox" title="[{authItem.name}]" value="[{authItem.id}]">
                                         [{/each}]
                                     </div>
                                 </td>
@@ -62,11 +62,11 @@
                         描述
                     </label>
                     <div class="layui-input-block">
-                        <textarea placeholder="请输入内容" id="remark" name="remark" class="layui-textarea"></textarea>
+                        <textarea placeholder="请输入内容" id="remark" name="remark" class="layui-textarea">[{role.remark}]</textarea>
                     </div>
                 </div>
                 <div class="layui-form-item">
-                <button class="layui-btn" lay-submit="" lay-filter="add">增加</button>
+                <button class="layui-btn" lay-submit="" lay-filter="edit">修改</button>
               </div>
             </form>
     </div>
@@ -87,7 +87,7 @@
 
 
           //监听提交
-          form.on('submit(add)', function(data){
+          form.on('submit(edit)', function(data){
             // 弹出提示
             let index = null;
             const id = setTimeout(() => {
@@ -105,7 +105,7 @@
                 }
             }
             $.ajax({
-                url:'/api/role/add',
+                url:'/api/role/edit/'+[{role.id}],
                 traditional:true,
                 data:{
                     name:data.field.name,

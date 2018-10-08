@@ -1,11 +1,11 @@
-const { AuthCate, Auth, Sequelize } = require('../../migrations/migration')
+const { AuthCate, Auth, AuthRoleRel, Sequelize } = require('../../migrations/migration')
 
 const moment =  require('moment')
 
 class AuthCateModel {
   
    // 获取数据
-  list(page = 1,pagesize = 20,includeAuth = false){
+  list(page = 1,pagesize = 20,includeAuth = false,roleId = 0){
     const conditions = {};
     // 分页
     if(page > 0 && pagesize > 0){
@@ -19,6 +19,24 @@ class AuthCateModel {
     if(includeAuth){
       conditions.include = [{
         model:Auth,
+        where:{
+          authCateId:Sequelize.col('authCates.id')
+        }
+      }]
+    }
+   
+    if(roleId > 0){
+      conditions.include = [{
+        model:Auth,
+        include:{
+          model:AuthRoleRel,
+          scope:{
+            authId:Sequelize.col('auths.id'),
+          },
+          where:{
+            roleId:roleId
+          }
+        },
         where:{
           authCateId:Sequelize.col('authCates.id')
         }

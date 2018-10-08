@@ -5,10 +5,11 @@ const adminModel =  require('../../models/adminManager/Admin')
 
 const authModel =  require('../../models/adminManager/Auth')
 const authCateModel = require('../../models/adminManager/AuthCate')
+const roleModel =  require('../../models/adminManager/Role')
 
 const { adminApi, adminPage } = require('../../configure/routerConfig')
  
-class AuthController extends BaseController {
+class RoleController extends BaseController {
    
   // 状态更新
   static async roleUpate(req,res){
@@ -39,7 +40,7 @@ class AuthController extends BaseController {
     const start = req.query.start || '';
     const end = req.query.end || '';
     
-    const count = await authModel.totalCount();
+    const count = await roleModel.totalCount();
 
     // 计算页数
     const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
@@ -54,7 +55,7 @@ class AuthController extends BaseController {
       end:end
     };
 
-    const list = await authModel.list(page,pageSize,conditions)
+    const list = await roleModel.list(page,pageSize,conditions)
 
     const data =  {
       list:list,
@@ -79,7 +80,7 @@ class AuthController extends BaseController {
   }
 
   // 权限添加
-  static async authAddPage(req,res){
+  static async roleAddPage(req,res){
     super.setHtmlHeader(res);
   
     const cateList  = await authCateModel.list(-1,-1,true);
@@ -90,12 +91,11 @@ class AuthController extends BaseController {
   }
  
   // 添加权限请求
-  static async authAdd(req,res){
-    if(req.body.name && req.body.rules && req.body.rules.length && req.body.cateId){
-      const data =  authModel.insert({
+  static async roleAdd(req,res){
+    if(req.body.name && req.body.authIds){
+      const data =  roleModel.insert({
         name:req.body.name,
-        rules:(typeof req.body.rules == 'string')? req.body.rules : req.body.rules.join(','),
-        authCateId:req.body.cateId,
+        authIds:(typeof req.body.authIds == 'number')? [req.body.authIds] : req.body.authIds,
         remark:req.body.remark
       })
       if(data){
@@ -114,8 +114,25 @@ class AuthController extends BaseController {
 
   // 修改请求
   static roleEdit(req,res){
-    req.body.rules = (typeof req.body.rules == 'string')? req.body.rules : req.body.rules.join(','),
-    AuthController.authUpate(req,res)
+    console.log(req.body,'查看body')
+    if(req.body.name && req.body.authIds && req.params.id){
+      const data =  roleModel.update({
+        name:req.body.name,
+        authIds:(typeof req.body.authIds == 'number')? [req.body.authIds] : req.body.authIds,
+        remark:req.body.remark
+      },req.params.id)
+      if(data){
+        const result = super.handlerResponseData(1,{},'修改成功');
+        res.json(result);
+      }else{
+        const result = super.handlerResponseData(0,{},'修改失败');
+        res.json(result);
+      }
+    }else{
+      const result = super.handlerResponseData(0,{},'修改失败，缺少参数');
+      res.json(result);
+    }
+    
   }
 
   // 编辑页面
@@ -128,15 +145,22 @@ class AuthController extends BaseController {
       return;
     }
     
-   
-
-    const authList = AuthController.configAuthList()
-    const cateList  = await authCateModel.list(-1,-1);
-    const auth =  await authModel.findOne(req.params.id)
-    res.render('admin/auth-edit.html',{
-      authList,
-      cateList,
-      auth
+    const cateList  = await authCateModel.list(-1,-1,true);
+    const roleCateList = await authCateModel.list(-1,-1,false,req.params.id);
+    const cateMap = {};
+    for(let cateItem of roleCateList){
+      cateMap[cateItem.id] = {
+        auths:cateItem.auths,
+        ids:cateItem.auths.map(authItem => {
+          return authItem.id
+        }).join(',')
+      }
+    }
+    const role = await roleModel.findOne(req.params.id)
+    res.render('admin/role-edit.html',{
+      cateList:cateList,
+      role:role,
+      roleCates:cateMap
     });
   }
 
@@ -183,4 +207,4 @@ class AuthController extends BaseController {
   }
 }
 
-module.exports = AuthController
+module.exports = RoleController

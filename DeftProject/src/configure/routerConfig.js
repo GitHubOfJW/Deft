@@ -111,7 +111,14 @@ const adminPage = {
     roleAdd:{
       path:'/role/add',
       desc:'角色添加',
-      method:'authAddPage',
+      method:'roleAddPage',
+      type:GET,
+      selected:false
+    },
+    roleEdit:{
+      path:'/role/edit/:id',
+      desc:'角色修改',
+      method:'roleEditPage',
       type:GET,
       selected:false
     }
@@ -201,6 +208,29 @@ const adminApi = {
       path:'/api/auth/edit/:id',
       desc:'修改权限',
       method:'authEdit',
+      type:POST,
+      selected:false
+    }
+  },
+  RoleController:{
+    roleAdd:{
+      path:'/api/role/add',
+      desc:'角色添加',
+      method:'roleAdd',
+      type:POST,
+      selected:false
+    },
+    roleList:{
+      path:'/api/role/list',
+      desc:'获取角色列表',
+      method:'roleList',
+      type:GET,
+      selected:false
+    },
+    roleEdit:{
+      path:'/api/role/edit/:id',
+      desc:'修改角色',
+      method:'roleEdit',
       type:POST,
       selected:false
     }

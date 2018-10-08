@@ -10,7 +10,13 @@ const Role = sequelize.define('roles', {
     type:Sequelize.TEXT,
     allowNull: true,
     comment: '角色备注'
-  }
+  },
+  enable: {
+    type:Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+    comment: '启用/禁用'
+  },
 },{
   getterMethods:{
     createdTime(){
