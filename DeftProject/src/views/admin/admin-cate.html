@@ -35,7 +35,7 @@
     <div class="x-body">
       <div class="layui-row">
         <form class="layui-form layui-col-md12 x-so layui-form-pane">
-          <input class="layui-input" placeholder="分类名" name="name">
+          <input class="layui-input" placeholder="分类名" lay-verify="required" name="name">
           <button class="layui-btn"  lay-submit lay-filter="cateAdd"><i class="layui-icon"></i>增加</button>
         </form>
       </div>
@@ -179,6 +179,15 @@
       
       layui.use('form', function(){
         var form = layui.form;
+
+        //自定义验证规则
+        form.verify({
+            name: function(value){
+              if(value.length < 5){
+                return '名称至少得4个字符啊';
+              }
+            }
+          });
         
         //监听提交
         form.on('submit(cateAdd)', function(data){

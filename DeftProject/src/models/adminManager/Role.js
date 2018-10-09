@@ -15,6 +15,7 @@ class RoleModel {
       conditions.offset =  (page - 1) * pagesize;
       conditions.limit = pagesize;
     }
+    
 
     conditions.include = [{
       model:AuthRoleRel,
@@ -30,10 +31,10 @@ class RoleModel {
     }]
 
     // where条件
-    conditions.where = {}
+    conditions.where = {is_delete:is_delete}
     conditions.where[Sequelize.Op.or] = {
       name:{
-        [Sequelize.Op.like]:`%${others.cateName}%`
+        [Sequelize.Op.like]:`%${others.name||''}%`
       }
     }
 
@@ -69,7 +70,7 @@ class RoleModel {
         })
       }).then(rels => {
          const relIds = rels.map(relItem=>{
-           return relItem.authId;
+           return `${relItem.authId}`;
          })
          console.log(relIds,values.authIds,'查看关系列表')
          const delIds = [];
@@ -89,20 +90,19 @@ class RoleModel {
               })
            }
          }
-         console.log(delIds,addRels,'查看数据')
-
+         console.log(idSets,delIds,addRels,'查看数据')
+        
          return Promise.all([
-          //  AuthRoleRel.destroy({
-          //    where:{
-          //      authId:{
-          //        [Sequelize.Op.in]:delIds
-          //      }
-          //    }
-          //  }),
-           AuthRoleRel.bulkCreate(addRels)
+           AuthRoleRel.destroy({
+             where:{
+               authId:{
+                 [Sequelize.Op.in]:delIds
+               }
+             }
+           },{transaction:t}),
+           AuthRoleRel.bulkCreate(addRels,{transaction:t})
          ])
       })
-
     })
   }
 

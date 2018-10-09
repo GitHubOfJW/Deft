@@ -17,6 +17,12 @@ const Role = sequelize.define('roles', {
     defaultValue: true,
     comment: '启用/禁用'
   },
+  is_delete: {
+    type:Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    comment: '删除'
+  }
 },{
   getterMethods:{
     createdTime(){

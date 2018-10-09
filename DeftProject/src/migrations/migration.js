@@ -11,7 +11,6 @@ const AuthRoleRel =  require('./AuthRoleRel')
 Role.hasOne(Admin)
 
 AuthRoleRel.belongsTo(Auth)
-Auth.hasOne(AuthRoleRel)
 Role.hasMany(AuthRoleRel)
 
 Auth.belongsTo(AuthCate);
@@ -40,6 +39,7 @@ Admin.sync({ force: force }).then((data)=>{
 })
 
 
+Auth.hasOne(AuthRoleRel)
 
 
 const { sequelize, Sequelize } = require('../utils/Squelize')

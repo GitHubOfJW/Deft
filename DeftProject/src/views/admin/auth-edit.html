@@ -48,14 +48,14 @@
                                             [{if item.controller.page.length > 0}]
                                             <div class="layui-input-block">
                                                 [{each item.controller.page pageItem pageIdx}]
-                                                <input name="rules[]" lay-skin="primary" type="checkbox" [{ if auth.rules.indexOf(pageItem.path) >= 0 }] checked [{/if}] title="[{pageItem.desc}]" alt="[{pageItem.path}]" value="[{pageItem.path}]">
+                                                <input name="rule" lay-skin="primary" type="checkbox" [{ if auth.rules.indexOf(pageItem.path) >= 0 }] checked [{/if}] title="[{pageItem.desc}]" alt="[{pageItem.path}]" value="[{pageItem.path}]">
                                                 [{/each}]
                                             </div>
                                             [{/if}]
                                             [{if item.controller.api.length > 0}]
                                             <div class="layui-input-block">
                                                 [{each item.controller.api apiItem apiIdx}]
-                                                <input name="rules[]" lay-skin="primary" type="checkbox" [{ if auth.rules.indexOf(apiItem.path) >= 0 }] checked [{/if}] title="[{apiItem.desc}]" alt="[{apiItem.path}]" value="[{apiItem.path}]">
+                                                <input name="rule" lay-skin="primary" type="checkbox" [{ if auth.rules.indexOf(apiItem.path) >= 0 }] checked [{/if}] title="[{apiItem.desc}]" alt="[{apiItem.path}]" value="[{apiItem.path}]">
                                                 [{/each}]
                                             </div>
                                             [{/if}]
@@ -125,12 +125,16 @@
             }, 1000);
             
             const rules = []
-
-            for(let key of Object.keys(data.field)){
-                if(key.indexOf('rules') >= 0){
-                    rules.push(data.field[key]);
+            // console.dir($("input[name='auth']"));
+            const rlueObjs =  $("input[name='rule']");
+            if(rlueObjs){
+                for(let i = 0;i < rlueObjs.length; i ++){
+                    if(rlueObjs[i].checked){
+                        rules.push(rlueObjs[i].value)
+                    }
                 }
             }
+
             $.ajax({
                 url:'/api/auth/edit/'+[{auth.id}],
                 traditional:true,

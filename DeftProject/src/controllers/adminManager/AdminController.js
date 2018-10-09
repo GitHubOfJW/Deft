@@ -6,6 +6,8 @@ const adminModel =  require('../../models/adminManager/Admin')
 const authCateModel =  require('../../models/adminManager/AuthCate')
 
 const { adminApi, adminPage } = require('../../configure/routerConfig')
+
+const roleModel =  require('../../models/adminManager/Role')
  
 class AdminController extends BaseController {
   
@@ -75,7 +77,12 @@ class AdminController extends BaseController {
   // 添加管理员页
   static adminAddPage(req,res){
     super.setHtmlHeader(res);
-    res.render('admin/admin-add.html');
+
+    const roles = roleModel.list(-1,-1,false)
+
+    res.render('admin/admin-add.html',{
+      roles:roles
+    });
   }
 }
 

@@ -47,7 +47,7 @@
                                 <td>
                                     <div class="layui-input-block">
                                         [{each cateItem.auths authItem}]
-                                        <input name="ids[]" id="auth[{authItem.id}]" [{ if roleCates[cateItem.id] && roleCates[cateItem.id].ids.indexOf(authItem.id) >= 0 }] checked [{ /if }] lay-skin="primary" type="checkbox" title="[{authItem.name}]" value="[{authItem.id}]">
+                                        <input name="auth" id="auth[{authItem.id}]" [{ if roleCates[cateItem.id] && roleCates[cateItem.id].ids.indexOf(authItem.id) >= 0 }] checked [{ /if }] lay-skin="primary" type="checkbox" title="[{authItem.name}]" value="[{authItem.id}]">
                                         [{/each}]
                                     </div>
                                 </td>
@@ -98,12 +98,16 @@
             }, 1000);
             
             const authIds = []
-
-            for(let key of Object.keys(data.field)){
-                if(key.indexOf('ids') >= 0){
-                    authIds.push(data.field[key]);
+            // console.dir($("input[name='auth']"));
+            const authObjs =  $("input[name='auth']");
+            if(authObjs){
+                for(let i = 0;i < authObjs.length; i ++){
+                    if(authObjs[i].checked){
+                        authIds.push(authObjs[i].value)
+                    }
                 }
             }
+ 
             $.ajax({
                 url:'/api/role/edit/'+[{role.id}],
                 traditional:true,

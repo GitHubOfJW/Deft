@@ -35,8 +35,7 @@ class RoleController extends BaseController {
     const page = req.query.nextpage || 1;
     const prePage =  req.query.page || 1;
     const pageSize = req.query.pageSize || 8;
-    const cateName =  req.query.cateName || '';
-    const cateId =  req.query.cateId || '';
+    const name =  req.query.name || '';
     const start = req.query.start || '';
     const end = req.query.end || '';
     
@@ -49,8 +48,7 @@ class RoleController extends BaseController {
       
     const conditions = {
       page:page,
-      cateName:cateName,
-      cateId:cateId,
+      name:name,
       start:start,
       end:end
     };
