@@ -42,7 +42,7 @@
                             [{if cateItem.auths && cateItem.auths.length}]
                             <tr>
                                 <td style="width:160px;">
-                                    <input type="checkbox" id="cate[{cateItem.id}]" data-length="[{cateItem.auths.length}]" lay-skin="primary" title="[{cateItem.name}]">
+                                    <input type="checkbox" lay-filter="cate" id="cate[{cateItem.id}]" data-length="[{cateItem.auths.length}]" lay-skin="primary" title="[{cateItem.name}]">
                                 </td>
                                 <td>
                                     <div class="layui-input-block">
@@ -84,19 +84,29 @@
               }
             }
           });
+
+          form.on('checkbox(cate)', function(data){
+            // 只要有未选中的 则取消全部选中
+            const cateObj = $(data.elem)
+            cateObj.parents('td').next('td').find("input[type='checkbox']").prop('checked',data.elem.checked)
+            form.render('checkbox')
+          }); 
           
           form.on('checkbox(auth)', function(data){
             // 只要有未选中的 则取消全部选中
+            const cateObj = $(`#cate${data.elem.dataset.cateId}`)
             if(!data.elem.checked){
-                console.log(data.elem.dataset)
-                $(`#cate${data.elem.dataset.cateId}`).attr('checked',false)
+                cateObj.prop('checked',false)
+                form.render('checkbox')
             }else{
                 // 获取所有该分类的权限
+                const totalLength =  cateObj.get(0).dataset.length;
+                const selectedLength = cateObj.parents('td').next('td').find('input:checked').length
+                if(totalLength  == selectedLength){
+                    cateObj.prop('checked',true);
+                    form.render('checkbox')
+                }
             }
-            // console.log(data.elem); //得到checkbox原始DOM对象
-            // console.log(data.elem.checked); //是否被选中，true或者false
-            // console.log(data.value); //复选框value值，也可以通过data.elem.value得到
-            // console.log(data.othis); //得到美化后的DOM对象
           });  
 
           //监听提交

@@ -1,6 +1,7 @@
 const moment =  require('moment')
 
-const { Auth, AuthCate ,Sequelize} = require('../../migrations/migration')
+const { Auth, AuthCate, AuthRoleRel, Sequelize, sequelize} = require('../../migrations/migration')
+
 
 class AuthModel {
   
@@ -86,6 +87,42 @@ class AuthModel {
           id:Sequelize.col('auths.authCateId')
         }
       }]
+    })
+  }
+
+  // 删除
+  deleteByIds(ids = [],reverse = false){
+    const deleteIds =  [...(ids||[])]
+    return Auth.update({
+      is_delete:!reverse
+    },{
+      where:{
+        id:{
+          [Sequelize.Op.in]:deleteIds
+        }
+      }
+    })
+  }
+
+  // 彻底删除
+  removeByIds(ids = []){
+    const removeIds =  [...(ids||[])]
+    return sequelize.transaction(function(t){
+      return AuthRoleRel.destroy({
+        where:{
+          authId:{
+            [Sequelize.Op.in]:removeIds
+          }
+        }
+      },{transaction:t}).then(result => {
+        return Auth.destroy({
+          where:{
+            id:{
+              [Sequelize.Op.in]:removeIds
+            }
+          }
+        },{ transaction:t})
+     })
     })
   }
 }

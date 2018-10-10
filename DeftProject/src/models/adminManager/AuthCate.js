@@ -66,6 +66,34 @@ class AuthCateModel {
   insert(values){
     return AuthCate.create(values)
   }
+
+
+  // 删除
+  deleteByIds(ids = [],reverse = false){
+    const deleteIds =  [...(ids||[])]
+    return Auth.update({
+      is_delete:!reverse
+    },{
+      where:{
+        id:{
+          [Sequelize.Op.in]:deleteIds
+        }
+      }
+    })
+  }
+
+  // 彻底删除
+  removeByIds(ids = []){
+    const removeIds =  [...(ids||[])]
+    return Auth.destroy({
+      where:{
+        id:{
+          [Sequelize.Op.in]:removeIds
+        }
+      }
+    })
+  }
+  
 }
 
 

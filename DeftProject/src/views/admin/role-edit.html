@@ -42,12 +42,12 @@
                             [{if cateItem.auths && cateItem.auths.length}]
                             <tr>
                                 <td style="width:160px;">
-                                    <input type="checkbox" id="[{cateItem.id}]" [{ if roleCates[cateItem.id] && roleCates[cateItem.id].auths.length == cateItem.auths.length }] checked [{ /if }] data-length="[{cateItem.auths.length}]" lay-skin="primary" title="[{cateItem.name}]">
+                                    <input type="checkbox" lay-filter="cate" id="cate[{cateItem.id}]" [{ if roleCates[cateItem.id] && roleCates[cateItem.id].auths.length == cateItem.auths.length }] checked [{ /if }] data-length="[{cateItem.auths.length}]" lay-skin="primary" title="[{cateItem.name}]">
                                 </td>
                                 <td>
                                     <div class="layui-input-block">
                                         [{each cateItem.auths authItem}]
-                                        <input name="auth" id="auth[{authItem.id}]" [{ if roleCates[cateItem.id] && roleCates[cateItem.id].ids.indexOf(authItem.id) >= 0 }] checked [{ /if }] lay-skin="primary" type="checkbox" title="[{authItem.name}]" value="[{authItem.id}]">
+                                        <input name="auth" lay-filter="auth" id="auth[{authItem.id}]" data-cate-id='[{cateItem.id}]' [{ if roleCates[cateItem.id] && roleCates[cateItem.id].ids.indexOf(authItem.id) >= 0 }] checked [{ /if }] lay-skin="primary" type="checkbox" title="[{authItem.name}]" value="[{authItem.id}]">
                                         [{/each}]
                                     </div>
                                 </td>
@@ -84,6 +84,30 @@
               }
             }
           });
+          
+          form.on('checkbox(cate)', function(data){
+            // 只要有未选中的 则取消全部选中
+            const cateObj = $(data.elem)
+            cateObj.parents('td').next('td').find("input[type='checkbox']").prop('checked',data.elem.checked)
+            form.render('checkbox')
+          }); 
+          
+          form.on('checkbox(auth)', function(data){
+            // 只要有未选中的 则取消全部选中
+            const cateObj = $(`#cate${data.elem.dataset.cateId}`)
+            if(!data.elem.checked){
+                cateObj.prop('checked',false)
+                form.render('checkbox')
+            }else{
+                // 获取所有该分类的权限
+                const totalLength =  cateObj.get(0).dataset.length;
+                const selectedLength = cateObj.parents('td').next('td').find('input:checked').length
+                if(totalLength  == selectedLength){
+                    cateObj.prop('checked',true);
+                    form.render('checkbox')
+                }
+            }
+          });  
 
 
           //监听提交

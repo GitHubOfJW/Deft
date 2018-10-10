@@ -83,6 +83,43 @@ class CateController extends BaseController {
       res.json(result);
     }
   }
+
+
+  // 删除
+  static async cateDelete(req,res){
+    if(req.body.ids){
+      const data = await cateModel.deleteByIds(req.body.ids.split(','))
+      if(data){
+        const result = super.handlerResponseData(1,data,'删除成功');
+        res.json(result);
+      }else{
+        const result = super.handlerResponseData(0,data,'删除失败');
+        res.json(result);
+      }
+      
+    }else{
+      const result = super.handlerResponseData(0,{},'删除失败，缺少参数');
+      res.json(result);
+    }
+  }
+
+  // 彻底删除
+  static async cateRemove(req,res){
+    if(req.body.ids){
+      const data = await cateModel.removeByIds(req.body.ids.split(','))
+      if(data){
+        const result = super.handlerResponseData(1,data,'删除成功');
+        res.json(result);
+      }else{
+        const result = super.handlerResponseData(0,data,'删除失败');
+        res.json(result);
+      }
+      
+    }else{
+      const result = super.handlerResponseData(0,{},'删除失败，缺少参数');
+      res.json(result);
+    }
+  }
 }
 
 module.exports =  CateController

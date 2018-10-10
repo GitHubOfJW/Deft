@@ -9,8 +9,10 @@ const AuthRoleRel =  require('./AuthRoleRel')
 
 // 管理关系
 Role.hasOne(Admin)
-
-AuthRoleRel.belongsTo(Auth)
+Auth.hasOne(AuthRoleRel)
+AuthRoleRel.belongsTo(Auth,{
+  constraints:false
+})
 Role.hasMany(AuthRoleRel)
 
 Auth.belongsTo(AuthCate);
@@ -37,10 +39,6 @@ Admin.sync({ force: force }).then((data)=>{
     })
   })
 })
-
-
-Auth.hasOne(AuthRoleRel)
-
 
 const { sequelize, Sequelize } = require('../utils/Squelize')
 module.exports = {

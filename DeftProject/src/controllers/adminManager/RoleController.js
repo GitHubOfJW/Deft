@@ -203,6 +203,42 @@ class RoleController extends BaseController {
 
     return authList;
   }
+
+  // 删除
+  static async roleDelete(req,res){
+    if(req.body.ids){
+      const data = await roleModel.deleteByIds(req.body.ids.split(','))
+      if(data){
+        const result = super.handlerResponseData(1,data,'删除成功');
+        res.json(result);
+      }else{
+        const result = super.handlerResponseData(0,data,'删除失败');
+        res.json(result);
+      }
+      
+    }else{
+      const result = super.handlerResponseData(0,{},'删除失败，缺少参数');
+      res.json(result);
+    }
+  }
+
+  // 彻底删除
+  static async roleRemove(req,res){
+    if(req.body.ids){
+      const data = await roleModel.removeByIds(req.body.ids.split(','))
+      if(data){
+        const result = super.handlerResponseData(1,data,'删除成功');
+        res.json(result);
+      }else{
+        const result = super.handlerResponseData(0,data,'删除失败');
+        res.json(result);
+      }
+      
+    }else{
+      const result = super.handlerResponseData(0,{},'删除失败，缺少参数');
+      res.json(result);
+    }
+  }
 }
 
 module.exports = RoleController

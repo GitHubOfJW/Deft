@@ -57,7 +57,7 @@ class AdminController extends BaseController {
   }
 
   // 状态更新
-  static async adminUpate(req,res){
+  static async adminUpdate(req,res){
     if(req.params.id){
       const data = await adminModel.update(req.body,req.params.id);
       if(data){
@@ -83,6 +83,42 @@ class AdminController extends BaseController {
     res.render('admin/admin-add.html',{
       roles:roles
     });
+  }
+
+  // 删除
+  static async adminDelete(req,res){
+    if(req.body.ids){
+      const data = await adminModel.deleteByIds(req.body.ids.split(','))
+      if(data){
+        const result = super.handlerResponseData(1,data,'删除成功');
+        res.json(result);
+      }else{
+        const result = super.handlerResponseData(0,data,'删除失败');
+        res.json(result);
+      }
+      
+    }else{
+      const result = super.handlerResponseData(0,{},'删除失败，缺少参数');
+      res.json(result);
+    }
+  }
+
+  // 彻底删除
+  static async adminRemove(req,res){
+    if(req.body.ids){
+      const data = await adminModel.removeByIds(req.body.ids.split(','))
+      if(data){
+        const result = super.handlerResponseData(1,data,'删除成功');
+        res.json(result);
+      }else{
+        const result = super.handlerResponseData(0,data,'删除失败');
+        res.json(result);
+      }
+      
+    }else{
+      const result = super.handlerResponseData(0,{},'删除失败，缺少参数');
+      res.json(result);
+    }
   }
 }
 

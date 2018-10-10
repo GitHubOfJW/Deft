@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./app.js localhost 8080"
+    "start": "run nodemon ./app.js localhost 8080"
   },
   "keywords": [
     "巧匠、手巧、手艺、发明、科技、废物利用"

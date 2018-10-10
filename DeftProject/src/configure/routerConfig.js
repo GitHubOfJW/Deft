@@ -143,25 +143,25 @@ const adminApi = {
       method:'adminList',
       type:GET,
       selected:false,
-    },
-    adminDelete:{
-      path:'/api/admin/delete/:id',
-      desc:'删除管理员',
-      method:'adminUpate',
-      type:POST,
-      selected:false,
-    },
+    },   
     adminStatus:{
       path:'/api/admin/status/:id',
       desc:'启用/禁用管理员',
-      method:'adminUpate',
+      method:'adminUpdate',
+      type:POST,
+      selected:false,
+    },
+    adminDelete:{
+      path:'/api/admin/delete',
+      desc:'删除管理员',
+      method:'adminDelete',
       type:POST,
       selected:false,
     },
     adminRemove:{
-      path:'/api/admin/remove/:id',
+      path:'/api/admin/remove',
       desc:'彻底删除管理员',
-      method:'adminAddPage',
+      method:'adminRemove',
       type:POST,
       selected:false
     },
@@ -210,7 +210,21 @@ const adminApi = {
       method:'authEdit',
       type:POST,
       selected:false
-    }
+    },
+    authDelete:{
+      path:'/api/auth/delete',
+      desc:'删除管理员',
+      method:'authDelete',
+      type:POST,
+      selected:false
+    },
+    authRemove:{
+      path:'/api/auth/remove',
+      desc:'彻底删除管理员',
+      method:'authRemove',
+      type:POST,
+      selected:false
+    },
   },
   RoleController:{
     roleAdd:{
@@ -233,7 +247,28 @@ const adminApi = {
       method:'roleEdit',
       type:POST,
       selected:false
-    }
+    },
+    roleStatus:{
+      path:'/api/role/status/:id',
+      desc:'启用/禁用角色',
+      method:'roleUpate',
+      type:POST,
+      selected:false,
+    },
+    roleDelete:{
+      path:'/api/role/delete',
+      desc:'删除管理员',
+      method:'roleDelete',
+      type:POST,
+      selected:false
+    },
+    roleRemove:{
+      path:'/api/role/remove',
+      desc:'彻底删除管理员',
+      method:'roleRemove',
+      type:POST,
+      selected:false
+    },
   }
 }
 
