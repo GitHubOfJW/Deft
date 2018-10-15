@@ -187,7 +187,21 @@ const adminApi = {
       method:'cateUpdate',
       type:POST,
       selected:false
-    }
+    },
+    cateDelete:{
+      path:'/api/cate/delete',
+      desc:'删除权限分类',
+      method:'cateDelete',
+      type:POST,
+      selected:false,
+    },
+    cateRemove:{
+      path:'/api/cate/remove',
+      desc:'彻底删除权限分类',
+      method:'cateRemove',
+      type:POST,
+      selected:false
+    },
   },
   AuthController:{
     authAdd:{

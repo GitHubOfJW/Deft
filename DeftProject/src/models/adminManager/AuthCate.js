@@ -86,21 +86,30 @@ class AuthCateModel {
   removeByIds(ids = []){
     const removeIds =  [...(ids||[])]
     return  sequelize.transaction(function(t){
+      
       return Auth.destroy({
-        where:{
-          authCateId:{
-            [Sequelize.Op.in]:removeIds
-          }
-        }
-      },{transaction:t}).then(result => {
-        return AuthCateModel.destroy({
           where:{
-            id:{
+            authCateId:{
               [Sequelize.Op.in]:removeIds
             }
           }
-        },{transaction:t})
-      })
+        },{transaction:t}).then(result => {
+          return AuthCate.destroy({
+            where:{
+              id:{
+                [Sequelize.Op.in]:removeIds
+              }
+            }
+          },{transaction:t}).then(result => {
+            return AuthRoleRel.destroy({
+              where:{
+                authId:{
+                  [Sequelize.Op.eq]:null
+                }
+              }
+            },{transaction:t})
+          })
+        })      
     });
     
   }
