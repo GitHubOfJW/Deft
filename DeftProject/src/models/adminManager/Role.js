@@ -20,13 +20,13 @@ class RoleModel {
       model:AuthRoleRel,
       include:{
         model:Auth,
-        scope:{
-          authId:Sequelize.col('authRoleRels.authId')
-        }
+        // scope:{
+        //   authId:Sequelize.col('authRoleRels.authId')
+        // }
       },
-      where:{
-        roleId:Sequelize.col('roles.id')
-      }
+      // where:{
+      //   roleId:Sequelize.col('roles.id')
+      // }
     }]
 
     // where条件
@@ -137,13 +137,13 @@ class RoleModel {
         model:AuthRoleRel,
         include:{
           model:Auth,
-          scope:{
-            authId:Sequelize.col('authRoleRels.authId')
-          }
+          // scope:{
+          //   authId:Sequelize.col('authRoleRels.authId')
+          // }
         },
-        where:{
-          roleId:Sequelize.col('roles.id')
-        }
+        // where:{
+        //   roleId:Sequelize.col('roles.id')
+        // }
       }]
     })
   }
