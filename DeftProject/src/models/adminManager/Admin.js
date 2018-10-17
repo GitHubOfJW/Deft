@@ -83,8 +83,48 @@ class AdminModel {
   }
 
   // 获取总数
-  totalCount(reqCondition={}){
-    const count =  Admin.count();
+  totalCount(others={},is_delete = false){
+    const conditions = {};
+   
+    // where条件
+    conditions.where = {
+      is_delete:is_delete,
+      [Sequelize.Op.and]:[{
+        [Sequelize.Op.or]:{
+          mobile:{
+            [Sequelize.Op.like]:`%${others.contact}%`
+          },
+          email:{
+            [Sequelize.Op.like]:`%${others.contact}%`
+          }
+        }
+      },
+      {
+        [Sequelize.Op.or]:{
+          name:{
+            [Sequelize.Op.like]:`%${others.username}%`
+          },
+          account:{
+            [Sequelize.Op.like]:`%${others.username}%`
+          }
+        }
+      }]
+    }
+
+    // 时间约束
+    if(others.start && others.start.trim().length && moment(others.start).isValid()){
+      conditions.where.createdAt = {
+        [Sequelize.Op.gt]:moment(others.start).toDate()
+      }
+    }
+    if(others.end && others.end.trim().length && moment(others.end).isValid()){
+      conditions.where.createdAt = {
+        [Sequelize.Op.lt]:moment(others.end).toDate()
+      }
+    }
+
+
+    const count =  Admin.count(conditions);
     return count;
   }
    

@@ -57,7 +57,7 @@ class AuthCateModel {
   }
 
   // 获取总数
-  totalCount(reqCondition={}){
+  totalCount(others={}){
     const count =  AuthCate.count();
     return count;
   }

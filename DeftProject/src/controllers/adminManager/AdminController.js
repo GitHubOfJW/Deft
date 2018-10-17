@@ -30,13 +30,6 @@ class AdminController extends BaseController {
     const prePage =  req.query.page || 1;
     const pageSize = req.query.pageSize || 8;
     
-    const count = await adminModel.totalCount();
-
-    // 计算页数
-    const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
- 
-    let pagination = super.pagination(page,totalPage);
-      
     const conditions = {
       page:page,
       start:start,
@@ -44,6 +37,13 @@ class AdminController extends BaseController {
       username:username,
       contact:contact
     };
+
+    const count = await adminModel.totalCount(conditions);
+
+    // 计算页数
+    const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
+ 
+    const pagination = super.pagination(page,totalPage);
     
     const list = await adminModel.list(page,pageSize,conditions)
 

@@ -39,13 +39,7 @@ class AuthController extends BaseController {
     const start = req.query.start || '';
     const end = req.query.end || '';
     
-    const count = await authModel.totalCount();
 
-    // 计算页数
-    const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
- 
-    let pagination = super.pagination(page,totalPage);
-      
     const conditions = {
       page:page,
       cateName:cateName,
@@ -54,6 +48,14 @@ class AuthController extends BaseController {
       end:end
     };
 
+
+    const count = await authModel.totalCount(conditions);
+
+    // 计算页数
+    const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
+ 
+    const pagination = super.pagination(page,totalPage);
+      
     const list = await authModel.list(page,pageSize,conditions)
 
     const data =  {
