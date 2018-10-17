@@ -19,9 +19,9 @@ class AuthCateModel {
     if(includeAuth){
       conditions.include = [{
         model:Auth,
-        where:{
-          authCateId:Sequelize.col('authCates.id')
-        }
+        // where:{
+        //   authCateId:Sequelize.col('authCates.id')
+        // }
       }]
     }
    
@@ -30,16 +30,16 @@ class AuthCateModel {
         model:Auth,
         include:{
           model:AuthRoleRel,
-          scope:{
-            authId:Sequelize.col('auths.id'),
-          },
+          // scope:{
+          //   authId:Sequelize.col('auths.id'),
+          // },
           where:{
             roleId:roleId
           }
         },
-        where:{
-          authCateId:Sequelize.col('authCates.id')
-        }
+        // where:{
+        //   authCateId:Sequelize.col('authCates.id')
+        // }
       }]
     }
     
@@ -71,7 +71,7 @@ class AuthCateModel {
   // 删除
   deleteByIds(ids = [],reverse = false){
     const deleteIds =  [...(ids||[])]
-    return Auth.update({
+    return AuthCate.update({
       is_delete:!reverse
     },{
       where:{

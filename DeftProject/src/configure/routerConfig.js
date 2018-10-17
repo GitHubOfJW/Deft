@@ -66,6 +66,13 @@ const adminPage = {
       method:'adminAddPage',
       type:GET,
       selected:false
+    },
+    adminEdit:{
+      path:'/admin/edit/:id',
+      desc:'编辑管理员',
+      method:'adminEditPage',
+      type:GET,
+      selected:false
     }
   },
   AuthController:{
@@ -143,7 +150,14 @@ const adminApi = {
       method:'adminList',
       type:GET,
       selected:false,
-    },   
+    },
+    adminAdd:{
+      path:'/api/admin/add',
+      desc:'添加管理员',
+      method:'adminAdd',
+      type:POST,
+      selected:false
+    },
     adminStatus:{
       path:'/api/admin/status/:id',
       desc:'启用/禁用管理员',

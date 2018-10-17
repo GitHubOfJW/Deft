@@ -28,7 +28,7 @@
                         <span class="x-red">*</span>用户名
                     </label>
                     <div class="layui-input-inline">
-                        <input type="text" id="account" name="account" required="" lay-verify="required"
+                        <input type="text" id="account" name="account" value="[{admin.account}]" required="" lay-verify="required"
                         autocomplete="off" class="layui-input">
                     </div>
                     <div class="layui-form-mid layui-word-aux">
@@ -41,7 +41,7 @@
                         <span class="x-red">*</span>手 机
                     </label>
                     <div class="layui-input-inline">
-                        <input type="text" id="mobile" name="mobile" required="" lay-verify="required"
+                        <input type="text" id="mobile" name="mobile" value="[{admin.mobile}]" required="" lay-verify="required"
                         autocomplete="off" class="layui-input">
                     </div>
                     <div class="layui-form-mid layui-word-aux">
@@ -54,7 +54,7 @@
                         <span class="x-red">*</span>邮 箱
                     </label>
                     <div class="layui-input-inline">
-                        <input type="text" id="email" name="email" required="" lay-verify="required"
+                        <input type="text" id="email" name="email" value="[{admin.email}]" required="" lay-verify="required"
                         autocomplete="off" class="layui-input">
                     </div>
                     <div class="layui-form-mid layui-word-aux">
@@ -66,16 +66,17 @@
                         <span class="x-red">*</span>姓 名
                     </label>
                     <div class="layui-input-inline">
-                        <input type="text" id="name" name="name" required="" lay-verify="required"
+                        <input type="text" id="name" name="name" value="[{admin.name}]" required="" lay-verify="required"
                         autocomplete="off" class="layui-input">
                     </div>
                 </div>
+                <!-- [{if account.is_admin}]
                 <div class="layui-form-item">
                     <label for="L_pass" class="layui-form-label">
                         <span class="x-red">*</span>密码
                     </label>
                     <div class="layui-input-inline">
-                        <input type="password" id="L_pass" name="password" required="" lay-verify="pass"
+                        <input type="password" id="L_pass"  name="password" required="" lay-verify="pass"
                         autocomplete="off" class="layui-input">
                     </div>
                     <div class="layui-form-mid layui-word-aux">
@@ -91,6 +92,8 @@
                         autocomplete="off" class="layui-input">
                     </div>
                 </div>
+                [{/if}] -->
+                [{if !admin.is_admin}]
                 <div class="layui-form-item layui-form-text">
                     <label class="layui-form-label">
                         所属角色
@@ -101,7 +104,7 @@
                                     <td>
                                         <div class="layui-input-block">
                                             [{each roles roleItem idx}]
-                                            <input name="roleId" lay-skin="primary" type="radio" title="[{roleItem.name}]"  value="[{roleItem.id}]">
+                                            <input name="roleId" lay-skin="primary" type="radio" [{if admin.role && admin.role.id === roleItem.id}] checked [{/if}] title="[{roleItem.name}]"  value="[{roleItem.id}]">
                                             [{/each}]
                                         </div>
                                     </td>
@@ -109,6 +112,7 @@
                         </tbody>
                     </table>
                 </div>
+                [{/if}]
                 <div class="layui-form-item layui-form-text">
                     <label class="layui-form-label">
                         启用/禁用

@@ -1,4 +1,4 @@
-const { Admin ,Sequelize } = require('../../migrations/migration')
+const { Admin, Role, Sequelize } = require('../../migrations/migration')
 
 const moment =  require('moment')
 
@@ -39,6 +39,10 @@ class AdminModel {
         }
       }]
     }
+
+    conditions.include = [{
+      model:Role
+    }]
     
     // 时间约束
     if(others.start && others.start.trim().length && moment(others.start).isValid()){
@@ -55,6 +59,15 @@ class AdminModel {
 
     const data = Admin.findAll(conditions);
     return data;
+  }
+
+  // 获取
+  has(conditions={}){
+   return Admin.count({
+      where:{
+        ...conditions
+      }
+    })
   }
 
   // 更新各状态
@@ -92,7 +105,7 @@ class AdminModel {
   // 删除
   deleteByIds(ids = [],reverse = false){
     const deleteIds =  [...(ids||[])]
-    return Auth.update({
+    return admin.update({
       is_delete:!reverse
     },{
       where:{
@@ -106,7 +119,7 @@ class AdminModel {
   // 彻底删除
   removeByIds(ids = []){
     const removeIds =  [...(ids||[])]
-    return Auth.destroy({
+    return Admin.destroy({
       where:{
         id:{
           [Sequelize.Op.in]:removeIds
@@ -114,7 +127,21 @@ class AdminModel {
       }
     })
   }
+
+  // 添加管理员
+  insert(values){
+    return Admin.create(values)
+  }
   
+  // 查询
+  findOne(id){
+    return Admin.findOne({ where:{
+      id:id,
+      },include:[{
+        model:Role
+      }]
+    })
+  }
 }
 
 

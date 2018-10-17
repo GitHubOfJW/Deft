@@ -26,12 +26,12 @@ class LoginController extends BaseController {
       if(model){
         // 设置model到sesson中
         req.session.user = model;
-        res.json(super.handlerResponseData(1,{},"登录成功"));
+        res.json(super.handlerResponseData(1,"登录成功"));
       }else{
-        res.json(super.handlerResponseData(0,{},"账号或密码不存在"));
+        res.json(super.handlerResponseData(0,"账号或密码不存在"));
       }
     }else{
-      res.json(super.handlerResponseData(0,{},"缺少请求参数"));
+      res.json(super.handlerResponseData(0,"缺少请求参数"));
     }
   }
 }

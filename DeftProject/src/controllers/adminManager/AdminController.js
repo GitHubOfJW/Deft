@@ -8,6 +8,7 @@ const authCateModel =  require('../../models/adminManager/AuthCate')
 const { adminApi, adminPage } = require('../../configure/routerConfig')
 
 const roleModel =  require('../../models/adminManager/Role')
+
  
 class AdminController extends BaseController {
   
@@ -43,6 +44,7 @@ class AdminController extends BaseController {
       username:username,
       contact:contact
     };
+    
     const list = await adminModel.list(page,pageSize,conditions)
 
     const data =  {
@@ -52,7 +54,7 @@ class AdminController extends BaseController {
       pagination:pagination,
       conditions:conditions
     }
-    const result = super.handlerResponseData(1,data,'获取成功')
+    const result = super.handlerResponseData(1,'获取成功',data)
     res.json(result);
   }
 
@@ -61,15 +63,15 @@ class AdminController extends BaseController {
     if(req.params.id){
       const data = await adminModel.update(req.body,req.params.id);
       if(data){
-        const result = super.handlerResponseData(1,data,'修改成功');
+        const result = super.handlerResponseData(1,'修改成功');
         res.json(result);
       }else{
-        const result = super.handlerResponseData(0,data,'修改失败');
+        const result = super.handlerResponseData(0,'修改失败');
         res.json(result);
       }
       
     }else{
-      const result = super.handlerResponseData(0,{},'修改失败，缺少唯一标识');
+      const result = super.handlerResponseData(0,'修改失败，缺少唯一标识');
       res.json(result);
     }
   }
@@ -85,20 +87,71 @@ class AdminController extends BaseController {
     });
   }
 
+  // 添加权限请求
+  static async adminAdd(req,res){
+    if(super.validator(req.body.account,{required:true},'用户名',res)
+    ||super.validator(req.body.mobile,{required:true,isMobile:true},'手机号',res)
+    ||super.validator(req.body.email,{required:true,isEmail:true},'邮箱',res)
+    ||super.validator(req.body.name,{required:true,min:2,max:6},'姓名',res)
+    ||super.validator(req.body.password,{required:true,regular:{enable:true,regx:/[a-z0-9A-Z]{6,12}/,prompt:"密码必须为6-12大小写字母、数字组合"}},'密码',res)
+    ||super.validator(req.body.roleId,{required:true,isInt:true},'角色',res)
+    ||super.validator(req.body.enable,{required:true,isBoolean:true},'启用状态',res)
+    ) return;
+
+    let count = await adminModel.has({
+        account:req.body.account
+    })
+    if(count>0){
+      const result = super.handlerResponseData(0,'用户名已存在');
+      res.json(result);
+      return;     
+    }
+
+    count = await adminModel.has({
+      mobile:req.body.mobile
+    })
+    if(count>0){
+      const result = super.handlerResponseData(0,'手机号已存在');
+      res.json(result);
+      return;     
+    }
+
+    count = await adminModel.has({
+      email:req.body.email
+    })
+    if(count>0){
+      const result = super.handlerResponseData(0,'邮箱已存在');
+      res.json(result);
+      return;     
+    }
+
+ 
+    const data =  adminModel.insert(req.body)
+    if(data){
+      const result = super.handlerResponseData(1,'添加成功');
+      res.json(result);
+    }else{
+      const result = super.handlerResponseData(0,'添加失败');
+      res.json(result);
+    }
+     
+  }
+
+
   // 删除
   static async adminDelete(req,res){
     if(req.body.ids){
       const data = await adminModel.deleteByIds(req.body.ids.split(','))
       if(data){
-        const result = super.handlerResponseData(1,data,'删除成功');
+        const result = super.handlerResponseData(1,'删除成功');
         res.json(result);
       }else{
-        const result = super.handlerResponseData(0,data,'删除失败');
+        const result = super.handlerResponseData(0,'删除失败');
         res.json(result);
       }
       
     }else{
-      const result = super.handlerResponseData(0,{},'删除失败，缺少参数');
+      const result = super.handlerResponseData(0,'删除失败，缺少参数');
       res.json(result);
     }
   }
@@ -108,17 +161,36 @@ class AdminController extends BaseController {
     if(req.body.ids){
       const data = await adminModel.removeByIds(req.body.ids.split(','))
       if(data){
-        const result = super.handlerResponseData(1,data,'删除成功');
+        const result = super.handlerResponseData(1,'删除成功');
         res.json(result);
       }else{
-        const result = super.handlerResponseData(0,data,'删除失败');
+        const result = super.handlerResponseData(0,'删除失败');
         res.json(result);
       }
       
     }else{
-      const result = super.handlerResponseData(0,{},'删除失败，缺少参数');
+      const result = super.handlerResponseData(0,'删除失败，缺少参数');
       res.json(result);
     }
+  }
+
+  // 管理员编辑
+  static async adminEditPage(req,res){
+    super.setHtmlHeader(res);
+    if(!req.params.id){
+      const result = super.handlerResponseData(0,'未获取到对应的id');
+      res.json(result);
+      return;
+    }
+
+    const roles = roleModel.list(-1,-1,false)
+    const admin = await adminModel.findOne(req.params.id)
+    res.render('admin/admin-edit.html',{
+      admin:admin,
+      roles:roles,
+      account:req.session.user
+    });
+
   }
 }
 

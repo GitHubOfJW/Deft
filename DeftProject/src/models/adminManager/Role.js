@@ -152,7 +152,7 @@ class RoleModel {
   // 删除
   deleteByIds(ids = [],reverse = false){
     const deleteIds =  [...(ids||[])]
-    return Auth.update({
+    return Role.update({
       is_delete:!reverse
     },{
       where:{
@@ -166,7 +166,7 @@ class RoleModel {
   // 彻底删除
   removeByIds(ids = []){
     const removeIds =  [...(ids||[])]
-    return Auth.destroy({
+    return Role.destroy({
       where:{
         id:{
           [Sequelize.Op.in]:removeIds

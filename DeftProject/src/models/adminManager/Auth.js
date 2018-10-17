@@ -19,9 +19,9 @@ class AuthModel {
 
     conditions.include = [{
       model:AuthCate,
-      where:{
-        id:Sequelize.col('auths.authCateId')
-      }
+      // where:{
+      //   id:Sequelize.col('auths.authCateId')
+      // }
     }]
 
     // where条件
@@ -75,7 +75,7 @@ class AuthModel {
   insert(values){
     return Auth.create(values)
   }
-
+  
 
   // 查询
   findOne(id){
@@ -83,9 +83,9 @@ class AuthModel {
       id:id,
       },include:[{
         model:AuthCate,
-        where:{
-          id:Sequelize.col('auths.authCateId')
-        }
+        // where:{
+        //   id:Sequelize.col('auths.authCateId')
+        // }
       }]
     })
   }

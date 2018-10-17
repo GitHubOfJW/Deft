@@ -16,15 +16,15 @@ class AuthController extends BaseController {
 
       const data = await authModel.update(req.body,req.params.id);
       if(data){
-        const result = super.handlerResponseData(1,data,'修改成功');
+        const result = super.handlerResponseData(1,'修改成功');
         res.json(result);
       }else{
-        const result = super.handlerResponseData(0,data,'修改失败');
+        const result = super.handlerResponseData(0,'修改失败');
         res.json(result);
       }
       
     }else{
-      const result = super.handlerResponseData(0,{},'修改失败，缺少唯一标识');
+      const result = super.handlerResponseData(0,'修改失败，缺少唯一标识');
       res.json(result);
     }
   }
@@ -63,7 +63,7 @@ class AuthController extends BaseController {
       pagination:pagination,
       conditions:conditions
     }
-    const result = super.handlerResponseData(1,data,'获取成功')
+    const result = super.handlerResponseData(1,'获取成功',data)
     res.json(result);
   }
 
@@ -95,21 +95,21 @@ class AuthController extends BaseController {
   // 添加权限请求
   static async authAdd(req,res){
     if(req.body.name && req.body.rules && req.body.rules.length && req.body.cateId){
-      const data =  authModel.insert({
+      const data = await authModel.insert({
         name:req.body.name,
         rules:(typeof req.body.rules == 'string')? req.body.rules : req.body.rules.join(','),
         authCateId:req.body.cateId,
         remark:req.body.remark
       })
       if(data){
-        const result = super.handlerResponseData(1,{},'添加成功');
+        const result = super.handlerResponseData(1,'添加成功');
         res.json(result);
       }else{
-        const result = super.handlerResponseData(0,{},'添加失败');
+        const result = super.handlerResponseData(0,'添加失败');
         res.json(result);
       }
     }else{
-      const result = super.handlerResponseData(0,{},'添加失败，缺少参数');
+      const result = super.handlerResponseData(0,'添加失败，缺少参数');
       res.json(result);
     }
      
@@ -126,7 +126,7 @@ class AuthController extends BaseController {
     super.setHtmlHeader(res);
 
     if(!req.params.id){
-      const result = super.handlerResponseData(0,{},'未获取到对应的id');
+      const result = super.handlerResponseData(0,'未获取到对应的id');
       res.json(result);
       return;
     }
@@ -190,14 +190,14 @@ class AuthController extends BaseController {
     if(req.body.ids){
       const data = await authModel.deleteByIds(req.body.ids.split(','))
       if(data){
-        const result = super.handlerResponseData(1,data,'删除成功');
+        const result = super.handlerResponseData(1,'删除成功');
         res.json(result);
       }else{
-        const result = super.handlerResponseData(0,data,'删除失败');
+        const result = super.handlerResponseData(0,'删除失败');
         res.json(result);
       }
     }else{
-      const result = super.handlerResponseData(0,{},'删除失败，缺少参数');
+      const result = super.handlerResponseData(0,'删除失败，缺少参数');
       res.json(result);
     }
   }
@@ -207,15 +207,15 @@ class AuthController extends BaseController {
     if(req.body.ids){
       const data = await authModel.removeByIds(req.body.ids.split(','))
       if(data){
-        const result = super.handlerResponseData(1,data,'删除成功');
+        const result = super.handlerResponseData(1,'删除成功');
         res.json(result);
       }else{
-        const result = super.handlerResponseData(0,data,'删除失败');
+        const result = super.handlerResponseData(0,'删除失败');
         res.json(result);
       }
       
     }else{
-      const result = super.handlerResponseData(0,{},'删除失败，缺少参数');
+      const result = super.handlerResponseData(0,'删除失败，缺少参数');
       res.json(result);
     }
   }

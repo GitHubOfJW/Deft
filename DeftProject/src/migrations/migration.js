@@ -8,7 +8,7 @@ const AuthRoleRel =  require('./AuthRoleRel')
 
 
 // 管理关系
-Role.hasOne(Admin)
+Admin.belongsTo(Role)
 Auth.hasOne(AuthRoleRel)
 AuthRoleRel.belongsTo(Auth,{
   constraints:false
