@@ -192,6 +192,61 @@ class AdminController extends BaseController {
     });
 
   }
+
+  // 编辑
+  static async adminEdit(req,res){
+    if(!req.params.id){
+      const result = super.handlerResponseData(0,'未获取到对应的id');
+      res.json(result);
+      return;
+    }
+
+    if(super.validator(req.body.account,{required:true},'用户名',res)
+    ||super.validator(req.body.mobile,{required:true,isMobile:true},'手机号',res)
+    ||super.validator(req.body.email,{required:true,isEmail:true},'邮箱',res)
+    ||super.validator(req.body.name,{required:true,min:2,max:6},'姓名',res)
+    // ||super.validator(req.body.password,{required:true,regular:{enable:true,regx:/[a-z0-9A-Z]{6,12}/,prompt:"密码必须为6-12大小写字母、数字组合"}},'密码',res)
+    ||super.validator(req.body.roleId,{required:true,isInt:true},'角色',res)
+    ||super.validator(req.body.enable,{required:true,isBoolean:true},'启用状态',res)
+    ) return;
+
+    let count = await adminModel.has({
+        account:req.body.account,
+    },req.params.id)
+    if(count>0){
+      const result = super.handlerResponseData(0,'用户名已存在');
+      res.json(result);
+      return;     
+    }
+
+    count = await adminModel.has({
+      mobile:req.body.mobile
+    },req.params.id)
+    if(count>0){
+      const result = super.handlerResponseData(0,'手机号已存在');
+      res.json(result);
+      return;     
+    }
+
+    count = await adminModel.has({
+      email:req.body.email
+    },req.params.id)
+    if(count>0){
+      const result = super.handlerResponseData(0,'邮箱已存在');
+      res.json(result);
+      return;     
+    }
+
+ 
+    const data =  adminModel.update(req.body,req.params.id)
+    if(data){
+      const result = super.handlerResponseData(1,'修改成功');
+      res.json(result);
+    }else{
+      const result = super.handlerResponseData(0,'修改失败');
+      res.json(result);
+    }
+  }
 }
 
 module.exports = AdminController

@@ -62,10 +62,13 @@ class AdminModel {
   }
 
   // 获取
-  has(conditions={}){
+  has(conditions={},excludeId=0){
    return Admin.count({
       where:{
-        ...conditions
+        ...conditions,
+        id:{
+          [Sequelize.Op.notIn]:[excludeId]
+        }
       }
     })
   }

@@ -158,6 +158,13 @@ const adminApi = {
       type:POST,
       selected:false
     },
+    adminEdit:{
+      path:'/api/admin/edit/:id',
+      desc:'添加管理员',
+      method:'adminEdit',
+      type:POST,
+      selected:false
+    },
     adminStatus:{
       path:'/api/admin/status/:id',
       desc:'启用/禁用管理员',

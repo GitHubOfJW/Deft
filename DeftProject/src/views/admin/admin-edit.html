@@ -131,7 +131,7 @@
                     </table>
                 </div>
                 <div class="layui-form-item">
-                <button class="layui-btn" lay-submit="" lay-filter="add">增加</button>
+                <button class="layui-btn" lay-submit="" lay-filter="edit">修改</button>
               </div>
             </form>
     </div>
@@ -157,7 +157,7 @@
           });
 
           //监听提交
-          form.on('submit(add)', function(data){
+          form.on('submit(edit)', function(data){
             // 弹出提示
             let index = null;
             const id = setTimeout(() => {
@@ -168,7 +168,7 @@
             }, 1000);
              
             $.ajax({
-                url:'/api/admin/add',
+                url:'/api/admin/edit/[{admin.id}]',
                 traditional:true,
                 data:data.field,
                 method:'POST',
