@@ -74,7 +74,7 @@
   {{each list role i}}
         <tr>
           <td>
-            <div class="layui-unselect layui-form-checkbox" onclick="idSelect(this,{{list.length}})" lay-skin="primary" data-id='2'><i class="layui-icon">&#xe605;</i></div>
+            <div class="layui-unselect layui-form-checkbox" onclick="idSelect(this,{{list.length}})" lay-skin="primary" data-id='{{role.id}}'><i class="layui-icon">&#xe605;</i></div>
           </td>
           <td>{{role.id}}</td>
           <td>{{role.name}}</td>

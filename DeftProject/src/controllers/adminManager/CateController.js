@@ -107,6 +107,7 @@ class CateController extends BaseController {
   static async cateRemove(req,res){
     if(req.body.ids){
       const data = await authCateModel.removeByIds(req.body.ids.split(','))
+      console.log(data,'删除结果')
       if(data){
         const result = super.handlerResponseData(1,data,'删除成功');
         res.json(result);

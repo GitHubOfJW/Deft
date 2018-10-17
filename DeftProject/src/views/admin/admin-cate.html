@@ -67,7 +67,7 @@
     {{each list cate i}}
       <tr>
           <td>
-            <div class="layui-unselect layui-form-checkbox" onclick="idSelect(this,{{list.length}})" lay-skin="primary" data-id='2'><i class="layui-icon">&#xe605;</i></div>
+            <div class="layui-unselect layui-form-checkbox" onclick="idSelect(this,{{list.length}})" lay-skin="primary" data-id='{{cate.id}}'><i class="layui-icon">&#xe605;</i></div>
           </td>
           <td>{{cate.id}}</td>
           <td id="td{{cate.id}}" edit="0" ondblClick="dbclick({{cate.id}})">{{cate.name}}</td>
@@ -314,7 +314,7 @@
               success:function(data){
                 if(data.status){
                   //发异步删除数据
-                  $(".layui-form-checked").not('.header').parents('tr').remove();
+                  selects.parents('tr').remove();
                   layer.msg(data.message,{icon:1,time:1000});
                 }else{
                   layer.msg(data.message,{icon:5,time:1000});
