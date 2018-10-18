@@ -139,7 +139,9 @@ class AdminModel {
           email: account
         },
         password:password
-      }
+      },include:[{
+        model:Role
+      }]
     });
 
     return admin;

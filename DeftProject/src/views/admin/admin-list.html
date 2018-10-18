@@ -102,7 +102,7 @@
               <td class="td-manage">
                 {{if admin.enable}}
                 <!-- 管理员不让禁用自己 -->
-                  {{ if !admin.is_admin }}
+                  {{ if !admin.is_admin && account.id != admin.id}}
                     <a onclick="member_stop(this,{{admin.id}})" href="javascript:;"  title="禁用">
                       <i class="layui-icon">&#xe601;</i>
                     </a>
@@ -112,14 +112,20 @@
                       <i class="layui-icon">&#xe62f;</i>
                   </a>
                 {{/if}}
+
+                {{if account.is_admin || account.id == admin.id}}
                 <a title="编辑"  onclick="x_admin_show('编辑','/admin/edit/{{admin.id}}')" href="javascript:;">
                   <i class="layui-icon">&#xe642;</i>
                 </a>
-                {{ if !admin.is_admin }}
+                {{else if admin.is_admin}}
+                  不可操作
+                {{/if}}
+
+                {{ if !admin.is_admin && admin.id != account.id }}
                 <a title="删除" onclick="member_del(this,{{admin.id}})" href="javascript:;">
                   <i class="layui-icon">&#xe640;</i>
                 </a>
-                {{ /if }}
+                {{/if}}
               </td>
             </tr>
             {{/each}}

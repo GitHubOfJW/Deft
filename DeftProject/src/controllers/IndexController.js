@@ -8,7 +8,10 @@ class IndexController extends BaseController {
   // 跳转到首页
   static async index(req,res){
     super.setHtmlHeader(res)
-    res.render('index.html');
+    console.log(req.session.user)
+    res.render('index.html',{
+      account:req.session.user
+    });
   }
 
 

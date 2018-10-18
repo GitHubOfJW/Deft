@@ -52,7 +52,8 @@ class AdminController extends BaseController {
       totalCount:count,
       totalPage:totalPage,
       pagination:pagination,
-      conditions:conditions
+      conditions:conditions,
+      account:req.session.user
     }
     const result = super.handlerResponseData(1,'获取成功',data)
     res.json(result);
@@ -63,6 +64,13 @@ class AdminController extends BaseController {
     if(req.params.id){
       const data = await adminModel.update(req.body,req.params.id);
       if(data){
+        if(req.session.user && req.session.user.id == req.params.id){
+          const model = await adminModel.findOne(req.params.id)
+          if(model){
+            // 设置model到sesson中
+            req.session.user = model;
+          }
+        }
         const result = super.handlerResponseData(1,'修改成功');
         res.json(result);
       }else{
@@ -236,10 +244,16 @@ class AdminController extends BaseController {
       res.json(result);
       return;     
     }
-
  
-    const data =  adminModel.update(req.body,req.params.id)
+    const data = await adminModel.update(req.body,req.params.id)
     if(data){
+      if(req.session.user && req.session.user.id == req.params.id){
+        const model = await adminModel.findOne(req.params.id)
+        if(model){
+          // 设置model到sesson中
+          req.session.user = model;
+        }
+      }
       const result = super.handlerResponseData(1,'修改成功');
       res.json(result);
     }else{
