@@ -51,6 +51,13 @@ const adminPage = {
       type:GET,
       selected:true
     },
+    unicode:{
+      path:'/unicodee',
+      desc:'图标字体',
+      method:'unicode',
+      type:GET,
+      selected:true
+    }
   },
   AdminController:{
     adminList:{

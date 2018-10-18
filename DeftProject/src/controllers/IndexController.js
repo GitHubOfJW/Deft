@@ -20,6 +20,11 @@ class IndexController extends BaseController {
       time:moment().format('YYYY-MM-DD HH:mm:ss')
     });
   }
+
+  static unicode(req,res){
+    super.setHtmlHeader(res)
+    res.render('unicode.html');
+  }
 }
 
 
