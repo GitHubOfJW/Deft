@@ -148,7 +148,7 @@ class AdminModel {
   // 删除
   deleteByIds(ids = [],reverse = false){
     const deleteIds =  [...(ids||[])]
-    return admin.update({
+    return Admin.update({
       is_delete:!reverse
     },{
       where:{
