@@ -1,10 +1,13 @@
 const force =  false;
 
-const Admin =  require('./AdminManager/Admin')
-const Auth = require('./AdminManager/Auth')
-const AuthCate = require('./AdminManager/AuthCate')
-const Role =  require('./AdminManager/Role')
-const AuthRoleRel =  require('./AdminManager/AuthRoleRel')
+const Admin =  require('./adminManager/Admin')
+const Auth = require('./adminManager/Auth')
+const AuthCate = require('./adminManager/AuthCate')
+const Role =  require('./adminManager/Role')
+const AuthRoleRel =  require('./adminManager/AuthRoleRel')
+
+const ArticleCate = require('./CateManager/ArticleCate')
+const ProductCate = require('./CateManager/ProductCate')
 
 
 // 管理关系
@@ -18,11 +21,16 @@ Role.hasMany(AuthRoleRel)
 Auth.belongsTo(AuthCate);
 AuthCate.hasMany(Auth)
 
+
+// 产品分类 和 文章分类
+ArticleCate.belongsTo(ArticleCate, { foreignKey:'pid'})
+ProductCate.belongsTo(ProductCate, { foreignKey:'pid'})
+
 // 创建表
-AuthCate.sync({ force:force})
+AuthCate.sync({ force:force })
 Role.sync({ force:force })
-Auth.sync({ force:force})
-AuthRoleRel.sync({ force:force})
+Auth.sync({ force:force })
+AuthRoleRel.sync({ force:force })
 Admin.sync({ force: force }).then((data)=>{
   Admin.count().then(count => {
     if(count > 0) return;
@@ -39,6 +47,10 @@ Admin.sync({ force: force }).then((data)=>{
     })
   })
 })
+// 产品分类 和 文章分类
+ArticleCate.sync({ force:force })
+ProductCate.sync({ force:force })
+
 
 const { sequelize, Sequelize } = require('../utils/Squelize')
 module.exports = {
@@ -47,6 +59,8 @@ module.exports = {
   Auth,
   AuthCate,
   AuthRoleRel,
+  ArticleCate,
+  ProductCate,
   Sequelize,
   sequelize
 }
