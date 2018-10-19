@@ -1,10 +1,10 @@
 const force =  false;
 
-const Admin =  require('./Admin')
-const Auth = require('./Auth')
-const AuthCate = require('./AuthCate')
-const Role =  require('./Role')
-const AuthRoleRel =  require('./AuthRoleRel')
+const Admin =  require('./AdminManager/Admin')
+const Auth = require('./AdminManager/Auth')
+const AuthCate = require('./AdminManager/AuthCate')
+const Role =  require('./AdminManager/Role')
+const AuthRoleRel =  require('./AdminManager/AuthRoleRel')
 
 
 // 管理关系
