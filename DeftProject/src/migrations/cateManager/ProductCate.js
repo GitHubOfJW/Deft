@@ -6,6 +6,12 @@ const ProductCate = sequelize.define('productCate', {
     allowNull: false,
     comment: '商品型名称'
   },
+  enable: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+    comment: '是否启用'
+  },
   sort: {
     type: Sequelize.INTEGER,
     allowNull: false,

@@ -23,8 +23,8 @@ AuthCate.hasMany(Auth)
 
 
 // 产品分类 和 文章分类
-ArticleCate.belongsTo(ArticleCate, { foreignKey:'pid'})
-ProductCate.belongsTo(ProductCate, { foreignKey:'pid'})
+ArticleCate.belongsTo(ArticleCate, { foreignKey:'pid', as:'Father'})
+ProductCate.belongsTo(ProductCate, { foreignKey:'pid', as:'Father'})
 
 // 创建表
 AuthCate.sync({ force:force })

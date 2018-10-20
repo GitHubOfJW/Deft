@@ -17,7 +17,8 @@ class ArticleCateModel {
     }
  
     conditions.include = [{
-      model:ArticleCate
+      model:ArticleCate,
+      as:'Father'
     }]
     
     const data = ArticleCate.findAll(conditions);

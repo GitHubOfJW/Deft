@@ -6,6 +6,12 @@ const ArticleCate = sequelize.define('articleCate', {
     allowNull: false,
     comment: '文章类型名称'
   },
+  enable: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+    comment: '是否启用'
+  },
   sort: {
     type: Sequelize.INTEGER,
     allowNull: false,
