@@ -18,8 +18,16 @@ class ArticleCateModel {
  
     conditions.include = [{
       model:ArticleCate,
-      as:'Father'
+      as:'children',
+      include:{
+        model:ArticleCate,
+        as:'father'
+      }
     }]
+    
+    conditions.where = {
+      pid:null
+    }
     
     const data = ArticleCate.findAll(conditions);
     return data;
@@ -36,7 +44,11 @@ class ArticleCateModel {
 
   // 获取总数
   totalCount(others={}){
-    const count =  ArticleCate.count();
+    const count =  ArticleCate.count({
+      where:{
+        pid:null
+      }
+    });
     return count;
   }
 

@@ -11,6 +11,13 @@ class BaseController {
       message: message
     };
   }
+  static handlerListResponseData(status = 0,data = {},message = ''){
+    return { 
+      code: status,
+      ...data,
+      msg: message
+    };
+  }
 
   static setHtmlHeader(res){
     res.setHeader("Content-Type", "text/html");

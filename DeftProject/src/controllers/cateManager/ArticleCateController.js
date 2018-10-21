@@ -34,9 +34,8 @@ class ArticleController extends BaseController {
 
    //权限分类列表请求
   static async cateList(req,res){
-    const page = req.query.nextpage || 1;
-    const prePage =  req.query.page || 1;
-    const pageSize = req.query.pageSize || 8;
+    const page = req.query.page || 1;
+    const pageSize = parseInt(req.query.limit || 10);
     
     const count = await articleCateModel.totalCount();
 
@@ -51,14 +50,23 @@ class ArticleController extends BaseController {
 
     const list = await articleCateModel.list(page,pageSize)
 
-    const data =  {
-      list:list,
-      totalCount:count,
-      totalPage:totalPage,
-      pagination:pagination,
-      conditions:conditions
+    const lists = [];
+    for(let item of list){
+      item.level = 0;
+      lists.push(item)
+      if(item.children){
+        for(let child of item.children){
+          child.level = 1;
+          lists.push(child)
+        }
+      }
     }
-    const result = super.handlerResponseData(1,'获取成功',data)
+
+    const data =  {
+      data:lists,
+      count:count,
+    }
+    const result = super.handlerListResponseData(list.length > 0 ? 0:1,data,list.length < 0 ? '暂未获取到任何数据':'成功');
     res.json(result);
   }
 
