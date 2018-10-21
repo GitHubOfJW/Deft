@@ -45,21 +45,7 @@
         <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
         <span class="x-right" style="line-height:40px">共有数据：88 条</span>
       </xblock>
-      <table class="layui-table layui-form" id="table">
-        <!-- <thead>
-          <tr>
-            <th width="20">
-              <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
-            </th>
-            <th width="70">ID</th>
-            <th>栏目名</th>
-            <th width="50">排序</th>
-            <th width="50">状态</th>
-            <th width="220">操作</th>
-        </thead>
-        <tbody class="x-cate" id="tbody">
-          
-        </tbody> -->
+      <table class="layui-table layui-form x-cate" id="table">
       </table>
     </div>
     <script  type="text/javascript">
@@ -76,11 +62,11 @@
             ,limit: 8
             ,cols: [[ //表头
               {field: 'id', title: `<div class="layui-unselect header layui-form-checkbox" lay-skin="primary" ><i class="layui-icon">&#xe605;</i></div>`, width:80,fixed: 'left',templet:function(d){
-                return `<div class="layui-unselect layui-form-checkbox" lay-skin="primary"  data-id='${d.id}'><i class="layui-icon">&#xe605;</i></div>`
+                return `<div class="layui-unselect  layui-form-checkbox" lay-skin="primary" data-id='${d.id}'><i class="layui-icon">&#xe605;</i></div><input name='fid' type='hidden' cate="${d.id}" value="${d.pid||0}"/>`
               }}
               ,{field: 'id', title: 'ID', width:80, sort: true, fixed: 'left'}
               ,{field: 'name', title: '分类名', width:250,templet:function(d){
-                return `${d.father ? '&nbsp;&nbsp;&nbsp;├&nbsp;':((d.children && d.children.length) ? '<i class="layui-icon x-show" status="true">&#xe623;</i>':'')}${d.name}`
+                return `${d.father ? '&nbsp;&nbsp;&nbsp;├&nbsp;':((d.children && d.children.length) ? `<i class="layui-icon x-show" status="true" cate-id="${d.id}">&#xe623;</i>`:'')}${d.name}`
               }}
               ,{field: 'sort', title: '排序', width: 100,templet:function(d){
                 return `<input type="text" class="layui-input x-sort" name="order" value="${d.sort}">`;
@@ -94,8 +80,8 @@
               <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'要删除的id')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>`
               }}
             ]]
-            ,done:function(){
-                console.log($('.cateilabel').length)
+            ,done:function(res, curr, count){
+                initTableEvent();
             }
           });
           
@@ -151,6 +137,40 @@
           return false;
        });
       })
+
+
+    function initTableEvent(){
+      $("input[name='fid']").each(function(idx,el){
+        if($(el).val() != '0'){
+          $(el).parents('tr').hide()
+        }
+      })
+      // 栏目多级显示效果
+      $('.x-show').click(function () {
+          if($(this).attr('status')=='true'){
+              $(this).html('&#xe625;'); 
+              $(this).attr('status','false');
+              const cateId = $(this).attr('cate-id');
+              // console.log(cateId,'开')
+              $("input[name='fid']").each(function(idx,el){
+                if($(el).val() == cateId){
+                  $(el).parents('tr').show()
+                }
+              })
+        }else{
+              $(this).html('&#xe623;');
+              $(this).attr('status','true');
+              const cateId = $(this).attr('cate-id');
+              // console.log(cateId,'关')
+              $("input[name='fid']").each(function(idx,el){
+                if($(el).val() == cateId){
+                  $(el).parents('tr').hide()
+                }
+              })
+        }
+      })  
+    }
+    
 
     </script>
     <script>var _hmt = _hmt || []; (function() {
