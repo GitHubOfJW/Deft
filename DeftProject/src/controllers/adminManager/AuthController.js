@@ -71,7 +71,7 @@ class AuthController extends BaseController {
       data:list,
       count:count,
     }
-    const result = super.handlerListResponseData(list.length > 0 ? 0:1,data,list.length < 0 ? '暂未获取到任何数据':'成功');
+    const result = super.handlerListResponseData(list.length > 0 ? 0:1,data,list.length <= 0 ? '暂未获取到任何数据':'成功');
     res.json(result);
   }
 
