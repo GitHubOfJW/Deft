@@ -54,8 +54,8 @@
         <button class="layui-btn" onclick="x_admin_show('添加权限','/auth/add')"><i class="layui-icon"></i>添加</button>
         <span class="x-right" id="totalcount" style="line-height:40px"></span>
       </xblock>
-      <table class="layui-table">
-        <thead>
+      <table class="layui-table" id="table">
+        <!-- <thead>
           <tr>
             <th>
               <div class="layui-unselect header layui-form-checkbox" id="select-header" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
@@ -68,7 +68,7 @@
             <th>操作</th>
         </thead>
         <tbody>
-        </tbody>
+        </tbody> -->
       </table>
       <div class="page">
       </div>
@@ -155,26 +155,24 @@
         })
       }
 
-      request('/api/auth/list',{})
+      // request('/api/auth/list',{})
 
       // 添加分页方法
       function pageHander(ele,page){
         request('/api/auth/list',JSON.parse(ele.dataset.set),page);
       }
 
-      layui.use('form', function(){
-        var form = layui.form;
-        
+      layui.use(['table','form','laydate'], function(){
+        const form = layui.form;
+        const laydate = layui.laydate;
+        const table = layui.table;
         //监听提交
         form.on('submit(sreach)', function(data){
           request('/api/auth/list',data.field);
           return false;
         });
-      });
-
-      layui.use('laydate', function(){
-        var laydate = layui.laydate;
         
+         
         //执行一个laydate实例
         laydate.render({
           elem: '#start', //指定元素
@@ -186,6 +184,43 @@
           elem: '#end', //指定元素
           type: 'datetime'
         });
+
+         
+
+          //第一个实例
+          const tableObj = table.render({
+            elem: '#table'
+            ,height: 'full-204'
+            ,url: '/api/auth/list' //数据接口
+            ,page: true //开启分页
+            ,limit: 10
+            ,cols: [[ //表头
+              {field: 'id', title: `<div class="layui-unselect header layui-form-checkbox" id="select-header" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>`, width:80,fixed: 'left',templet:function(d){
+                return `<div class="layui-unselect  layui-form-checkbox" lay-skin="primary" data-id='${d.id}'><i class="layui-icon">&#xe605;</i></div><input name='fid' type='hidden' cate="${d.id}" value="${d.pid||0}"/>`
+              }}
+              ,{field: 'id', title: 'ID', width:80, sort: true, fixed: 'left'}
+              ,{field: 'name', title: '权限名称', width:250,templet:function(d){
+                return `${d.father ? '&nbsp;&nbsp;&nbsp;├&nbsp;':((d.children && d.children.length) ? `<i class="layui-icon x-show" status="true" cate-id="${d.id}">&#xe623;</i>`:'')}${d.name}`
+              }}
+              ,{field: 'name', title: '所属分类', width: 100,templet:function(d){
+                return `${d.authCate.name}`;
+              }}
+              ,{field: 'rules', title: '权限规则'}
+              ,{field: 'createdTime', title: '创建时间'}
+              ,{field: 'enable', title: '操作', templet:function(d){
+                return `<a title="编辑"  onclick="x_admin_show('编辑','/auth/edit/${d.id}')" href="javascript:;">
+                         <i class="layui-icon">&#xe642;</i>
+                        </a>
+                        <a title="删除" onclick="member_del(this,${d.id})" href="javascript:;">
+                          <i class="layui-icon">&#xe640;</i>
+                        </a>`
+              }}
+            ]]
+            ,done:function(res, curr, count){
+            }
+          });
+        
+
       });
 
        /*用户-停用*/

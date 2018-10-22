@@ -33,7 +33,7 @@ class AuthController extends BaseController {
   static async authList(req,res){
     const page = req.query.nextpage || 1;
     const prePage =  req.query.page || 1;
-    const pageSize = req.query.pageSize || 8;
+    const pageSize = parseInt(req.query.limit || 10);
     const cateName =  req.query.cateName || '';
     const cateId =  req.query.cateId || '';
     const start = req.query.start || '';
@@ -52,20 +52,26 @@ class AuthController extends BaseController {
     const count = await authModel.totalCount(conditions);
 
     // 计算页数
-    const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
+    // const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
  
-    const pagination = super.pagination(page,totalPage);
+    // const pagination = super.pagination(page,totalPage);
       
     const list = await authModel.list(page,pageSize,conditions)
 
+    // const data =  {
+    //   list:list,
+    //   totalCount:count,
+    //   totalPage:totalPage,
+    //   pagination:pagination,
+    //   conditions:conditions
+    // }
+    // const result = super.handlerResponseData(1,'获取成功',data)
+    // res.json(result);
     const data =  {
-      list:list,
-      totalCount:count,
-      totalPage:totalPage,
-      pagination:pagination,
-      conditions:conditions
+      data:list,
+      count:count,
     }
-    const result = super.handlerResponseData(1,'获取成功',data)
+    const result = super.handlerListResponseData(list.length > 0 ? 0:1,data,list.length < 0 ? '暂未获取到任何数据':'成功');
     res.json(result);
   }
 
