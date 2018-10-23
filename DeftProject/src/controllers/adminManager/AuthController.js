@@ -52,7 +52,7 @@ class AuthController extends BaseController {
     const count = await authModel.totalCount(conditions);
 
     // 计算页数
-    // const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
+    const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
  
     // const pagination = super.pagination(page,totalPage);
       
@@ -70,6 +70,7 @@ class AuthController extends BaseController {
     const data =  {
       data:list,
       count:count,
+      totalPage:totalPage
     }
     const result = super.handlerListResponseData(list.length > 0 ? 0:1,data,list.length <= 0 ? '暂未获取到任何数据':'成功');
     res.json(result);

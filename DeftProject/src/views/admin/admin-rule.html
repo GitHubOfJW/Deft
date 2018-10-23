@@ -116,9 +116,6 @@
           //监听事件
           table.on('tool(authList)', function(obj){
             switch(obj.event){
-              case 'add':
-                layer.msg('添加');
-              break;
               case 'delete':
                 member_del(obj.data.id,function(){
                     obj.del()

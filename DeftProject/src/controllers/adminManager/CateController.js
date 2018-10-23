@@ -43,7 +43,7 @@ class CateController extends BaseController {
     const count = await authCateModel.totalCount();
 
     // 计算页数
-    // const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
+    const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
  
     // let pagination = super.pagination(page,totalPage);
       
@@ -65,6 +65,7 @@ class CateController extends BaseController {
     const data =  {
       data:list,
       count:count,
+      totalPage:totalPage
     }
     const result = super.handlerListResponseData(list.length > 0 ? 0:1,data,list.length <= 0 ? '暂未获取到任何数据':'成功');
     res.json(result);
