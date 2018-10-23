@@ -43,8 +43,8 @@
         <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
         <span class="x-right" style="line-height:40px" id="totalcount"></span>
       </xblock>
-      <table class="layui-table">
-        <thead>
+      <table class="layui-table" id="table" lay-filter='cateList'>
+        <!-- <thead>
           <tr>
             <th>
               <div class="layui-unselect header layui-form-checkbox" id="select-header" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
@@ -55,7 +55,7 @@
         </thead>
         <tbody>
          
-        </tbody>
+        </tbody> -->
       </table>
       <div class="page">
       </div>
@@ -95,39 +95,31 @@
   </div>
 </script>
 
+ <script type="text/html" id="toolbar">
+      <div class="layui-btn-container">
+        <a title="编辑" lay-event="edit" href="javascript:;">
+          <i class="layui-icon">&#xe642;</i>
+        </a>
+        <a title="删除" lay-event="delete" href="javascript:;">
+         <i class="layui-icon">&#xe640;</i>
+        </a>
+      </div>
+  </script>
+
     <script>
 
-      // 选择了id 
-      const totalSelect = $('#select-header');
-      function idSelect(ele,length){
-          $(ele).toggleClass("layui-form-checked");
-          // 有没有选中
-          const selectedLen = $('.layui-form-checked').not(totalSelect).length
-          if(selectedLen != length){
-            totalSelect.removeClass('layui-form-checked')
-          }else{
-            totalSelect.addClass('layui-form-checked')
-          }
-      }
-
-      function saveChange(input){
-        const tdObj = $('#td'+ input.dataset.id);
+     
+      function saveChange(text,id,callback){
+        // const tdObj = $('#td'+ input.dataset.id);
         $.ajax({
-          url:'/api/cate/edit/'+input.dataset.id,
+          url:'/api/cate/edit/'+id,
           method:'POST',
           data:{
-            name:input.value
+            name:text
           },
           type:'json',
           success:function(resData){
-            console.log(resData.message)
-            if(resData.status){
-               tdObj.attr('edit','0');
-               tdObj.html(input.value)
-            }else{
-               tdObj.attr('edit','1');
-               tdObj.html(input.dataset.content)
-            }
+            if(callback) callback(resData.status)
           },
           error:function(err){
             tdObj.attr('edit','1');
@@ -136,65 +128,15 @@
           }
         })
       }
-
-      function dbclick(id){
-        const tdObj = $('#td'+id);
-        const edit = tdObj.attr('edit');
-        if(edit == 1){
-          const inputObj = tdObj.find('input')
-          saveChange(inputObj[0])
-          return;
-        }
-
-        tdObj.attr('edit','1');
-        const html =  tdObj.html();
-        tdObj.html('<input class="layui-input" placeholder="分类名" data-id="'+id+'" data-content="'+ html +'" onblur="saveChange(this)" value="'+ html +'" name="name">');
-        const inputObj = tdObj.find('input')
-        inputObj.focus();
-      }
-
-      function request(url,data,page=1){
-        
-        // 发送请求
-        data['nextpage'] =  page;
-        $.ajax({
-                  url:url,
-                  data:data,
-                  method:'GET',
-                  type:'json',
-                  success: function(data){              
-                      if(data.status){
-                        const trList = template("pageContent",data.data)
-                        $("tbody").html(trList);
-                        const pagination =  template("pagination",data.data)
-                        $(".page").html(pagination);
-
-                        // 总数量
-                        $("#totalcount").html(`共有数据：${data.data.totalCount} 条 ${data.data.totalPage} 页`)
-                      }else{
-                        layer.msg(data.message,{type:5,shade:0.2,time:1000});
-                      }
-                  },
-                  error: function(err){
-                      layer.msg('服务器开小差了',{type:2,shade:0.2,time:1000});
-                  }
-              })
-      }
-
-      request('/api/cate/list',{})
-
-
-
-      // 添加分页方法
-      function pageHander(ele,page){
-        request('/api/cate/list',JSON.parse(ele.dataset.set),page);
-      }
-      
-      layui.use('form', function(){
-        var form = layui.form;
-
-        //自定义验证规则
-        form.verify({
+       
+       layui.use(['table','form','laydate'], function(){
+        const form = layui.form;
+        const laydate = layui.laydate;
+        const table = layui.table;
+        const $ =  layui.jquery;
+         
+         //自定义验证规则
+         form.verify({
             name: function(value){
               if(value.length < 5){
                 return '名称至少得4个字符啊';
@@ -238,7 +180,72 @@
            });
           return false;
        });
-      })
+
+         
+
+          //第一个实例
+          const tableObj = table.render({
+            elem: '#table'
+            ,height: 'full-204'
+            ,url: '/api/cate/list' //数据接口
+            ,page: true //开启分页
+            ,limit: 10
+            ,cols: [[ //表头
+              {width:'10%',type:'checkbox'}
+              ,{field: 'id', title: 'ID', width:'10%', sort: true}
+              ,{field:'name',title: '权限分类名称', width:'30%',templet:function(d){
+                return `<input type="text" style="display:none;" class="layui-input x-sort" name="name" value="${d.name}"><label>${d.name}</label>`;
+              }}
+              ,{field: 'createdTime', title: '创建时间',width:'30%'}
+              ,{title: '操作',width:'20%',toolbar:'#toolbar'}
+            ]]
+            ,done:function(res, curr, count){
+            }
+          });
+
+          //监听事件
+          table.on('tool(cateList)', function(obj){
+            switch(obj.event){
+              case 'delete':
+                member_del(obj.data.id,function(){
+                    obj.del()
+                })
+              break;
+              case 'edit':
+                const inputObj = obj.tr.find('td[data-field="name"]').find('input')
+                if(inputObj.css('display') == 'none'){
+                  inputObj.css('display','inline-block').siblings().css('display','none');
+                  inputObj.focus();
+                }else{
+                  saveChange(inputObj.val(),obj.data.id,function(success){
+                      if(success){
+                        obj.update({
+                          name:inputObj.val()
+                        })
+                      }else{
+                        obj.update()
+                      }
+                  })
+                  inputObj.css('display','none').siblings().css('display','inline-block');
+                }
+              break;
+            };
+          });
+ 
+        
+        $('#delAll').on('click',function(){
+          const checkStatus =  table.checkStatus('table')
+          const ids = checkStatus.data.map(obj=>{
+              return obj.id;
+          })
+          delAll(ids,function(){
+              table.reload('table',{})
+          })
+        })
+        
+      });
+    
+    
 
        /*停用*/
       function member_stop(obj,id){

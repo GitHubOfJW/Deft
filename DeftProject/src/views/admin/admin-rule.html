@@ -100,10 +100,8 @@
             ,cols: [[ //表头
               {width:'8%',type:'checkbox'}
               ,{field: 'id', title: 'ID', width:'8%', sort: true}
-              ,{field: 'name', title: '权限名称', width:'14%',templet:function(d){
-                return `${d.father ? '&nbsp;&nbsp;&nbsp;├&nbsp;':((d.children && d.children.length) ? `<i class="layui-icon x-show" status="true" cate-id="${d.id}">&#xe623;</i>`:'')}${d.name}`
-              }}
-              ,{field: 'name', title: '所属分类', width: '15%',templet:function(d){
+              ,{field: 'name', title: '权限名称', width:'14%'}
+              ,{title: '所属分类', width: '15%',templet:function(d){
                 return `${d.authCate.name}`;
               }}
               ,{field: 'rules', title: '权限规则',width:'20%'}
@@ -140,9 +138,6 @@
           return false;
         });
         
-        table.on('checkbox(authList)', function(obj){
-           checkStatus =  table.checkStatus('table')
-        });
         
         $('#delAll').on('click',function(){
           const checkStatus =  table.checkStatus('table')

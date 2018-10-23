@@ -43,24 +43,30 @@ class CateController extends BaseController {
     const count = await authCateModel.totalCount();
 
     // 计算页数
-    const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
+    // const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
  
-    let pagination = super.pagination(page,totalPage);
+    // let pagination = super.pagination(page,totalPage);
       
-    const conditions = {
-      page:page
-    };
+    // const conditions = {
+    //   page:page
+    // };
 
     const list = await authCateModel.list(page,pageSize)
 
+    // const data =  {
+    //   list:list,
+    //   totalCount:count,
+    //   totalPage:totalPage,
+    //   pagination:pagination,
+    //   conditions:conditions
+    // }
+    // const result = super.handlerResponseData(1,'获取成功',data)
+    // res.json(result);
     const data =  {
-      list:list,
-      totalCount:count,
-      totalPage:totalPage,
-      pagination:pagination,
-      conditions:conditions
+      data:list,
+      count:count,
     }
-    const result = super.handlerResponseData(1,'获取成功',data)
+    const result = super.handlerListResponseData(list.length > 0 ? 0:1,data,list.length <= 0 ? '暂未获取到任何数据':'成功');
     res.json(result);
   }
 
