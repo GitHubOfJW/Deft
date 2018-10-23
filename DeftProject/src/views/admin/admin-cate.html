@@ -111,8 +111,7 @@
             }
           });
        
-         
-          let eventFlag = false;
+          
           //第一个实例
           const tableObj = table.render({
             elem: '#table'
@@ -123,9 +122,7 @@
             ,cols: [[ //表头
               {width:'10%',type:'checkbox'}
               ,{field: 'id', title: 'ID', width:'10%', sort: true}
-              ,{field:'name',title: '权限分类名称', width:'30%',templet:function(d){
-                return `<input type="text" style="display:none;" class="layui-input x-sort" name="name" value="${d.name}"><label>${d.name}</label>`;
-              }}
+              ,{field:'name',title: '权限分类名称<i class="layui-icon">&#xe642;</i>', width:'30%',edit:true}
               ,{field: 'createdTime', title: '创建时间',width:'30%'}
               ,{title: '操作',width:'20%',toolbar:'#toolbar'}
             ]]
@@ -142,46 +139,24 @@
                 })
               break;
               case 'edit':
-                // 添加离开事件
-                if(eventFlag){
-                  eventFlag = false;
-                  return;
-                }
-                const inputObj = obj.tr.find('td[data-field="name"]').find('input')
-                if(inputObj.css('display') == 'none'){
-                  inputObj.css('display','inline-block').siblings().css('display','none');
-                  inputObj.focus();
-                  
-                  eventFlag = true;
-                  inputObj.on('blur',function(){
-                    saveChange(inputObj.val(),obj.data.id,function(success){
-                        if(success){
-                          inputObj.siblings().html(inputObj.val())
-                          obj.data.name =  inputObj.val();
-                        }else{
-                          inputObj.val(obj.data.name)
-                        }
-                        inputObj.off()
-                    })
-                    inputObj.css('display','none').siblings().css('display','inline-block');
-                  })
-                }
-                else{
-                  saveChange(inputObj.val(),obj.data.id,function(success){
-                        if(success){
-                          inputObj.siblings().html(inputObj.val())
-                          obj.data.name =  inputObj.val();
-                        }else{
-                          inputObj.val(obj.data.name)
-                        }
-                  })
-                  inputObj.css('display','none').siblings().css('display','inline-block');
-                }
+              layer.confirm('带有<i class="layui-icon">&#xe642;</i>图标的单元格，可单击进行修改',{
+                btn:'我知道',function(index){
+                layer.close(index)
+              }
+            })
               break;
             };
           });
  
-        
+          table.on('edit(cateList)', function(obj){ //注：edit是固定事件名，test是table原始容器的属性 lay-filter="对应的值"
+              saveChange(obj.value,obj.data.id,function(success){
+                if(!success){
+                  layer.msg('修改失败',{type:2,shade:0.2,time:1000});
+                  tableObj.reload();
+                }
+              })
+          });
+
         $('#delAll').on('click',function(){
           const checkStatus =  table.checkStatus('table')
           const ids = checkStatus.data.map(obj=>{
@@ -233,32 +208,7 @@
  
         
       });
-    
-    
-
-       /*停用*/
-      function member_stop(obj,id){
-          layer.confirm('确认要停用吗？',function(index){
-
-              if($(obj).attr('title')=='启用'){
-
-                //发异步把用户状态进行更改
-                $(obj).attr('title','停用')
-                $(obj).find('i').html('&#xe62f;');
-
-                $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
-                layer.msg('已停用!',{icon: 5,time:1000});
-
-              }else{
-                $(obj).attr('title','启用')
-                $(obj).find('i').html('&#xe601;');
-
-                $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
-                layer.msg('已启用!',{icon: 5,time:1000});
-              }
-          });
-      }
-
+  
       
       /*删除*/
       function member_del(obj,id){
