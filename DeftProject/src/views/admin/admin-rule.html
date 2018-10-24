@@ -98,16 +98,15 @@
             ,page: true //开启分页
             ,limit: 10
             ,cols: [[ //表头
-              {width:'8%',type:'checkbox'}
+              {width:'8%',type:'checkbox',fixed:'left'}
               ,{field: 'id', title: 'ID', width:'8%', sort: true}
               ,{field: 'name', title: '权限名称', width:'14%'}
-              ,{title: '所属分类', width: '15%',templet:function(d){
+              ,{field:'authCate.name',title: '所属分类', width: '15%',templet:function(d){
                 return `${d.authCate.name}`;
               }}
               ,{field: 'rules', title: '权限规则',width:'20%'}
               ,{field: 'createdTime', title: '创建时间',width:'20%'}
-              ,{field: 'enable', title: '操作',width:'15%',toolbar:'#toolbar'
-            }
+              ,{title: '操作',width:'16%',toolbar:'#toolbar',fixed:'right'}
             ]]
             ,done:function(res, curr, count){
             }

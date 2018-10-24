@@ -36,32 +36,16 @@ class CateController extends BaseController {
 
    //权限分类列表请求
   static async cateList(req,res){
-    const page = req.query.nextpage || 1;
-    const prePage =  req.query.page || 1;
+    const page = req.query.page || 1;
     const pageSize = req.query.pageSize || 8;
     
     const count = await authCateModel.totalCount();
 
     // 计算页数
     const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
- 
-    // let pagination = super.pagination(page,totalPage);
-      
-    // const conditions = {
-    //   page:page
-    // };
-
+  
     const list = await authCateModel.list(page,pageSize)
 
-    // const data =  {
-    //   list:list,
-    //   totalCount:count,
-    //   totalPage:totalPage,
-    //   pagination:pagination,
-    //   conditions:conditions
-    // }
-    // const result = super.handlerResponseData(1,'获取成功',data)
-    // res.json(result);
     const data =  {
       data:list,
       count:count,
@@ -114,13 +98,13 @@ class CateController extends BaseController {
   static async cateRemove(req,res){
     if(req.body.ids){
       const data = await authCateModel.removeByIds(req.body.ids.split(','))
-      if(data){
+      // if(data){
         const result = super.handlerResponseData(1,'删除成功');
         res.json(result);
-      }else{
-        const result = super.handlerResponseData(0,'删除失败');
-        res.json(result);
-      }
+      // }else{
+      //   const result = super.handlerResponseData(0,'删除失败');
+      //   res.json(result);
+      // }
       
     }else{
       const result = super.handlerResponseData(0,'删除失败，缺少参数');

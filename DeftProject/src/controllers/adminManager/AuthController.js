@@ -31,8 +31,7 @@ class AuthController extends BaseController {
 
   //权限分类列表请求
   static async authList(req,res){
-    const page = req.query.nextpage || 1;
-    const prePage =  req.query.page || 1;
+    const page = req.query.page || 1;
     const pageSize = parseInt(req.query.limit || 10);
     const cateName =  req.query.cateName || '';
     const cateId =  req.query.cateId || '';

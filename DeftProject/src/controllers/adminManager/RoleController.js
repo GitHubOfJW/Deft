@@ -15,7 +15,7 @@ class RoleController extends BaseController {
   static async roleUpate(req,res){
     if(req.params.id){
 
-      const data = await authModel.update(req.body,req.params.id);
+      const data = await roleModel.update(req.body,req.params.id);
       if(data){
         const result = super.handlerResponseData(1,'修改成功');
         res.json(result);
@@ -32,9 +32,8 @@ class RoleController extends BaseController {
 
   //权限分类列表请求
   static async roleList(req,res){
-    const page = req.query.nextpage || 1;
-    const prePage =  req.query.page || 1;
-    const pageSize = req.query.pageSize || 8;
+    const page = req.query.page || 1;
+    const pageSize = parseInt(req.query.limit || 10);
     const name =  req.query.name || '';
     const start = req.query.start || '';
     const end = req.query.end || '';
@@ -50,20 +49,15 @@ class RoleController extends BaseController {
 
     // 计算页数
     const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
- 
-    let pagination = super.pagination(page,totalPage);
-      
-
+  
     const list = await roleModel.list(page,pageSize,conditions)
-
+ 
     const data =  {
-      list:list,
-      totalCount:count,
-      totalPage:totalPage,
-      pagination:pagination,
-      conditions:conditions
+      data:list,
+      count:count,
+      totalPage:totalPage
     }
-    const result = super.handlerResponseData(1,'获取成功',data)
+    const result = super.handlerListResponseData(list.length > 0 ? 0:1,data,list.length <= 0 ? '暂未获取到任何数据':'成功');
     res.json(result);
   }
 

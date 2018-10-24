@@ -40,26 +40,11 @@
         </form>
       </div>
       <xblock>
-        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+        <button class="layui-btn layui-btn-danger" id="delAll"><i class="layui-icon"></i>批量删除</button>
         <span class="x-right" style="line-height:40px" id="totalcount"></span>
       </xblock>
-      <table class="layui-table" id="table" lay-filter='cateList'>
-        <!-- <thead>
-          <tr>
-            <th>
-              <div class="layui-unselect header layui-form-checkbox" id="select-header" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
-            </th>
-            <th>ID</th>
-            <th>分类名</th>
-            <th>操作</th>
-        </thead>
-        <tbody>
-         
-        </tbody> -->
+      <table class="layui-table" id="table" lay-filter='cateList'>     
       </table>
-      <div class="page">
-      </div>
-
     </div>
     
  <script type="text/html" id="toolbar">
@@ -74,28 +59,7 @@
   </script>
 
     <script>
-
-     
-      function saveChange(text,id,callback){
-        // const tdObj = $('#td'+ input.dataset.id);
-        $.ajax({
-          url:'/api/cate/edit/'+id,
-          method:'POST',
-          data:{
-            name:text
-          },
-          type:'json',
-          success:function(resData){
-            if(callback) callback(resData.status)
-          },
-          error:function(err){
-            tdObj.attr('edit','1');
-            tdObj.html(input.dataset.content)
-            layer.msg('服务器开小差了',{type:2,shade:0.2,time:1000});
-          }
-        })
-      }
-       
+    
        layui.use(['table','form','laydate'], function(){
         const form = layui.form;
         const laydate = layui.laydate;
@@ -120,11 +84,11 @@
             ,page: true //开启分页
             ,limit: 10
             ,cols: [[ //表头
-              {width:'10%',type:'checkbox'}
+              {width:'10%',type:'checkbox',fixed:'left'}
               ,{field: 'id', title: 'ID', width:'10%', sort: true}
               ,{field:'name',title: '权限分类名称<i class="layui-icon">&#xe642;</i>', width:'30%',edit:true}
               ,{field: 'createdTime', title: '创建时间',width:'30%'}
-              ,{title: '操作',width:'20%',toolbar:'#toolbar'}
+              ,{title: '操作',width:'21%',toolbar:'#toolbar',fixed:'right'}
             ]]
             ,done:function(res, curr, count){
             }
@@ -209,9 +173,26 @@
         
       });
   
-      
+      function saveChange(text,id,callback){
+        $.ajax({
+          url:'/api/cate/edit/'+id,
+          method:'POST',
+          data:{
+            name:text
+          },
+          type:'json',
+          success:function(resData){
+            if(callback) callback(resData.status)
+          },
+          error:function(err){
+            if(callback) callback(0)
+            layer.msg('服务器开小差了',{type:2,shade:0.2,time:1000});
+          }
+        })
+      }
+
       /*删除*/
-      function member_del(obj,id){
+      function member_del(id,callback){
           layer.confirm('确认要删除吗？',function(index){
             $.ajax({
               url:'/api/cate/remove',
@@ -223,7 +204,10 @@
               success:function(data){
                 if(data.status){
                   //发异步删除数据
-                  $(obj).parents("tr").remove();
+                   //发异步删除数据
+                  if(callback){
+                    callback()
+                  }
                   layer.msg(data.message,{icon:1,time:1000});
                 }else{
                   layer.msg(data.message,{icon:5,time:1000});
@@ -238,18 +222,12 @@
 
 
       // 批量删除
-      function delAll (argument) {
-        const selects = $('.layui-form-checked').not(totalSelect);
-          if(selects.length <=0){
-            layer.msg('并未选择',{icon:5,time:1000});
-            return;
-          }
+      function delAll (ids,callback) {
+        if(!ids || ids.length <=0){
+          layer.msg('并未选择',{icon:5,time:1000});
+          return;
+        }
         layer.confirm('确认要删除吗？这个事情很严重，考虑一下下！',function(index){
-            const ids = []
-            for(let i = 0 ;i < selects.length;i++){
-               const selectObj =  selects.eq(i)
-              ids.push(selectObj.get(0).dataset.id);
-            }
             $.ajax({
               url:'/api/cate/remove',
               data:{
@@ -260,7 +238,9 @@
               success:function(data){
                 if(data.status){
                   //发异步删除数据
-                  selects.parents('tr').remove();
+                  if(callback){
+                    callback()
+                  }
                   layer.msg(data.message,{icon:1,time:1000});
                 }else{
                   layer.msg(data.message,{icon:5,time:1000});

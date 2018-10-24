@@ -57,6 +57,7 @@ class RoleModel {
 
   // 更新各状态
   update(values,id){
+    values.authIds = values.authIds || []
     return sequelize.transaction(function(t){
       const roleValues = { ...values }
       delete roleValues.authIds;
