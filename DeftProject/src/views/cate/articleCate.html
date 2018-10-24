@@ -36,7 +36,7 @@
     <div class="x-body">
       <div class="layui-row">
         <form class="layui-form layui-col-md12 x-so layui-form-pane">
-          <input class="layui-input" placeholder="分类名" name="name">
+          <input class="layui-input" placeholder="分类名" name="name" autocomplete="off">
           <button class="layui-btn"  lay-submit="" lay-filter="cateAdd"><i class="layui-icon"></i>增加</button>
         </form>
       </div>
@@ -48,6 +48,13 @@
       <table class="layui-table layui-form x-cate" id="table" lay-filter="articleCateList">
       </table>
     </div>
+
+    <script type="text/html" id="toolbar">
+          <button class="layui-btn layui-btn layui-btn-xs" lay-event="edit" ><i class="layui-icon">&#xe642;</i>编辑</button>
+          <button class="layui-btn layui-btn-warm layui-btn-xs"  lay-event="add"><i class="layui-icon">&#xe642;</i>添加子栏目</button>
+          <button class="layui-btn-danger layui-btn layui-btn-xs" lay-event="delete" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+  </script>
+
     <script  type="text/javascript">
       layui.use(['table','form'], function(){
           const table = layui.table;
@@ -63,18 +70,14 @@
             ,cols: [[ //表头
               {width:'10%',type:'checkbox',fixed:'left'}
               ,{field: 'id', title: 'ID', width:'10%', sort: true}
-              ,{field: 'name', title: '分类名<i class="layui-icon">&#xe642;</i>', edit:true, width:250,templet:function(d){
+              ,{field: 'name', title: '分类名<i class="layui-icon">&#xe642;</i>', edit:true, width:'20%',templet:function(d){
                 return `${d.father ? '&nbsp;&nbsp;&nbsp;├&nbsp;':((d.children && d.children.length) ? `<i class="layui-icon x-show" status="true" cate-id="${d.id}">&#xe623;</i>`:'')}${d.name}`
               }}
-              ,{field: 'sort', title: '排序<i class="layui-icon">&#xe642;</i>', edit:true, width: 100}
-              ,{field: 'enable', title: '开启/停用',templet:function(d){
-                return `<input type="checkbox" name="switch" lay-filter="switch"  lay-text="开启|停用"   ${d.enable ? 'checked=""' : ""} lay-skin="switch">`;
+              ,{field: 'sort', title: '排序<i class="layui-icon">&#xe642;</i>', edit:true, width: '15%'}
+              ,{title: '开启/停用',width:'15%',templet:function(d){
+                return `<input type="checkbox" name="switch" lay-filter="switch" value="${d.id}"  lay-text="开启|停用"   ${d.enable ? 'checked=""' : ""} lay-skin="switch">`;
               }}
-              ,{field: 'enable', title: '操作', templet:function(d){
-                return `<button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','admin-edit.html')" ><i class="layui-icon">&#xe642;</i>编辑</button>
-              <button class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('编辑','admin-edit.html')" ><i class="layui-icon">&#xe642;</i>添加子栏目</button>
-              <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'要删除的id')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>`
-              }}
+              ,{title: '操作',width:'31%',toolbar:'#toolbar',fixed:'right'}
             ]]
             ,done:function(res, curr, count){
                 initTableEvent();
@@ -145,6 +148,35 @@
           })
         });
 
+        //监听事件
+        table.on('tool(articleCateList)', function(obj){
+          switch(obj.event){
+            case 'add':
+               
+            break;
+            case 'delete':
+              member_del(obj.data.id,function(){
+                  obj.del()
+              })
+            break;
+            case 'edit':
+            layer.confirm('带有<i class="layui-icon">&#xe642;</i>图标的单元格，可单击进行修改',{
+              btn:'我知道',function(index){
+              layer.close(index)
+            }
+          })
+            break;
+          };
+        });
+
+        form.on('switch(switch)',function(obj){
+          member_stop(obj.elem.checked,obj.value,function(status,message){
+              if(!status){
+                layer.msg(message,{icon:5,time:1000});
+              }
+          })
+      })
+
         //删除
         $('#delAll').on('click',function(){
           const checkStatus =  table.checkStatus('table')
@@ -158,7 +190,23 @@
 
       })
 
-
+     /*用户-停用*/
+   function member_stop(enable,id,callback){
+      $.ajax({
+        url:'/api/article/cate/status/'+ id,
+        method:"POST",
+        data:{
+          enable:enable
+        },
+        type:'json',
+        success:function(data){
+            if(callback)callback(data.status,data.message)
+        },
+        error(){
+          if(callback)callback(false,'服务器开小差了')
+        }
+      })
+    }
     
     function saveChange(data,id,callback){
       $.ajax({

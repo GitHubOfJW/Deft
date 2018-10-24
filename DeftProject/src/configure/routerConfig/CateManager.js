@@ -55,6 +55,13 @@ const adminApi = {
       type:POST,
       selected:false,
     },
+    cateStatus:{
+      path:'/api/article/cate/status/:id',
+      desc:'启用/禁用角色',
+      method:'cateUpdate',
+      type:POST,
+      selected:false,
+    },
     // cateRemove:{
     //   path:'/api/article/cate/remove',
     //   desc:'彻底删除文章分类',

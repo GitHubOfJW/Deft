@@ -5,7 +5,7 @@ const moment =  require('moment')
 class ArticleCateModel {
   
    // 获取数据
-  list(page = 1,pagesize = 20){
+  list(page = 1,pagesize = 20,is_delete = false){
     const conditions = {};
     // 分页
     if(page > 0 && pagesize > 0){
@@ -26,7 +26,8 @@ class ArticleCateModel {
     }]
     
     conditions.where = {
-      pid:null
+      pid:null,
+      is_delete:is_delete
     }
     
     const data = ArticleCate.findAll(conditions);
@@ -55,6 +56,20 @@ class ArticleCateModel {
   // 添加分类
   insert(values){
     return ArticleCate.create(values)
+  }
+
+  // 删除
+  deleteByIds(ids = [],reverse = false){
+    const deleteIds =  [...(ids||[])]
+    return ArticleCate.update({
+      is_delete:!reverse
+    },{
+      where:{
+        id:{
+          [Sequelize.Op.in]:deleteIds
+        }
+      }
+    })
   }
 
   // 彻底删除
