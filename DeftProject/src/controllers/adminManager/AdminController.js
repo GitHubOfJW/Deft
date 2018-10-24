@@ -17,7 +17,9 @@ class AdminController extends BaseController {
      
     super.setHtmlHeader(res);
    
-    res.render('admin/admin-list.html');
+    res.render('admin/admin-list.html',{
+      account:req.session.user
+    });
   }
 
   //管理管理员列表请求
@@ -26,9 +28,8 @@ class AdminController extends BaseController {
     const end = req.query.end || '';
     const username = req.query.username || '';
     const contact = req.query.contact || '';
-    const page = req.query.nextpage || 1;
-    const prePage =  req.query.page || 1;
-    const pageSize = req.query.pageSize || 8;
+    const page = req.query.page || 1;
+    const pageSize = parseInt(req.query.pageSize || 10);
     
     const conditions = {
       page:page,
@@ -42,20 +43,15 @@ class AdminController extends BaseController {
 
     // 计算页数
     const totalPage = Math.floor((count +  pageSize - 1) / pageSize);
- 
-    const pagination = super.pagination(page,totalPage);
     
     const list = await adminModel.list(page,pageSize,conditions)
-
+ 
     const data =  {
-      list:list,
-      totalCount:count,
-      totalPage:totalPage,
-      pagination:pagination,
-      conditions:conditions,
-      account:req.session.user
+      data:list,
+      count:count,
+      totalPage:totalPage
     }
-    const result = super.handlerResponseData(1,'获取成功',data)
+    const result = super.handlerListResponseData(list.length > 0 ? 0:1,data,list.length <= 0 ? '暂未获取到任何数据':'成功');
     res.json(result);
   }
 

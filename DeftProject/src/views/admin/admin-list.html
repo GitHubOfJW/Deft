@@ -47,286 +47,207 @@
         <button class="layui-btn" onclick="x_admin_show('添加用户','/admin/add')"><i class="layui-icon"></i>添加</button>
         <span class="x-right" id="totalcount" style="line-height:40px"></span>
       </xblock>
-      <table class="layui-table">
-        <thead>
-          <tr>
-            <th>
-              <div class="layui-unselect header layui-form-checkbox" id="select-header" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
-            </th>
-            <th>ID</th>
-            <th>登录名</th>
-            <th>手机</th>
-            <th>邮箱</th>
-            <th>角色</th>
-            <th>加入时间</th>
-            <th>状态</th>
-            <th>操作</th>
-        </thead>
-        <tbody>
-        
-        </tbody>
+      <table class="layui-table" id="table" lay-filter="adminList">
       </table>
-      <!-- 分页 -->
-      <div class="page">
-       
-      </div>
-
     </div>
-    <!-- 列表 -->
-    <script id="pageContent" type="text/html">
-      {{each list admin i}}
-            <tr>
-              <td>
-                <div class="layui-unselect layui-form-checkbox"  onclick="idSelect(this,{{list.length}})" lay-skin="primary" data-id='{{admin.id}}'><i class="layui-icon">&#xe605;</i></div>
-              </td>
-              <td>{{admin.id}}</td>
-              <td>{{admin.account}}</td>
-              <td>{{admin.mobile}}</td>
-              <td>{{admin.email}}</td>
-              <td>
-                {{if admin.is_admin}}
-                  超级管理员
-                {{else}} 
-                  {{if admin.role}} {{admin.role.name}} {{else}} 未知 {{/if}} 
-                {{/if}}
-              </td>
-              <td>{{admin.createdTime}}</td>
-              <td class="td-status">
-                {{if !admin.enable }}
-                <span class="layui-btn layui-btn-normal layui-btn-mini layui-btn-disabled">已禁用</span>
-                {{else}}
-                <span class="layui-btn layui-btn-normal layui-btn-mini">已启用</span>
-                {{/if}}
-              </td>
-
-              <td class="td-manage">
-                {{if admin.enable}}
-                <!-- 管理员不让禁用自己 -->
-                  {{ if !admin.is_admin && account.id != admin.id}}
-                    <a onclick="member_stop(this,{{admin.id}})" href="javascript:;"  title="禁用">
-                      <i class="layui-icon">&#xe601;</i>
-                    </a>
-                  {{/if}}
-                {{else}}
-                  <a onclick="member_stop(this,{{admin.id}})" href="javascript:;"  title="启用">
-                      <i class="layui-icon">&#xe62f;</i>
-                  </a>
-                {{/if}}
-
-                {{if account.is_admin || account.id == admin.id}}
-                <a title="编辑"  onclick="x_admin_show('编辑','/admin/edit/{{admin.id}}')" href="javascript:;">
-                  <i class="layui-icon">&#xe642;</i>
-                </a>
-                {{else if admin.is_admin}}
-                  不可操作
-                {{/if}}
-
-                {{ if !admin.is_admin && admin.id != account.id }}
-                <a title="删除" onclick="member_del(this,{{admin.id}})" href="javascript:;">
-                  <i class="layui-icon">&#xe640;</i>
-                </a>
-                {{/if}}
-              </td>
-            </tr>
-            {{/each}}
-  </script>
-  <!-- 分页模版 -->
-  <script id="pagination" type="text/html"> 
-    <div>
-      {{each pagination pageItem index}}
-        {{ if(pageItem.page == conditions.page) }}
-         <span class="current">{{pageItem.text}}</span>
-        {{else}}
-         <a class="{{pageItem.className}}" href="javascript:;" onclick="pageHander(this,{{pageItem.page}})" data-set="{{conditions}}">{{pageItem.text}}</a>
-        {{/if}}
-      {{/each}}
-    </div>
-  </script>
     
-   
-  <script>
+    
+  <!-- layui的模版引擎，不好用,有问题-->
+<script type="text/html" id="toolbar">
+  <div class="layui-btn-container">
+      {{ if [{account.is_admin}] || [{account.id}] == d.id  }}
+      <a title="编辑" lay-event="edit" href="javascript:;">
+        <i class="layui-icon">&#xe642;</i>
+      </a>
+      {{  else if d.is_admin }}
+        不可操作
+      {{ /if }}
 
+      {{  if !d.is_admin && d.id != [{account.id}]  }}
+      <a title="删除" lay-event="delete" href="javascript:;">
+        <i class="layui-icon">&#xe640;</i>
+      </a>
+      {{ /if }}
+  </div>
+</script>
+<script>
+  
+  layui.use(['table','form','laydate','laytpl'], function(){
+    const form = layui.form;
+    const laydate = layui.laydate;
+    const table = layui.table;
+    // const $ =  layui.jquery;
+     
+    //执行一个laydate实例
+    laydate.render({
+      elem: '#start', //指定元素
+      type: 'datetime'
+    });
 
-      
-      // 选择了id 
-      const totalSelect = $('#select-header');
-      function idSelect(ele,length){
-          $(ele).toggleClass("layui-form-checked");
-          // 有没有选中
-          const selectedLen = $('.layui-form-checked').not(totalSelect).length
-          if(selectedLen != length){
-            totalSelect.removeClass('layui-form-checked')
-          }else{
-            totalSelect.addClass('layui-form-checked')
-          }
-      }
-      
-      
-      function request(url,data,page=1){
-        
-        // 发送请求
-        data['nextpage'] =  page;
-        $.ajax({
-                  url:url,
-                  data:data,
-                  method:'GET',
-                  type:'json',
-                  success: function(data){              
-                      if(data.status){
-                        const trList = template("pageContent",data.data)
-                        $("tbody").html(trList);
-                        const pagination =  template("pagination",data.data)
-                        $(".page").html(pagination);
-
-                        // 总数量
-                        $("#totalcount").html(`共有数据：${data.data.totalCount} 条 ${data.data.totalPage} 页`)
-                      }else{
-                        layer.msg(data.message,{type:5,shade:0.2});
-                      }
-                  },
-                  error: function(err){
-                      layer.msg('服务器开小差了',{type:5,shade:0.2});
-                  }
-              })
-      }
-
-      request('/api/admin/list',{})
-
-      // 添加分页方法
-      function pageHander(ele,page){
-        request('/api/admin/list',JSON.parse(ele.dataset.set),page);
-      }
-      
-      layui.use('form', function(){
-        var form = layui.form;
-        
-        //监听提交
-        form.on('submit(sreach)', function(data){
-          request('/api/admin/list',data.field);
-          return false;
-        });
+    //执行一个laydate实例
+    laydate.render({
+      elem: '#end', //指定元素
+      type: 'datetime'
+    });
+    
+      //第一个实例
+      const tableObj = table.render({
+        elem: '#table'
+        ,height: 'full-204'
+        ,url: '/api/admin/list' //数据接口
+        ,page: true //开启分页
+        ,limit: 10
+        ,cols: [[ //表头
+          {width:'8%',type:'checkbox',fixed:'left'}
+          ,{field: 'id', title: 'ID', width:'8%', sort: true}
+          ,{field: 'account', title: '登录名', width:'10%'}
+          ,{field: 'mobile', title: '手机', width:'12%'}
+          ,{field: 'email', title: '邮箱', width:'16%'}
+          ,{title: '角色', width:'10%',templet:function(d){
+            return d.role ? d.role.name : '超级管理员'
+          }}
+          ,{field: 'enable', title: '开启/停用',width:'10%',
+          templet:function(d){
+            if(d.is_admin){
+              return '已启用';
+            }
+            return `<input type="checkbox" name="switch" lay-filter="switch" value='${d.id}' lay-text="开启|停用" ${d.enable ? 'checked=""' : ""} lay-skin="switch">`;
+          }}
+          ,{field: 'createdTime', title: '创建时间',width:'16%'}
+          ,{title: '操作',width:'11%',fixed:'right',templet:function(d){
+             return template('toolbar',{
+               d:d
+             })
+          }}
+        ]]
+        ,done:function(res, curr, count){
+           
+        }
       });
- 
 
-      layui.use('laydate', function(){
-        var laydate = layui.laydate;
-        
-        //执行一个laydate实例
-        laydate.render({
-          elem: '#start', //指定元素
-          type: 'datetime'
-        });
-
-        //执行一个laydate实例
-        laydate.render({
-          elem: '#end', //指定元素
-          type: 'datetime'
-        });
-      });
-      
-
-       /*用户-停用*/
-      function member_stop(obj,id){
-          const enable =  $(obj).attr('title') == '启用';
-          layer.confirm('确认要'+(enable?'启用':'停用')+'吗？',function(index){
-            $.ajax({
-              url:'/api/admin/status/'+ id,
-              method:"POST",
-              data:{
-                enable:enable
-              },
-              type:'json',
-              success:function(data){
-                if(data.status){
-                  if(enable){
-                    //发异步把用户状态进行更改
-                    $(obj).attr('title','停用')
-                    $(obj).find('i').html('&#xe601;');
-
-                    $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
-                    layer.msg('已启用!',{icon: 5,time:1000});
-                  }else{
-                    $(obj).attr('title','启用')
-                    $(obj).find('i').html('&#xe62f;');
-
-                    $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
-                    layer.msg('已停用!',{icon: 5,time:1000});
-                  }
-                }
-              },
-              error(){
-
-              }
+      //监听事件
+      table.on('tool(adminList)', function(obj){
+        switch(obj.event){
+          case 'delete':
+            member_del(obj.data.id,function(){
+                obj.del()
             })
-            
-              
-          });
-      }
+          break;
+          case 'edit':
+            x_admin_show('编辑',`/admin/edit/${obj.data.id}`)
+          break;
+        };
+      });
 
-      /*用户-删除*/
-      function member_del(obj,id){
-        layer.confirm('确认要删除吗？',function(index){
-          $.ajax({
-            url:'/api/admin/delete',
-            data:{
-              ids:id
-            },
-            method:'POST',
-            type:'json',
-            success:function(data){
-              if(data.status){
-                //发异步删除数据
-                $(obj).parents("tr").remove();
-                layer.msg(data.message,{icon:1,time:1000});
-              }else{
-                layer.msg(data.message,{icon:5,time:1000});
-              }
-            },
-            error:function(res){
-              layer.msg('服务器开小差了',{type:5,shade:0.2});
+      form.on('switch(switch)',function(obj){
+        member_stop(obj.elem.checked,obj.value,function(status,message){
+            if(!status){
+              layer.msg(message,{icon:5,time:1000});
             }
-          })
-        });
-      }
+        })
+      })
 
+      //监听查询
+      form.on('submit(sreach)', function(data){
+        tableObj.reload({
+          where:data.field
+        })
+        return false;
+      });
 
-
-      // 批量删除
-   function delAll (argument) {
-        const selects = $('.layui-form-checked').not(totalSelect);
-          if(selects.length <=0){
-            layer.msg('并未选择',{icon:5,time:1000});
-            return;
+    
+    
+      $('#delAll').on('click',function(){
+        const checkStatus =  table.checkStatus('table')
+        const ids = checkStatus.data.map(obj=>{
+            return obj.id;
+        })
+        delAll(ids,function(){
+            table.reload('table',{})
+        })
+      })
+      
+  });
+  
+   /*用户-停用*/
+   function member_stop(enable,id,callback){
+        $.ajax({
+          url:'/api/admin/status/'+ id,
+          method:"POST",
+          data:{
+            enable:enable
+          },
+          type:'json',
+          success:function(data){
+             if(callback)callback(data.status,data.message)
+          },
+          error(){
+            if(callback)callback(false,'服务器开小差了')
           }
-        layer.confirm('确认要删除吗？这个事情很严重，考虑一下下！',function(index){
-            const ids = []
-            for(let i = 0 ;i < selects.length;i++){
-               const selectObj =  selects.eq(i)
-              ids.push(selectObj.get(0).dataset.id);
-            }
-            $.ajax({
-              url:'/api/admin/delete',
-              data:{
-                ids:ids.join(",")
-              },
-              method:'POST',
-              type:'json',
-              success:function(data){
-                if(data.status){
-                  //发异步删除数据
-                  $(".layui-form-checked").not('.header').parents('tr').remove();
-                  layer.msg(data.message,{icon:1,time:1000});
-                }else{
-                  layer.msg(data.message,{icon:5,time:1000});
-                }
-              },
-              error:function(res){
-                layer.msg('服务器开小差了',{type:5,shade:0.2});
+        })
+  }
+
+  /*用户-删除*/
+  function member_del(id,callback){
+      layer.confirm('确认要删除吗？',function(index){
+        $.ajax({
+          url:'/api/admin/delete',
+          data:{
+            ids:id
+          },
+          method:'POST',
+          type:'json',
+          success:function(data){
+            if(data.status){
+              //发异步删除数据
+              if(callback){
+                callback()
               }
-          });
-        });
+              layer.msg(data.message,{icon:1,time:1000});
+            }else{
+              layer.msg(data.message,{icon:5,time:1000});
+            }
+          },
+          error:function(res){
+            layer.msg('服务器开小差了',{type:5,shade:0.2});
+          }
+        })
+      });
+  }
+
+
+  // 批量删除
+  function delAll (ids,callback) {
+      if(!ids || ids.length <=0){
+        layer.msg('并未选择',{icon:5,time:1000});
+        return;
       }
-    </script>
+    layer.confirm('确认要删除吗？这个事情很严重，考虑一下下！',function(index){
+        $.ajax({
+          url:'/api/admin/delete',
+          data:{
+            ids:ids.join(",")
+          },
+          method:'POST',
+          type:'json',
+          success:function(data){
+            if(data.status){
+              //发异步删除数据
+              if(callback){
+                callback()
+              }
+              layer.msg(data.message,{icon:1,time:1000});
+            }else{
+              layer.msg(data.message,{icon:5,time:1000});
+            }
+          },
+          error:function(res){
+            layer.msg('服务器开小差了',{type:5,shade:0.2});
+          }
+      });
+    });
+  }
+</script>
     <script>var _hmt = _hmt || []; (function() {
         var hm = document.createElement("script");
         hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";

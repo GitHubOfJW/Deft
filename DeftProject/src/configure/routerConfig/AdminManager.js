@@ -186,13 +186,13 @@ const adminApi = {
       type:POST,
       selected:false,
     },
-    adminRemove:{
-      path:'/api/admin/remove',
-      desc:'彻底删除管理员',
-      method:'adminRemove',
-      type:POST,
-      selected:false
-    },
+    // adminRemove:{
+    //   path:'/api/admin/remove',
+    //   desc:'彻底删除管理员',
+    //   method:'adminRemove',
+    //   type:POST,
+    //   selected:false
+    // },
   },
   CateController:{
     cateList:{
@@ -216,13 +216,13 @@ const adminApi = {
       type:POST,
       selected:false
     },
-    cateDelete:{
-      path:'/api/cate/delete',
-      desc:'删除权限分类',
-      method:'cateDelete',
-      type:POST,
-      selected:false,
-    },
+    // cateDelete:{
+    //   path:'/api/cate/delete',
+    //   desc:'删除权限分类',
+    //   method:'cateDelete',
+    //   type:POST,
+    //   selected:false,
+    // },
     cateRemove:{
       path:'/api/cate/remove',
       desc:'彻底删除权限分类',
@@ -253,16 +253,16 @@ const adminApi = {
       type:POST,
       selected:false
     },
-    authDelete:{
-      path:'/api/auth/delete',
-      desc:'删除管理员',
-      method:'authDelete',
-      type:POST,
-      selected:false
-    },
+    // authDelete:{
+    //   path:'/api/auth/delete',
+    //   desc:'删除管理员',
+    //   method:'authDelete',
+    //   type:POST,
+    //   selected:false
+    // },
     authRemove:{
       path:'/api/auth/remove',
-      desc:'彻底删除管理员',
+      desc:'彻底删除权限',
       method:'authRemove',
       type:POST,
       selected:false
@@ -304,13 +304,13 @@ const adminApi = {
       type:POST,
       selected:false
     },
-    roleRemove:{
-      path:'/api/role/remove',
-      desc:'彻底删除管理员',
-      method:'roleRemove',
-      type:POST,
-      selected:false
-    },
+    // roleRemove:{
+    //   path:'/api/role/remove',
+    //   desc:'彻底删除角色',
+    //   method:'roleRemove',
+    //   type:POST,
+    //   selected:false
+    // },
   }
 }
 

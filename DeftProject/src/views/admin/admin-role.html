@@ -50,41 +50,6 @@
        
       </table>
     </div>
- <!-- 列表 -->
- <script id="pageContent" type="text/html">
-  {{each list role i}}
-        <tr>
-          <td>
-            <div class="layui-unselect layui-form-checkbox" onclick="idSelect(this,{{list.length}})" lay-skin="primary" data-id='{{role.id}}'><i class="layui-icon">&#xe605;</i></div>
-          </td>
-          <td>{{role.id}}</td>
-          <td>{{role.name}}</td>
-          <td>{{each role.authRoleRels  relItem}} {{relItem.auth.name}} {{/each}}</td>
-          <td>{{role.remark}}</td>
-          <td class="td-status">
-            {{if !role.enable }}
-            <span class="layui-btn layui-btn-normal layui-btn-mini layui-btn-disabled">已禁用</span>
-            {{else}}
-            <span class="layui-btn layui-btn-normal layui-btn-mini">已启用</span>
-            {{/if}}
-          </td>
-          <td>{{role.createdTime}}</td>
-          <td class="td-manage">
-            {{if role.enable}}
-                <a onclick="member_stop(this,{{role.id}})" href="javascript:;"  title="禁用">
-                  <i class="layui-icon">&#xe601;</i>
-                </a>
-            {{else}}
-              <a onclick="member_stop(this,{{role.id}})" href="javascript:;"  title="启用">
-                  <i class="layui-icon">&#xe62f;</i>
-              </a>
-            {{/if}}
-            
-          </td>
-        </tr>
-        {{/each}}
-</script>
-
 <script type="text/html" id="toolbar">
   <div class="layui-btn-container">
     <a title="编辑"  lay-event="edit"  href="javascript:;">
@@ -214,7 +179,7 @@
   function member_del(id,callback){
       layer.confirm('确认要删除吗？',function(index){
         $.ajax({
-          url:'/api/role/remove',
+          url:'/api/role/delete',
           data:{
             ids:id
           },
@@ -247,7 +212,7 @@
       }
     layer.confirm('确认要删除吗？这个事情很严重，考虑一下下！',function(index){
         $.ajax({
-          url:'/api/role/remove',
+          url:'/api/role/delete',
           data:{
             ids:ids.join(",")
           },
