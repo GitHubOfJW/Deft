@@ -30,7 +30,7 @@
         <a>
           <cite>文章分类管理</cite></a>
       </span>
-      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:;" id='refresh' title="刷新">
         <i class="layui-icon" style="line-height:30px">ဂ</i></a>
     </div>
     <div class="x-body">
@@ -68,16 +68,22 @@
             ,page: true //开启分页
             ,limit: 10
             ,cols: [[ //表头
-              {width:'10%',type:'checkbox',fixed:'left'}
-              ,{field: 'id', title: 'ID', width:'10%', sort: true}
-              ,{field: 'name', title: '分类名<i class="layui-icon">&#xe642;</i>', edit:true, width:'20%',templet:function(d){
-                return `${d.father ? '&nbsp;&nbsp;&nbsp;├&nbsp;':((d.children && d.children.length) ? `<i class="layui-icon x-show" status="true" cate-id="${d.id}">&#xe623;</i>`:'')}${d.name}`
+              {width:'10%',type:'checkbox'}
+              ,{field: 'id', title: 'ID', width:'10%', sort: true,templet:function(d){
+                if(d.children && d.children.length > 0){
+                  return `<i class="layui-icon x-show" status="true" cate-id="${d.id}">&#xe623;</i>&nbsp;&nbsp;&nbsp;${d.id}`
+                }else{
+                  return `&nbsp;&nbsp;&nbsp;→&nbsp;${d.id}`;
+                }
+              }}
+              ,{field: 'name', title: '分类名<i class="layui-icon">&#xe642;</i>',edit:true,event:'change', width:'20%',templet:function(d){
+                return `${d.father ? '&nbsp;&nbsp;&nbsp;├&nbsp;':''}${d.name}`
               }}
               ,{field: 'sort', title: '排序<i class="layui-icon">&#xe642;</i>', edit:true, width: '15%'}
               ,{title: '开启/停用',width:'15%',templet:function(d){
-                return `<input type="checkbox" name="switch" lay-filter="switch" value="${d.id}"  lay-text="开启|停用"   ${d.enable ? 'checked=""' : ""} lay-skin="switch">`;
+                  return `<input type="checkbox" name="switch" lay-filter="switch" value="${d.id}"  lay-text="开启|停用"   ${d.enable ? 'checked=""' : ""} lay-skin="switch"><input name='fid' type='hidden' cate="${d.id}" value="${d.pid||0}"/>`;
               }}
-              ,{title: '操作',width:'31%',toolbar:'#toolbar',fixed:'right'}
+              ,{title: '操作',width:'31%',toolbar:'#toolbar'}
             ]]
             ,done:function(res, curr, count){
                 initTableEvent();
@@ -151,6 +157,9 @@
         //监听事件
         table.on('tool(articleCateList)', function(obj){
           switch(obj.event){
+            case 'change':
+            console.log(obj)
+            break
             case 'add':
                
             break;
@@ -175,7 +184,16 @@
                 layer.msg(message,{icon:5,time:1000});
               }
           })
-      })
+       })
+
+       form.on('switch(expand)',function(obj){
+         console.log(obj)
+          if(obj.elem.checked){// 展开
+
+          }else{ // 闭合
+
+          }
+       })
 
         //删除
         $('#delAll').on('click',function(){
@@ -188,6 +206,9 @@
           })
         })
 
+        $('#refresh').click(function(){
+           tableObj.reload();
+        })
       })
 
      /*用户-停用*/
