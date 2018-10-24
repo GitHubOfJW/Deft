@@ -72,13 +72,13 @@
               ,{field: 'id', title: 'ID', width:'10%', sort: true,templet:function(d){
                 if(d.children && d.children.length > 0){
                   return `<i class="layui-icon x-show" status="true" cate-id="${d.id}">&#xe623;</i>&nbsp;&nbsp;&nbsp;${d.id}`
-                }else{
+                }else if(d.father){
                   return `&nbsp;&nbsp;&nbsp;→&nbsp;${d.id}`;
+                }else{
+                  return d.id;
                 }
               }}
-              ,{field: 'name', title: '分类名<i class="layui-icon">&#xe642;</i>',edit:true,event:'change', width:'20%',templet:function(d){
-                return `${d.father ? '&nbsp;&nbsp;&nbsp;├&nbsp;':''}${d.name}`
-              }}
+              ,{field:'name',title: '分类名<i class="layui-icon">&#xe642;</i>',edit:true, width:'20%'}
               ,{field: 'sort', title: '排序<i class="layui-icon">&#xe642;</i>', edit:true, width: '15%'}
               ,{title: '开启/停用',width:'15%',templet:function(d){
                   return `<input type="checkbox" name="switch" lay-filter="switch" value="${d.id}"  lay-text="开启|停用"   ${d.enable ? 'checked=""' : ""} lay-skin="switch"><input name='fid' type='hidden' cate="${d.id}" value="${d.pid||0}"/>`;
@@ -157,9 +157,6 @@
         //监听事件
         table.on('tool(articleCateList)', function(obj){
           switch(obj.event){
-            case 'change':
-            console.log(obj)
-            break
             case 'add':
                
             break;
