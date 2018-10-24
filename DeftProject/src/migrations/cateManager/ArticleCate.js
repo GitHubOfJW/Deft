@@ -17,6 +17,12 @@ const ArticleCate = sequelize.define('articleCate', {
     allowNull: false,
     defaultValue: '1',
     comment: '排序'
+  },
+  is_delete: {
+    type:Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    comment: '删除'
   }
 },{
   getterMethods:{

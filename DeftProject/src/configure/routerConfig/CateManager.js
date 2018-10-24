@@ -55,13 +55,13 @@ const adminApi = {
       type:POST,
       selected:false,
     },
-    cateRemove:{
-      path:'/api/article/cate/remove',
-      desc:'彻底删除文章分类',
-      method:'cateRemove',
-      type:POST,
-      selected:false
-    },
+    // cateRemove:{
+    //   path:'/api/article/cate/remove',
+    //   desc:'彻底删除文章分类',
+    //   method:'cateRemove',
+    //   type:POST,
+    //   selected:false
+    // },
   }
 }
 

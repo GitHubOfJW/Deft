@@ -113,7 +113,9 @@
           });
  
           table.on('edit(cateList)', function(obj){ //注：edit是固定事件名，test是table原始容器的属性 lay-filter="对应的值"
-              saveChange(obj.value,obj.data.id,function(success){
+              saveChange({
+                [obj.field]:obj.value
+                },obj.data.id,function(success){
                 if(!success){
                   layer.msg('修改失败',{type:2,shade:0.2,time:1000});
                   tableObj.reload();
@@ -173,13 +175,11 @@
         
       });
   
-      function saveChange(text,id,callback){
+      function saveChange(data,id,callback){
         $.ajax({
           url:'/api/cate/edit/'+id,
           method:'POST',
-          data:{
-            name:text
-          },
+          data:data,
           type:'json',
           success:function(resData){
             if(callback) callback(resData.status)
