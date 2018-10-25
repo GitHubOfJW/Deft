@@ -82,7 +82,7 @@
             ,limit: 10
             ,cols: [[ //表头
               {width:'10%',type:'checkbox'}
-              ,{field: 'id', title: 'ID', width:'10%', sort: true,templet:function(d){
+              ,{field: 'id', title: 'ID', width:'10%', sort: true,align:'center',templet:function(d){
                 if(d.children && d.children.length > 0){
                   return `<i class="layui-icon x-show" status="true" cate-id="${d.id}">&#xe623;</i>&nbsp;&nbsp;&nbsp;${d.id}`
                 }else if(d.father){
