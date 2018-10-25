@@ -173,17 +173,14 @@
 
         // 编辑文本
         table.on('edit(articleCateList)', function(obj){ //注：edit是固定事件名，test是table原始容器的属性 lay-filter="对应的值"
-          obj.update({
-            name:'新数据'
-          })
-          return;
           const cateObj = $('#cateName'+obj.data.id);
           console.log(obj,'看看数据',cateObj.val())
           if(obj.value.trim().length <= 0 || (obj.field == 'sort' && isNaN(obj.value))){
             const old = {
               [obj.field]:obj.field == 'name' ? cateObj.val():cateObj.attr('sort')
             }
-            obj.update(old);
+            obj.update(old)
+            tableObj.reload();
           }else{
             saveChange({
               [obj.field]:obj.value
@@ -208,16 +205,15 @@
             case 'delete':
               member_del(obj.data.id,function(){
                   obj.del()
-
                   refreshCateList(table.cache['table'])
               })
             break;
             case 'edit':
-            layer.confirm('带有<i class="layui-icon">&#xe642;</i>图标的单元格，可单击进行修改',{
-              btn:'我知道',function(index){
-              layer.close(index)
-            }
-          })
+              layer.confirm('带有<i class="layui-icon">&#xe642;</i>图标的单元格，可单击进行修改',{
+                btn:'我知道',function(index){
+                layer.close(index)
+              }
+            })
             break;
           };
         });
