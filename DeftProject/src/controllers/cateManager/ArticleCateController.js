@@ -74,7 +74,8 @@ class ArticleController extends BaseController {
   static async cateAdd(req,res){
     if(req.body.name){
       const result = await articleCateModel.insert({
-        name: req.body.name
+        name: req.body.name,
+        pid:req.body.pid > 0 ? req.body.pid:null
       })
 
       if(result){

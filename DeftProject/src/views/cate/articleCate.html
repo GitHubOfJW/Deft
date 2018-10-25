@@ -37,6 +37,11 @@
       <div class="layui-row">
         <form class="layui-form layui-col-md12 x-so layui-form-pane">
           <input class="layui-input" placeholder="分类名" name="name" autocomplete="off">
+          <div class="layui-input-inline">
+            <select name="pid" id='selectPid'>
+              <!-- 内容 -->
+            </select>
+          </div>
           <button class="layui-btn"  lay-submit="" lay-filter="cateAdd"><i class="layui-icon"></i>增加</button>
         </form>
       </div>
@@ -48,6 +53,13 @@
       <table class="layui-table layui-form x-cate" id="table" lay-filter="articleCateList">
       </table>
     </div>
+    <!-- 分类内容 -->
+    <script  type="text/html" id="templatePid">
+      <option value="0">根分类</option>
+      {{ each cateList cateItem}}
+        <option value="{{cateItem.id}}">{{cateItem.name}}</option>
+      {{ /each }}
+    </script>
 
     <script type="text/html" id="toolbar">
           <button class="layui-btn layui-btn layui-btn-xs" lay-event="edit" ><i class="layui-icon">&#xe642;</i>编辑</button>
@@ -56,6 +68,7 @@
   </script>
 
     <script  type="text/javascript">
+      
       layui.use(['table','form'], function(){
           const table = layui.table;
           const form = layui.form;
@@ -81,15 +94,31 @@
               ,{field:'name',title: '分类名<i class="layui-icon">&#xe642;</i>',edit:true, width:'20%'}
               ,{field: 'sort', title: '排序<i class="layui-icon">&#xe642;</i>', edit:true, width: '15%'}
               ,{title: '开启/停用',width:'15%',templet:function(d){
-                  return `<input type="checkbox" name="switch" lay-filter="switch" value="${d.id}"  lay-text="开启|停用"   ${d.enable ? 'checked=""' : ""} lay-skin="switch"><input name='fid' type='hidden' cate="${d.id}" value="${d.pid||0}"/>`;
+                  return `<input type="checkbox" name="switch" lay-filter="switch" value="${d.id}"  lay-text="开启|停用"   ${d.enable ? 'checked=""' : ""} lay-skin="switch"><input name='fid' type='hidden' cate="${d.id}" value="${d.pid||0}"/><input type='hidden' id='cateName${d.id}' sort='${d.sort}' value='${d.name}'>`;
               }}
               ,{title: '操作',width:'31%',toolbar:'#toolbar'}
             ]]
             ,done:function(res, curr, count){
                 initTableEvent();
+                // 刷新数据
+                refreshCateList(res.data)
             }
           });
           
+
+         function refreshCateList(dataList = []){
+            const list = [];
+            for(let data of  dataList){
+              if(!data.father){
+                list.push(data)
+              }
+            }
+            const content =  template('templatePid',{
+              cateList:list
+            })
+            $("#selectPid").html(content)
+            form.render('select')
+         }
 
         //自定义验证规则
         form.verify({
@@ -144,25 +173,43 @@
 
         // 编辑文本
         table.on('edit(articleCateList)', function(obj){ //注：edit是固定事件名，test是table原始容器的属性 lay-filter="对应的值"
-          saveChange({
-            [obj.field]:obj.value
-          },obj.data.id,function(success){
-            if(!success){
-              layer.msg('修改失败',{type:2,shade:0.2,time:1000});
-              tableObj.reload();
-            }
+          obj.update({
+            name:'新数据'
           })
+          return;
+          const cateObj = $('#cateName'+obj.data.id);
+          console.log(obj,'看看数据',cateObj.val())
+          if(obj.value.trim().length <= 0 || (obj.field == 'sort' && isNaN(obj.value))){
+            const old = {
+              [obj.field]:obj.field == 'name' ? cateObj.val():cateObj.attr('sort')
+            }
+            obj.update(old);
+          }else{
+            saveChange({
+              [obj.field]:obj.value
+            },obj.data.id,function(success){
+              if(!success){
+                layer.msg('修改失败',{type:2,shade:0.2,time:1000});
+                tableObj.reload();
+              }else{
+                cateObj.val(obj.value)
+                refreshCateList(table.cache['table'])
+              }
+            })
+          }
         });
 
         //监听事件
         table.on('tool(articleCateList)', function(obj){
           switch(obj.event){
             case 'add':
-               
+              
             break;
             case 'delete':
               member_del(obj.data.id,function(){
                   obj.del()
+
+                  refreshCateList(table.cache['table'])
               })
             break;
             case 'edit':
@@ -182,16 +229,7 @@
               }
           })
        })
-
-       form.on('switch(expand)',function(obj){
-         console.log(obj)
-          if(obj.elem.checked){// 展开
-
-          }else{ // 闭合
-
-          }
-       })
-
+  
         //删除
         $('#delAll').on('click',function(){
           const checkStatus =  table.checkStatus('table')
@@ -254,7 +292,6 @@
           $(this).html('&#xe625;'); 
           $(this).attr('status','false');
           const cateId = $(this).attr('cate-id');
-          // console.log(cateId,'开')
           $("input[name='fid']").each(function(idx,el){
             if($(el).val() == cateId){
               $(el).parents('tr').show()
@@ -264,7 +301,6 @@
           $(this).html('&#xe623;');
           $(this).attr('status','true');
           const cateId = $(this).attr('cate-id');
-          // console.log(cateId,'关')
           $("input[name='fid']").each(function(idx,el){
             if($(el).val() == cateId){
               $(el).parents('tr').hide()
