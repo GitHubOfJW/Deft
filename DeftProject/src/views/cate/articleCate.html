@@ -81,7 +81,7 @@
             ,limit: 10
             ,cols: [[ //表头
               {width:'10%',type:'checkbox'}
-              ,{field: 'id', title: 'ID', width:'10%', sort: true,align:'center',templet:function(d){
+              ,{field: 'id', title: 'ID', width:'15%', sort: true,align:'center',templet:function(d){
                 if(d.children && d.children.length > 0){
                   return `<i class="layui-icon x-show" status="true" cate-id="${d.id}">&#xe623;</i>&nbsp;&nbsp;&nbsp;${d.id}`
                 }else if(d.father){
@@ -90,12 +90,12 @@
                   return d.id;
                 }
               }}
-              ,{field:'name',title: '分类名<i class="layui-icon">&#xe642;</i>',edit:true, width:'20%'}
+              ,{field:'name',title: '分类名<i class="layui-icon">&#xe642;</i>',edit:true, width:'25%'}
               ,{field: 'sort', title: '排序<i class="layui-icon">&#xe642;</i>', edit:true, width: '15%'}
               ,{title: '开启/停用',width:'15%',templet:function(d){
                   return `<input type="checkbox" name="switch" lay-filter="switch" value="${d.id}"  lay-text="开启|停用"   ${d.enable ? 'checked=""' : ""} lay-skin="switch"><input name='fid' type='hidden' cate="${d.id}" value="${d.pid||0}"/><input type='hidden' id='cateName${d.id}' sort='${d.sort}' value='${d.name}'>`;
               }}
-              ,{title: '操作',width:'31%',toolbar:'#toolbar'}
+              ,{title: '操作',width:'21%',toolbar:'#toolbar'}
             ]]
             ,done:function(res, curr, count){
                 initTableEvent();
