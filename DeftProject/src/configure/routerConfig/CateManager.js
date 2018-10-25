@@ -21,6 +21,15 @@ const adminPage = {
       type:GET,
       selected:false
     }
+  },
+  ProductCateController:{
+    cateList:{
+      path:'/product/cate/list',
+      desc:'文章分类列表',
+      method:'cateListPage',
+      type:GET,
+      selected:false
+    }
   }
 }
 
@@ -57,6 +66,50 @@ const adminApi = {
     },
     cateStatus:{
       path:'/api/article/cate/status/:id',
+      desc:'启用/禁用角色',
+      method:'cateUpdate',
+      type:POST,
+      selected:false,
+    },
+    // cateRemove:{
+    //   path:'/api/article/cate/remove',
+    //   desc:'彻底删除文章分类',
+    //   method:'cateRemove',
+    //   type:POST,
+    //   selected:false
+    // },
+  },
+  ProductCateController:{
+    cateList:{
+      path:'/api/product/cate/list',
+      desc:'文章分类列表',
+      method:'cateList',
+      type:GET,
+      selected:false,
+    },
+    cateAdd:{
+      path:'/api/product/cate/add',
+      desc:'添加文章分类',
+      method:'cateAdd',
+      type:POST,
+      selected:false
+    },
+    cateEdit:{
+      path:'/api/product/cate/edit/:id',
+      desc:'修改文章分类',
+      method:'cateUpdate',
+      type:POST,
+      selected:false
+    },
+    cateDelete:{
+      path:'/api/product/cate/delete',
+      desc:'删除文章分类',
+      method:'cateDelete',
+      type:POST,
+      selected:false,
+    },
+    cateStatus:{
+      path:'/api/product/cate/status/:id',
       desc:'启用/禁用角色',
       method:'cateUpdate',
       type:POST,

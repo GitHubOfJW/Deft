@@ -1,0 +1,378 @@
+
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/public/css/font.css">
+    <link rel="stylesheet" href="/public/css/xadmin.css">
+    <script type="text/javascript" src="/public/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/public/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/public/js/xadmin.js"></script>
+    <script type="text/javascript" src="/public/js/template-web.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">分类管理</a>
+        <a>
+          <cite>商品分类管理</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:;" id='refresh' title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+    </div>
+    <div class="x-body">
+      <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so layui-form-pane">
+          <input class="layui-input" placeholder="分类名" name="name" autocomplete="off">
+          <div class="layui-input-inline">
+            <select name="pid" id='selectPid'>
+              <!-- 内容 -->
+            </select>
+          </div>
+          <button class="layui-btn"  lay-submit="" lay-filter="cateAdd"><i class="layui-icon"></i>增加</button>
+        </form>
+      </div>
+      <!-- <blockquote class="layui-elem-quote">每个tr 上有两个属性 cate-id='1' 当前分类id fid='0' 父级id ,顶级分类为 0，有子分类的前面加收缩图标<i class="layui-icon x-show" status='true'>&#xe623;</i></blockquote> -->
+      <xblock>
+        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+        <span class="x-right" style="line-height:40px"></span>
+      </xblock>
+      <table class="layui-table layui-form x-cate" id="table" lay-filter="productCateList">
+      </table>
+    </div>
+    <!-- 分类内容 -->
+    <script  type="text/html" id="templatePid">
+      <option value="0">根分类</option>
+      {{ each cateList cateItem}}
+        <option value="{{cateItem.id}}">{{cateItem.name}}</option>
+      {{ /each }}
+    </script>
+
+    <script type="text/html" id="toolbar">
+          <button class="layui-btn layui-btn layui-btn-xs" lay-event="edit" ><i class="layui-icon">&#xe642;</i>编辑</button>
+          <button class="layui-btn-danger layui-btn layui-btn-xs" lay-event="delete" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+  </script>
+
+    <script  type="text/javascript">
+      
+      layui.use(['table','form'], function(){
+          const table = layui.table;
+          const form = layui.form;
+
+          //第一个实例
+          const tableObj = table.render({
+            elem: '#table'
+            ,height: 'full-204'
+            ,url: '/api/product/cate/list' //数据接口
+            ,page: true //开启分页
+            ,limit: 10
+            ,cols: [[ //表头
+              {width:'10%',type:'checkbox'}
+              ,{field: 'id', title: 'ID', width:'15%', sort: true,align:'center',templet:function(d){
+                if(d.children && d.children.length > 0){
+                  return `<i class="layui-icon x-show" status="true" cate-id="${d.id}">&#xe623;</i>&nbsp;&nbsp;&nbsp;${d.id}`
+                }else if(d.father){
+                  return `&nbsp;&nbsp;&nbsp;→&nbsp;${d.id}`;
+                }else{
+                  return d.id;
+                }
+              }}
+              ,{field:'name',title: '分类名<i class="layui-icon">&#xe642;</i>',edit:true, width:'25%'}
+              ,{field: 'sort', title: '排序<i class="layui-icon">&#xe642;</i>', edit:true, width: '15%'}
+              ,{title: '开启/停用',width:'15%',templet:function(d){
+                  return `<input type="checkbox" name="switch" lay-filter="switch" value="${d.id}"  lay-text="开启|停用"   ${d.enable ? 'checked=""' : ""} lay-skin="switch"><input name='fid' type='hidden' cate="${d.id}" value="${d.pid||0}"/><input type='hidden' id='cateName${d.id}' sort='${d.sort}' value='${d.name}'>`;
+              }}
+              ,{title: '操作',width:'21%',toolbar:'#toolbar'}
+            ]]
+            ,done:function(res, curr, count){
+                initTableEvent();
+                // 刷新数据
+                refreshCateList(res.data)
+            }
+          });
+          
+
+         function refreshCateList(dataList = []){
+            const list = [];
+            for(let data of  dataList){
+              if(!data.father){
+                list.push(data)
+              }
+            }
+            const content =  template('templatePid',{
+              cateList:list
+            })
+            $("#selectPid").html(content)
+            form.render('select')
+         }
+
+        //自定义验证规则
+        form.verify({
+            name: function(value){
+              if(value.length < 5){
+                return '名称至少得4个字符啊';
+              }
+            }
+          });
+        
+        //监听提交
+        form.on('submit(cateAdd)', function(data){
+           
+          // 弹出提示
+          let index = null;
+          const id = setTimeout(() => {
+              clearTimeout(id);
+              if(!index){
+                index = layer.msg('玩命卖萌中...',{type:1,shade:0.5,time:0});
+              }
+          }, 1000);
+
+          $.ajax({
+              url:'/api/product/cate/add',
+              data:data.field,
+              method:'POST',
+              type:'json',
+              success: function(data){  
+                if(data.status){
+                  //清除数据
+                  $('form input').val('')
+                  layer.msg(data.message,{icon:1,shade:0.2,time:1000});
+                }else{
+                  layer.msg(data.message,{icon:2,shade:0.2,time:1000});
+                }
+                layer.close(index);
+                index = " ";
+                tableObj.reload({
+                  page:{
+                    curr:1
+                  }
+                });
+              },
+              error:function(err){
+                layer.msg('服务器开小差了',{icon:2,shade:0.2,time:1000});
+                layer.close(index);
+                index = " ";
+              }
+           });
+          return false;
+        });
+
+        // 编辑文本
+        table.on('edit(productCateList)', function(obj){ //注：edit是固定事件名，test是table原始容器的属性 lay-filter="对应的值"
+          const cateObj = $('#cateName'+obj.data.id);
+          console.log(obj,'看看数据',cateObj.val())
+          if(obj.value.trim().length <= 0 || (obj.field == 'sort' && isNaN(obj.value))){
+            const old = {
+              [obj.field]:obj.field == 'name' ? cateObj.val():cateObj.attr('sort')
+            }
+            obj.update(old)
+            tableObj.reload();
+          }else{
+            saveChange({
+              [obj.field]:obj.value
+            },obj.data.id,function(success){
+              if(!success){
+                layer.msg('修改失败',{type:2,shade:0.2,time:1000});
+                tableObj.reload();
+              }else{
+                cateObj.val(obj.value)
+                refreshCateList(table.cache['table'])
+              }
+            })
+          }
+        });
+
+        //监听事件
+        table.on('tool(productCateList)', function(obj){
+          switch(obj.event){
+            case 'add':
+              
+            break;
+            case 'delete':
+              member_del(obj.data.id,function(){
+                  obj.del()
+                  refreshCateList(table.cache['table'])
+              })
+            break;
+            case 'edit':
+              layer.confirm('带有<i class="layui-icon">&#xe642;</i>图标的单元格，可单击进行修改',{
+                btn:'我知道',function(index){
+                layer.close(index)
+              }
+            })
+            break;
+          };
+        });
+
+        form.on('switch(switch)',function(obj){
+          member_stop(obj.elem.checked,obj.value,function(status,message){
+              if(!status){
+                layer.msg(message,{icon:5,time:1000});
+              }
+          })
+       })
+  
+        //删除
+        $('#delAll').on('click',function(){
+          const checkStatus =  table.checkStatus('table')
+          const ids = checkStatus.data.map(obj=>{
+              return obj.id;
+          })
+          delAll(ids,function(){
+              table.reload('table',{})
+          })
+        })
+
+        $('#refresh').click(function(){
+           tableObj.reload();
+        })
+      })
+
+     /*用户-停用*/
+   function member_stop(enable,id,callback){
+      $.ajax({
+        url:'/api/product/cate/status/'+ id,
+        method:"POST",
+        data:{
+          enable:enable
+        },
+        type:'json',
+        success:function(data){
+            if(callback)callback(data.status,data.message)
+        },
+        error(){
+          if(callback)callback(false,'服务器开小差了')
+        }
+      })
+    }
+    
+    function saveChange(data,id,callback){
+      $.ajax({
+        url:'/api/product/cate/edit/'+id,
+        method:'POST',
+        data:data,
+        type:'json',
+        success:function(resData){
+          if(callback) callback(resData.status)
+        },
+        error:function(err){
+          if(callback) callback(0)
+          layer.msg('服务器开小差了',{type:2,shade:0.2,time:1000});
+        }
+      })
+    }
+
+    function initTableEvent(){
+      $("input[name='fid']").each(function(idx,el){
+        if($(el).val() != '0'){
+          $(el).parents('tr').hide()
+        }
+      })
+      // 栏目多级显示效果
+      $('.x-show').click(function () {
+        if($(this).attr('status')=='true'){
+          $(this).html('&#xe625;'); 
+          $(this).attr('status','false');
+          const cateId = $(this).attr('cate-id');
+          $("input[name='fid']").each(function(idx,el){
+            if($(el).val() == cateId){
+              $(el).parents('tr').show()
+            }
+          })
+        }else{
+          $(this).html('&#xe623;');
+          $(this).attr('status','true');
+          const cateId = $(this).attr('cate-id');
+          $("input[name='fid']").each(function(idx,el){
+            if($(el).val() == cateId){
+              $(el).parents('tr').hide()
+            }
+          })
+        }
+      })  
+    }
+
+    /*删除*/
+    function member_del(id,callback){
+      layer.confirm('确认要删除吗？',function(index){
+        $.ajax({
+          url:'/api/product/cate/delete',
+          data:{
+            ids:id
+          },
+          method:'POST',
+          type:'json',
+          success:function(data){
+            if(data.status){
+              //发异步删除数据
+                //发异步删除数据
+              if(callback){
+                callback()
+              }
+              layer.msg(data.message,{icon:1,time:1000});
+            }else{
+              layer.msg(data.message,{icon:5,time:1000});
+            }
+          },
+          error:function(res){
+            layer.msg('服务器开小差了',{type:5,shade:0.2});
+          }
+        })
+      });
+    }
+
+    // 批量删除
+    function delAll (ids,callback) {
+      if(!ids || ids.length <=0){
+        layer.msg('并未选择',{icon:5,time:1000});
+        return;
+      }
+      layer.confirm('确认要删除吗？这个事情很严重，考虑一下下！',function(index){
+          $.ajax({
+            url:'/api/product/cate/delete',
+            data:{
+              ids:ids.join(",")
+            },
+            method:'POST',
+            type:'json',
+            success:function(data){
+              if(data.status){
+                //发异步删除数据
+                if(callback){
+                  callback()
+                }
+                layer.msg(data.message,{icon:1,time:1000});
+              }else{
+                layer.msg(data.message,{icon:5,time:1000});
+              }
+            },
+            error:function(res){
+              layer.msg('服务器开小差了',{type:5,shade:0.2});
+            }
+        });
+      });
+    }
+
+    </script>
+    <script>var _hmt = _hmt || []; (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();</script>
+  </body>
+
+</html>
