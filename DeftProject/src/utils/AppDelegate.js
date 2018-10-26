@@ -13,7 +13,7 @@ class AppDelegate {
 
   // 初始化
   configApp(app){
-
+    
       // 模版引擎
       app.set('views',path.join(__dirname,'../views'));
       app.set('view engine', 'html');

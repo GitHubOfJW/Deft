@@ -13,16 +13,19 @@ const GET = 'get'
 
 const adminManager = require('./routerConfig/AdminManager')
 const cateManager = require('./routerConfig/CateManager')
+const articleManager = require('./routerConfig/ArticleManager')
 
 // 导出
 module.exports = {
   adminApi:{
     ...adminManager.adminApi,
-    ...cateManager.adminApi
+    ...cateManager.adminApi,
+    ...articleManager.adminApi,
   },
   adminPage:{
     ...adminManager.adminPage,
-    ...cateManager.adminPage
+    ...cateManager.adminPage,
+    ...articleManager.adminPage,
   },
   requestType:{
     POST,

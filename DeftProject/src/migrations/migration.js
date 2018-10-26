@@ -9,6 +9,8 @@ const AuthRoleRel =  require('./adminManager/AuthRoleRel')
 const ArticleCate = require('./CateManager/ArticleCate')
 const ProductCate = require('./CateManager/ProductCate')
 
+const Article = require('./articleManager/Article')
+
 
 // 管理关系
 Admin.belongsTo(Role)
@@ -28,6 +30,11 @@ ProductCate.belongsTo(ProductCate, { foreignKey:'pid', as:'father'})
 
 ArticleCate.hasMany(ArticleCate,{ foreignKey:'pid', as:'children'})
 ProductCate.hasMany(ProductCate,{ foreignKey:'pid', as:'children'})
+
+// 文章分类
+Article.belongsTo(ArticleCate,{ foreignKey:'cate_id', as:'cate'});
+Article.belongsTo(Admin,{ foreignKey:'admin_id', as:'admin'});
+// Article.belongsTo(Admin,{ foreignKey:'member_id', as:'author'});
 
 // 创建表
 AuthCate.sync({ force:force })
@@ -53,6 +60,8 @@ Admin.sync({ force: force }).then((data)=>{
 // 产品分类 和 文章分类
 ArticleCate.sync({ force:force })
 ProductCate.sync({ force:force })
+// 文章
+Article.sync({ force: force})
 
 
 const { sequelize, Sequelize } = require('../utils/Squelize')
@@ -63,6 +72,7 @@ module.exports = {
   AuthCate,
   AuthRoleRel,
   ArticleCate,
+  Article,
   ProductCate,
   Sequelize,
   sequelize

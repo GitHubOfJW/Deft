@@ -14,6 +14,7 @@ const controllers = {
   AuthController:require('../controllers/adminManager/AuthController'),
   RoleController:require('../controllers/adminManager/RoleController'),
   ArticleCateController:require('../controllers/cateManager/ArticleCateController'),
+  ArticleController:require('../controllers/articleManager/ArticleController'),
   ProductCateController:require('../controllers/cateManager/ProductCateController')
 }
 
