@@ -37,14 +37,14 @@
         <form class="layui-form layui-col-md12 x-so" method="GET">
           <input class="layui-input" placeholder="开始日" name="start" id="start">
           <input class="layui-input" placeholder="截止日" name="end" id="end">
-          <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
+          <input type="text" name="username"  placeholder="请输入文章名" autocomplete="off" class="layui-input">
           <input type="text" name="contact"  placeholder="请输入手机/邮箱" autocomplete="off" class="layui-input">
           <button class="layui-btn" id="formSearch" lay-submit lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
         </form>
       </div>
       <xblock>
         <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
-        <button class="layui-btn" onclick="x_admin_show('添加用户','/article/add')"><i class="layui-icon"></i>添加</button>
+        <button class="layui-btn" onclick="x_admin_show('添加文章','/article/add')"><i class="layui-icon"></i>添加</button>
         <span class="x-right" id="totalcount" style="line-height:40px"></span>
       </xblock>
       <table class="layui-table" id="table" lay-filter="articleList">
@@ -105,7 +105,7 @@
               if(d.admin){
                 return `管理员：${d.admin.account}`
               }else if(d.author){
-                return `用户：${d.auth.account}`
+                return `文章：${d.auth.account}`
               }else {
                 return "未知"
               }
@@ -176,7 +176,7 @@
       })
   });
   
-   /*用户-停用*/
+   /*文章-停用*/
    function member_stop(enable,id,callback){
         $.ajax({
           url:'/api/article/status/'+ id,
@@ -194,7 +194,7 @@
         })
   }
 
-  /*用户-删除*/
+  /*文章-删除*/
   function member_del(id,callback){
       layer.confirm('确认要删除吗？',function(index){
         $.ajax({

@@ -10,9 +10,19 @@
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="/public/css/font.css">
     <link rel="stylesheet" href="/public/css/xadmin.css">
+    
+    
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
     <script type="text/javascript" src="/public/js/jquery-3.3.1.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script> 
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.js"></script>
+    
     <script type="text/javascript" src="/public/lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="/public/js/xadmin.js"></script>
+    <!-- include summernote css/js -->
+    <link href="/public/libs/summernote/summernote.css">
+    <script src="/public/libs/summernote/summernote.js"></script>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
       <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -24,11 +34,11 @@
     <div class="x-body">
         <form action="" method="post" class="layui-form layui-form-pane">
                 <div class="layui-form-item">
-                    <label for="name" class="layui-form-label">
-                        <span class="x-red">*</span>权限名称
+                    <label for="title" class="layui-form-label">
+                        <span class="x-red">*</span>文章标题
                     </label>
                     <div class="layui-input-inline">
-                        <input type="text" id="name" name="name" required="" lay-verify="required"
+                        <input type="text" id="title" name="title" required="" lay-verify="required"
                         autocomplete="off" class="layui-input">
                     </div>
                 </div>
@@ -62,10 +72,8 @@
                         描述
                     </label>
                     <div class="layui-input-block">
-                        <!-- <textarea placeholder="请输入内容" id="desc" name="remark" class="layui-textarea"></textarea> -->
-                        <div id="editor">
-
-                        </div>
+                        <!-- <textarea id="summernote" placeholder="请输入内容" id="desc" name="remark" class="layui-textarea"></textarea> -->
+                        <textarea name="remark"  placeholder="请输入内容" id="summernote"></textarea>
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -74,6 +82,12 @@
             </form>
     </div>
     <script>
+
+        $(document).ready(function() {
+            $('#summernote').summernote({
+                height:220
+            });
+        });
         
         layui.use(['form','layer'], function(){
             $ = layui.jquery;
@@ -127,7 +141,6 @@
                 success:function(data){
                     layer.close(index);
                     index = " ";
-                    //发异步，把数据提交给php
                     if(!data.status){
                         layer.msg(data.message,{icon:2,shade:0.2,time:1000});
                         return;
@@ -138,11 +151,13 @@
                         var index = parent.layer.getFrameIndex(window.name);
                         //关闭当前frame
                         parent.layer.close(index);
+                        $('#summernote').summernote('destroy');
                     });
                 },
                 error:function(err){
                     layer.msg('服务器开小差了',{icon:2,shade:0.2,time:1000});
                     layer.close(index);
+                    $('#summernote').summernote('destroy');
                     index = " ";
                 }
             })
