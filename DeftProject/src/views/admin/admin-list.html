@@ -142,7 +142,7 @@
       form.on('switch(switch)',function(obj){
         member_stop(obj.elem.checked,obj.value,function(status,message){
             if(!status){
-              layer.msg(message,{icon:5,time:1000});
+              layer.msg(message,{icon:5,time:500});
             }
         })
       })
@@ -206,9 +206,9 @@
               if(callback){
                 callback()
               }
-              layer.msg(data.message,{icon:1,time:1000});
+              layer.msg(data.message,{icon:1,time:500});
             }else{
-              layer.msg(data.message,{icon:5,time:1000});
+              layer.msg(data.message,{icon:5,time:500});
             }
           },
           error:function(res){
@@ -222,7 +222,7 @@
   // 批量删除
   function delAll (ids,callback) {
       if(!ids || ids.length <=0){
-        layer.msg('并未选择',{icon:5,time:1000});
+        layer.msg('并未选择',{icon:5,time:500});
         return;
       }
     layer.confirm('确认要删除吗？这个事情很严重，考虑一下下！',function(index){
@@ -239,9 +239,9 @@
               if(callback){
                 callback()
               }
-              layer.msg(data.message,{icon:1,time:1000});
+              layer.msg(data.message,{icon:1,time:500});
             }else{
-              layer.msg(data.message,{icon:5,time:1000});
+              layer.msg(data.message,{icon:5,time:500});
             }
           },
           error:function(res){

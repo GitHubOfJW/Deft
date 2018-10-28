@@ -16,16 +16,16 @@ class ArticleModel {
       conditions.limit = pagesize;
     }
     // where条件
-    // conditions.where = {
-    //   is_delete:is_delete,
-    //   [Sequelize.Op.and]:[{
-    //     [Sequelize.Op.or]:{
-    //       name:{
-    //         [Sequelize.Op.like]:`%${others.username}%`
-    //       }
-    //     }
-    //   }]
-    // }
+    conditions.where = {
+      is_delete:is_delete,
+      // [Sequelize.Op.and]:[{
+      //   [Sequelize.Op.or]:{
+      //     name:{
+      //       [Sequelize.Op.like]:`%${others.username}%`
+      //     }
+      //   }
+      // }]
+    }
 
     conditions.include = [{
       model:Admin,
@@ -78,8 +78,8 @@ class ArticleModel {
     const conditions = {};
    
     // where条件
-    // conditions.where = {
-    //   is_delete:is_delete,
+    conditions.where = {
+      is_delete:is_delete,
     //   [Sequelize.Op.and]:[{
     //     [Sequelize.Op.or]:{
     //       mobile:{
@@ -100,7 +100,7 @@ class ArticleModel {
     //       }
     //     }
     //   }]
-    // }
+    }
 
     // 时间约束
     if(others.start && others.start.trim().length && moment(others.start).isValid()){
@@ -155,7 +155,11 @@ class ArticleModel {
     return Article.findOne({ where:{
       id:id,
       },include:[{
-        model:Role
+        model:Admin,
+        as:'admin'
+      },{
+        model:ArticleCate,
+        as:'cate'
       }]
     })
   }

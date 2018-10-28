@@ -5,6 +5,14 @@ const articleModel =  require('../../models/articleManager/Article')
 
 const cateModel =  require('../../models/cateManager/ArticleCate')
 
+const UploadUtil = require('../../utils/UploadUtil')
+
+const path = require('path')
+
+const StringUtil = require('../../utils/StringUtil')
+
+const fse = require('fs-extra')
+
 class ArticleController extends BaseController {
   
   //管理员列表页面
@@ -88,44 +96,26 @@ class ArticleController extends BaseController {
 
   // 添加权限请求
   static async articleAdd(req,res){
-    if(super.validator(req.body.account,{required:true},'用户名',res)
-    ||super.validator(req.body.mobile,{required:true,isMobile:true},'手机号',res)
-    ||super.validator(req.body.email,{required:true,isEmail:true},'邮箱',res)
-    ||super.validator(req.body.name,{required:true,min:2,max:6},'姓名',res)
-    ||super.validator(req.body.password,{required:true,regular:{enable:true,regx:/[a-z0-9A-Z]{6,12}/,prompt:"密码必须为6-12大小写字母、数字组合"}},'密码',res)
-    ||super.validator(req.body.roleId,{required:true,isInt:true},'角色',res)
-    ||super.validator(req.body.enable,{required:true,isBoolean:true},'启用状态',res)
+    if(super.validator(req.body.title,{required:true},'标题',res)
+    ||super.validator(req.body.cate_id,{required:true,isInt:true},'分类',res)
+    ||super.validator(req.body.content,{required:true},'内容',res)
     ) return;
-
-    let count = await articleModel.has({
-        account:req.body.account
-    })
-    if(count>0){
-      const result = super.handlerResponseData(0,'用户名已存在');
-      res.json(result);
-      return;     
+    
+    if(req.body.imgs){
+        const  articlePath =  UploadUtil.articleDirPath();
+        for(let imgUrl of req.body.imgs.split(',')){
+          const source = path.join(articlePath,imgUrl);
+          const dest =  path.join(articlePath,imgUrl.replace('_[y]','_[n]'))
+          fse.rename(source,dest);
+        }
     }
-
-    count = await articleModel.has({
-      mobile:req.body.mobile
+    delete req.body.imgs
+    
+    const data =  articleModel.insert({
+      ...req.body,
+      admin_id:req.session.user.id
     })
-    if(count>0){
-      const result = super.handlerResponseData(0,'手机号已存在');
-      res.json(result);
-      return;     
-    }
 
-    count = await articleModel.has({
-      email:req.body.email
-    })
-    if(count>0){
-      const result = super.handlerResponseData(0,'邮箱已存在');
-      res.json(result);
-      return;     
-    }
-
- 
-    const data =  articleModel.insert(req.body)
     if(data){
       const result = super.handlerResponseData(1,'添加成功');
       res.json(result);
@@ -182,12 +172,12 @@ class ArticleController extends BaseController {
       return;
     }
 
-    const roles = roleModel.list(-1,-1,false)
+    const cateList = cateModel.list(-1,-1,false)
     const article = await articleModel.findOne(req.params.id)
+    article.content = escape(article.content)
     res.render('article/article-edit.html',{
       article:article,
-      roles:roles,
-      account:req.session.user
+      cateList:cateList,
     });
 
   }
@@ -200,42 +190,21 @@ class ArticleController extends BaseController {
       return;
     }
 
-    if(super.validator(req.body.account,{required:true},'用户名',res)
-    ||super.validator(req.body.mobile,{required:true,isMobile:true},'手机号',res)
-    ||super.validator(req.body.email,{required:true,isEmail:true},'邮箱',res)
-    ||super.validator(req.body.name,{required:true,min:2,max:6},'姓名',res)
-    // ||super.validator(req.body.password,{required:true,regular:{enable:true,regx:/[a-z0-9A-Z]{6,12}/,prompt:"密码必须为6-12大小写字母、数字组合"}},'密码',res)
-    ||super.validator(req.body.roleId,{required:true,isInt:true},'角色',res)
-    ||super.validator(req.body.enable,{required:true,isBoolean:true},'启用状态',res)
+    if(super.validator(req.body.title,{required:true},'标题',res)
+    ||super.validator(req.body.cate_id,{required:true,isInt:true},'分类',res)
+    ||super.validator(req.body.content,{required:true},'内容',res)
     ) return;
-
-    let count = await articleModel.has({
-        account:req.body.account,
-    },req.params.id)
-    if(count>0){
-      const result = super.handlerResponseData(0,'用户名已存在');
-      res.json(result);
-      return;     
+    
+    if(req.body.imgs){
+        const  articlePath =  UploadUtil.articleDirPath();
+        for(let imgUrl of req.body.imgs.split(',')){
+          const source = path.join(articlePath,imgUrl);
+          const dest =  path.join(articlePath,imgUrl.replace('_[y]','_[n]'))
+          fse.rename(source,dest);
+        }
     }
+    delete req.body.imgs
 
-    count = await articleModel.has({
-      mobile:req.body.mobile
-    },req.params.id)
-    if(count>0){
-      const result = super.handlerResponseData(0,'手机号已存在');
-      res.json(result);
-      return;     
-    }
-
-    count = await articleModel.has({
-      email:req.body.email
-    },req.params.id)
-    if(count>0){
-      const result = super.handlerResponseData(0,'邮箱已存在');
-      res.json(result);
-      return;     
-    }
- 
     const data = await articleModel.update(req.body,req.params.id)
     if(data){
       if(req.session.user && req.session.user.id == req.params.id){

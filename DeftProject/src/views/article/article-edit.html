@@ -36,7 +36,7 @@
                         <span class="x-red">*</span>文章标题
                     </label>
                     <div class="layui-input-inline">
-                        <input type="text" id="title" name="title"  lay-verify="required"
+                        <input type="text" id="title" name="title" value="[{article.title}]"  lay-verify="required"
                         autocomplete="off" class="layui-input">
                     </div>
                 </div>
@@ -55,7 +55,7 @@
                                         <td>
                                             <div class="layui-input-block">
                                                 [{each cateItem.children item idx}]
-                                                <input name="cate_id" lay-skin="primary" type="radio" title="[{item.name}]"  value="[{item.id}]">
+                                                <input name="cate_id" lay-skin="primary" [{ if article.cate.id == item.id }]checked[{/if}] type="radio" title="[{item.name}]"  value="[{item.id}]">
                                                 [{/each}]
                                             </div>
                                         </td>
@@ -75,7 +75,7 @@
                     </div>
                 </div>
                 <div class="layui-form-item">
-                <button class="layui-btn" lay-submit="" lay-filter="add">增加</button>
+                <button class="layui-btn" lay-submit="" lay-filter="edit">修改</button>
               </div>
             </form>
     </div>
@@ -90,14 +90,22 @@
                   onImageUpload: (files) => {
                       console.log(files);
                       uploadImage(files,(status,data)=>{
-                        $('#summernote').summernote('insertImage', data.url, function ($image) {
+                          if(!status){
+                            layer.msg(data.message,{icon:2,shade:0.2,time:500});
+                            return;
+                          }
+                            $('#summernote').summernote('insertImage', data.url, function ($image) {
                                 $image.css('width', '100%');
                                 $image.attr('data-filename', data.imageName);
                             });
                       })
+                  },
+                  onInit:() => {
+                    $('#summernote').summernote('code',unescape('[{article.content}]'))
                   }
                 }
             });
+
         });
 
         // 上传图片
@@ -120,12 +128,10 @@
                     withCredentials: true
                 },
                 success: function(data) {
-                    console.log(data)
-                    callback(data.status,data.data);
+                    callback(data.status,data)
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    console.log(errorThrown)
-                    callback(0);
+                    callback(0,{message:'服务器开小差了'});
                 }
             })
         }
@@ -147,7 +153,7 @@
 
 
           //监听提交
-          form.on('submit(add)', function(data){
+          form.on('submit(edit)', function(data){
             if(!data.field.cate_id){
                 layer.msg('请选择分类',{icon:2,shade:0.2,time:500});
                 return false;
@@ -155,8 +161,7 @@
                 layer.msg('内容不能为空',{icon:2,shade:0.2,time:500});
                 return false;
             }
-            
-            // 弹出提示
+
             let index = null;
             const id = setTimeout(() => {
                 clearTimeout(id);
@@ -166,7 +171,7 @@
             }, 1000);
             
             $.ajax({
-                url:'/api/article/add',
+                url:'/api/article/edit/'+ [{article.id}],
                 traditional:true,
                 data:data.field,
                 method:'POST',

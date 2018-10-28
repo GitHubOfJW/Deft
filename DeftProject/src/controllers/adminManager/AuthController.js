@@ -3,6 +3,8 @@ const BaseController = require('../BaseController');
 
 const adminModel =  require('../../models/adminManager/Admin')
 
+const { adminApi,adminPage} = require('../../configure/routerConfig')
+
 const authModel =  require('../../models/adminManager/Auth')
 const authCateModel = require('../../models/adminManager/AuthCate')
  

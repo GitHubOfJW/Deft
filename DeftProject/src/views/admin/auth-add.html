@@ -153,7 +153,7 @@
                     index = " ";
                     //发异步，把数据提交给php
                     if(!data.status){
-                        layer.msg(data.message,{icon:2,shade:0.2,time:1000});
+                        layer.msg(data.message,{icon:2,shade:0.2,time:500});
                         return;
                     }
 
@@ -165,7 +165,7 @@
                     });
                 },
                 error:function(err){
-                    layer.msg('服务器开小差了',{icon:2,shade:0.2,time:1000});
+                    layer.msg('服务器开小差了',{icon:2,shade:0.2,time:500});
                     layer.close(index);
                     index = " ";
                 }

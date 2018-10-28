@@ -55,20 +55,17 @@
   <!-- layui的模版引擎，不好用,有问题-->
 <script type="text/html" id="toolbar">
   <div class="layui-btn-container">
-      {{ if [{account.is_admin}] || [{account.id}] == d.id  }}
       <a title="编辑" lay-event="edit" href="javascript:;">
         <i class="layui-icon">&#xe642;</i>
       </a>
-      {{  else if d.is_admin }}
-        不可操作
-      {{ /if }}
-
-      {{  if !d.is_admin && d.id != [{account.id}]  }}
       <a title="删除" lay-event="delete" href="javascript:;">
         <i class="layui-icon">&#xe640;</i>
       </a>
-      {{ /if }}
+      <a title="预览" lay-event="browser" href="javascript:;">
+        <i class="iconfont" style='font-size:14px;'>&nbsp;&#xe6e6;</i>
+      </a>
   </div>
+
 </script>
 <script>
   
@@ -98,27 +95,27 @@
         ,page: true //开启分页
         ,limit: 10
         ,cols: [[ //表头
-          {width:'8%',type:'checkbox',fixed:'left'}
-          ,{field: 'id', title: 'ID', width:'8%', sort: true}
-          ,{field: 'title', title: '名称', width:'10%'}
+          {width:'6%',type:'checkbox',fixed:'left'}
+          ,{field: 'id', title: 'ID', width:'6%', sort: true}
+          ,{field: 'title', title: '名称', width:'12%'}
           ,{title: '作者',templet:function(d){
               if(d.admin){
-                return `管理员：${d.admin.account}`
+                return `${d.admin.account} *`
               }else if(d.author){
                 return `文章：${d.auth.account}`
               }else {
                 return "未知"
               }
-          },width:'10%'}
+          },width:'14%'}
           ,{title: '类别',templet:function(d){
             return d.cate ? d.cate.name : '未知'
-          }, width:'10%'}
-          ,{field: 'inspects', title: '浏览数', width:'8%'}
-          ,{field: 'support', title: '点赞数', width:'8%'}
-          ,{field: 'collect', title: '收藏量', width:'8%'}
-          ,{field: 'rewards', title: '打赏量', width:'8%'}
-          ,{field: 'createdTime', title: '创建时间',width:'12%'}
-          ,{title: '操作',width:'10%',templet:function(d){
+          }, width:'12%'}
+          ,{field: 'inspects', title: '浏览', width:'6%'}
+          ,{field: 'support', title: '点赞', width:'6%'}
+          ,{field: 'collect', title: '收藏', width:'6%'}
+          ,{field: 'rewards', title: '打赏', width:'6%'}
+          ,{field: 'createdTime', title: '创建时间',width:'18%'}
+          ,{title: '操作',width:'12%',templet:function(d){
              return template('toolbar',{
                d:d
              })
@@ -132,6 +129,9 @@
       //监听事件
       table.on('tool(articleList)', function(obj){
         switch(obj.event){
+          case 'browser':
+            x_admin_show('编辑',`/article/edit/${obj.data.id}`)
+            break;
           case 'delete':
             member_del(obj.data.id,function(){
                 obj.del()
@@ -146,7 +146,7 @@
       form.on('switch(switch)',function(obj){
         member_stop(obj.elem.checked,obj.value,function(status,message){
             if(!status){
-              layer.msg(message,{icon:5,time:1000});
+              layer.msg(message,{icon:5,time:500});
             }
         })
       })
@@ -210,9 +210,9 @@
               if(callback){
                 callback()
               }
-              layer.msg(data.message,{icon:1,time:1000});
+              layer.msg(data.message,{icon:1,time:500});
             }else{
-              layer.msg(data.message,{icon:5,time:1000});
+              layer.msg(data.message,{icon:5,time:500});
             }
           },
           error:function(res){
@@ -226,7 +226,7 @@
   // 批量删除
   function delAll (ids,callback) {
       if(!ids || ids.length <=0){
-        layer.msg('并未选择',{icon:5,time:1000});
+        layer.msg('并未选择',{icon:5,time:500});
         return;
       }
     layer.confirm('确认要删除吗？这个事情很严重，考虑一下下！',function(index){
@@ -243,9 +243,9 @@
               if(callback){
                 callback()
               }
-              layer.msg(data.message,{icon:1,time:1000});
+              layer.msg(data.message,{icon:1,time:500});
             }else{
-              layer.msg(data.message,{icon:5,time:1000});
+              layer.msg(data.message,{icon:5,time:500});
             }
           },
           error:function(res){

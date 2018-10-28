@@ -21,22 +21,17 @@ class UploadController extends BaseController {
      form.uploadDir = uploadDir;
      //设置文件大小限制
      form.maxFilesSize = 2 * 1024 * 1024;
-     // form.maxFields = 1000;   //设置所有文件的大小总和
      //上传后处理
      form.parse(req, (err, fields, files) => {
-        //  const filesTemp = JSON.stringify(files, null, 2);
-         console.log(files,err)
          if(err) {
             const result =  super.handlerResponseData(0,'上传失败');
             res.json(result)
          }else {
-            //  console.log('parse files:' + filesTemp);
-            //  console.log('parse files:' + files);
              var imgs = files.imgs[0];
              var uploadedPath = imgs.path;
              
              //重命名为真实文件名
-             const name = path.basename(uploadedPath,path.extname(uploadedPath)) + '_[0]';
+             const name = path.basename(uploadedPath,path.extname(uploadedPath)) + '_[y]';
              const fileName =  name+path.extname(uploadedPath)
              const dstPath = path.join(UploadUtil.articleDirPath(),fileName);
              fs.renameSync(uploadedPath,dstPath);
