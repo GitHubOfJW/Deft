@@ -1,0 +1,13 @@
+{
+  "description": "一个心灵手巧者的平台",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram",
+  "appid": "touristappid",
+  "projectname": "minideft",
+  "miniprogramRoot": "./dist"
+}
