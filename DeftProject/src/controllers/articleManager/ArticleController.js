@@ -29,8 +29,8 @@ class ArticleController extends BaseController {
   static async articleList(req,res){
     const start = req.query.start || '';
     const end = req.query.end || '';
-    const username = req.query.username || '';
-    const contact = req.query.contact || '';
+    const title = req.query.title || '';
+    const cateName = req.query.cateName || '';
     const page = req.query.page || 1;
     const pageSize = parseInt(req.query.pageSize || 10);
     
@@ -38,8 +38,8 @@ class ArticleController extends BaseController {
       page:page,
       start:start,
       end:end,
-      username:username,
-      contact:contact
+      title:title,
+      cateName:cateName
     };
 
     const count = await articleModel.totalCount(conditions);

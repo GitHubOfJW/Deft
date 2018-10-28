@@ -15,16 +15,13 @@ class ArticleModel {
       conditions.offset =  (page - 1) * pagesize;
       conditions.limit = pagesize;
     }
+    
     // where条件
     conditions.where = {
       is_delete:is_delete,
-      // [Sequelize.Op.and]:[{
-      //   [Sequelize.Op.or]:{
-      //     name:{
-      //       [Sequelize.Op.like]:`%${others.username}%`
-      //     }
-      //   }
-      // }]
+      title:{
+          [Sequelize.Op.like]:`%${others.title}%`
+      }
     }
 
     conditions.include = [{
@@ -32,7 +29,12 @@ class ArticleModel {
       as:'admin'
     },{
       model:ArticleCate,
-      as:'cate'
+      as:'cate',
+      where:{
+        name:{
+          [Sequelize.Op.like]:`%${others.cateName}%`
+        }
+      }
     }]
     
     // 时间约束
@@ -80,27 +82,23 @@ class ArticleModel {
     // where条件
     conditions.where = {
       is_delete:is_delete,
-    //   [Sequelize.Op.and]:[{
-    //     [Sequelize.Op.or]:{
-    //       mobile:{
-    //         [Sequelize.Op.like]:`%${others.contact}%`
-    //       },
-    //       email:{
-    //         [Sequelize.Op.like]:`%${others.contact}%`
-    //       }
-    //     }
-    //   },
-    //   {
-    //     [Sequelize.Op.or]:{
-    //       name:{
-    //         [Sequelize.Op.like]:`%${others.username}%`
-    //       },
-    //       account:{
-    //         [Sequelize.Op.like]:`%${others.username}%`
-    //       }
-    //     }
-    //   }]
+      title:{
+          [Sequelize.Op.like]:`%${others.title}%`
+      }
     }
+
+    conditions.include = [{
+      model:Admin,
+      as:'admin'
+    },{
+      model:ArticleCate,
+      as:'cate',
+      where:{
+        name:{
+          [Sequelize.Op.like]:`%${others.cateName}%`
+        }
+      }
+    }]
 
     // 时间约束
     if(others.start && others.start.trim().length && moment(others.start).isValid()){

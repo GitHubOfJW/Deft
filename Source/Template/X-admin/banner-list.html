@@ -130,7 +130,7 @@
                     $(obj).parents("tr").find(".td-manage").prepend('<a style="text-decoration:none" onClick="banner_start(this,id)" href="javascript:;" title="显示"><i class="layui-icon">&#xe62f;</i></a>');
                     $(obj).parents("tr").find(".td-status").html('<span class="layui-btn layui-btn-disabled layui-btn-mini">不显示</span>');
                     $(obj).remove();
-                    layer.msg('不显示!',{icon: 5,time:1000});
+                    layer.msg('不显示!',{icon: 5,time:500});
                 });
             }
 
@@ -141,7 +141,7 @@
                     $(obj).parents("tr").find(".td-manage").prepend('<a style="text-decoration:none" onClick="banner_stop(this,id)" href="javascript:;" title="不显示"><i class="layui-icon">&#xe601;</i></a>');
                     $(obj).parents("tr").find(".td-status").html('<span class="layui-btn layui-btn-normal layui-btn-mini">已显示</span>');
                     $(obj).remove();
-                    layer.msg('已显示!',{icon: 6,time:1000});
+                    layer.msg('已显示!',{icon: 6,time:500});
                 });
             }
             // 编辑
@@ -153,7 +153,7 @@
                 layer.confirm('确认要删除吗？',function(index){
                     //发异步删除数据
                     $(obj).parents("tr").remove();
-                    layer.msg('已删除!',{icon:1,time:1000});
+                    layer.msg('已删除!',{icon:1,time:500});
                 });
             }
             </script>
