@@ -55,7 +55,7 @@
                                         <td>
                                             <div class="layui-input-block">
                                                 [{each cateItem.children item idx}]
-                                                <input name="cate_id" lay-skin="primary" [{ if article.cate.id == item.id }]checked[{/if}] type="radio" title="[{item.name}]"  value="[{item.id}]">
+                                                <input name="cate_id" lay-skin="primary" [{ if article.cate.id == item.id }] checked [{/if}] type="radio" title="[{item.name}]"  value="[{item.id}]">
                                                 [{/each}]
                                             </div>
                                         </td>
@@ -88,28 +88,19 @@
                 dialogsInBody:true,
                 callbacks: {
                   onImageUpload: (files) => {
-                      console.log(files);
                       uploadImage(files,(status,data)=>{
-                          if(!status){
-                            layer.msg(data.message,{icon:2,shade:0.2,time:500});
+                        if(!status){
                             return;
-                          }
-                          console.log('上传成功')
-                            var node = document.createElement('image');
-                            node.src = data.url;
-                            $image = $(node);
-                            $image.css('width', '100%');
-                            $image.attr('data-filename', data.imageName);
-                            $('#summernote').summernote('insertNode', node);
-
-                            // $('#summernote').summernote('insertImage', data.url, function ($image) {
-                            //     $image.css('width', '100%');
-                            //     $image.attr('data-filename', data.imageName);
-                            // });
+                        }
+                        $('#summernote').summernote('insertImage', data.url, function ($image) {
+                                $image.css('width', '100%');
+                                $image.attr('data-filename', data.imageName);
+                        });
                       })
                   },
                   onInit:() => {
-                    $('#summernote').summernote('code',unescape('[{article.content}]'))
+                    const content = unescape('[{article.content}]');
+                    $('#summernote').summernote('code',content);
                   }
                 }
             });
@@ -136,10 +127,10 @@
                     withCredentials: true
                 },
                 success: function(data) {
-                    callback(data.status,data)
+                    callback(data.status,data.data);
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    callback(0,{message:'服务器开小差了'});
+                    callback(0);
                 }
             })
         }

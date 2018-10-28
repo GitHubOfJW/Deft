@@ -88,12 +88,14 @@
                 dialogsInBody:true,
                 callbacks: {
                   onImageUpload: (files) => {
-                      console.log(files);
                       uploadImage(files,(status,data)=>{
+                        if(!status){
+                            return;
+                        }
                         $('#summernote').summernote('insertImage', data.url, function ($image) {
                                 $image.css('width', '100%');
                                 $image.attr('data-filename', data.imageName);
-                            });
+                        });
                       })
                   }
                 }
@@ -120,11 +122,9 @@
                     withCredentials: true
                 },
                 success: function(data) {
-                    console.log(data)
                     callback(data.status,data.data);
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    console.log(errorThrown)
                     callback(0);
                 }
             })
