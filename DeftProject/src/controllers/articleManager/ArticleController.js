@@ -15,7 +15,7 @@ const fse = require('fs-extra')
 
 class ArticleController extends BaseController {
   
-  //管理员列表页面
+  //文章列表页面
   static articleListPage(req,res){
      
     super.setHtmlHeader(res);
@@ -25,7 +25,7 @@ class ArticleController extends BaseController {
     });
   }
 
-  //管理管理员列表请求
+  //文章列表请求
   static async articleList(req,res){
     const start = req.query.start || '';
     const end = req.query.end || '';
@@ -83,7 +83,7 @@ class ArticleController extends BaseController {
     }
   }
 
-  // 添加管理员页
+  // 添加文章页
   static articleAddPage(req,res){
     super.setHtmlHeader(res);
 
@@ -163,7 +163,22 @@ class ArticleController extends BaseController {
     }
   }
 
-  // 管理员编辑
+  // 预览
+  static async articleBrwoserPage(req,res){
+    super.setHtmlHeader(res);
+    if(!req.params.id){
+      const result = super.handlerResponseData(0,'未获取到对应的id');
+      res.json(result);
+      return;
+    }
+    const article = await articleModel.findOne(req.params.id)
+    article.content = escape(article.content)
+    res.render('article/article-browser.html',{
+      article:article
+    });
+
+  }
+  // 文章编辑
   static async articleEditPage(req,res){
     super.setHtmlHeader(res);
     if(!req.params.id){

@@ -94,10 +94,18 @@
                             layer.msg(data.message,{icon:2,shade:0.2,time:500});
                             return;
                           }
-                            $('#summernote').summernote('insertImage', data.url, function ($image) {
-                                $image.css('width', '100%');
-                                $image.attr('data-filename', data.imageName);
-                            });
+                          console.log('上传成功')
+                            var node = document.createElement('image');
+                            node.src = data.url;
+                            $image = $(node);
+                            $image.css('width', '100%');
+                            $image.attr('data-filename', data.imageName);
+                            $('#summernote').summernote('insertNode', node);
+
+                            // $('#summernote').summernote('insertImage', data.url, function ($image) {
+                            //     $image.css('width', '100%');
+                            //     $image.attr('data-filename', data.imageName);
+                            // });
                       })
                   },
                   onInit:() => {

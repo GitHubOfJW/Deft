@@ -130,7 +130,7 @@
       table.on('tool(articleList)', function(obj){
         switch(obj.event){
           case 'browser':
-            x_admin_show('编辑',`/article/edit/${obj.data.id}`)
+            x_admin_show('预览',`/article/browser/${obj.data.id}`,320,568);
             break;
           case 'delete':
             member_del(obj.data.id,function(){

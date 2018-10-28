@@ -16,22 +16,29 @@ const adminPage = {
   ArticleController:{
     articleList:{
       path:'/article/list',
-      desc:'管理员列表',
+      desc:'文章列表',
       method:'articleListPage',
       type:GET,
       selected:false
     },
     articleAdd:{
       path:'/article/add',
-      desc:'添加管理员',
+      desc:'添加文章',
       method:'articleAddPage',
       type:GET,
       selected:false
     },
     articleEdit:{
       path:'/article/edit/:id',
-      desc:'编辑管理员',
+      desc:'编辑文章',
       method:'articleEditPage',
+      type:GET,
+      selected:false
+    },
+    articleBrowser:{
+      path:'/article/browser/:id',
+      desc:'预览文章',
+      method:'articleBrwoserPage',
       type:GET,
       selected:false
     }
@@ -43,42 +50,42 @@ const adminApi = {
   ArticleController:{
     articleList:{
       path:'/api/article/list',
-      desc:'管理员列表请求',
+      desc:'文章列表请求',
       method:'articleList',
       type:GET,
       selected:false,
     },
     ArticleAdd:{
       path:'/api/article/add',
-      desc:'添加管理员',
+      desc:'添加文章',
       method:'articleAdd',
       type:POST,
       selected:false
     },
     articleEdit:{
       path:'/api/article/edit/:id',
-      desc:'添加管理员',
+      desc:'添加文章',
       method:'articleEdit',
       type:POST,
       selected:false
     },
     articleStatus:{
       path:'/api/article/status/:id',
-      desc:'启用/禁用管理员',
+      desc:'启用/禁用文章',
       method:'articleUpdate',
       type:POST,
       selected:false,
     },
     articleDelete:{
       path:'/api/article/delete',
-      desc:'删除管理员',
+      desc:'删除文章',
       method:'articleDelete',
       type:POST,
       selected:false,
     },
     // articleRemove:{
     //   path:'/api/article/remove',
-    //   desc:'彻底删除管理员',
+    //   desc:'彻底删除文章',
     //   method:'articleRemove',
     //   type:POST,
     //   selected:false
