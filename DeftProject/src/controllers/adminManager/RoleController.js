@@ -6,8 +6,6 @@ const adminModel =  require('../../models/adminManager/Admin')
 const authModel =  require('../../models/adminManager/Auth')
 const authCateModel = require('../../models/adminManager/AuthCate')
 const roleModel =  require('../../models/adminManager/Role')
-
-const { adminApi, adminPage } = require('../../configure/routerConfig')
  
 class RoleController extends BaseController {
    

@@ -22,9 +22,9 @@ const adminApi = {
   UploadController:{
     upload:{
       path:'/image/upload',
-      desc:'图片上传',
-      method:'upload',
-      type:GET,
+      desc:'图片/视频上传',
+      method:'imageUpload',
+      type:POST,
       selected:true
     }
   }

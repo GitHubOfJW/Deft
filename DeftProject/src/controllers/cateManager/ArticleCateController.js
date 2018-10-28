@@ -3,7 +3,6 @@ const BaseController = require('../BaseController');
 
 const articleCateModel =  require('../../models/cateManager/ArticleCate')
 
-const { adminApi, adminPage } = require('../../configure/routerConfig')
  
 class ArticleController extends BaseController {
   

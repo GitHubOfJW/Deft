@@ -85,9 +85,52 @@
 
         $(document).ready(function() {
             $('#summernote').summernote({
-                height:220
+                height:220,
+                placeholder: '开始你的文章....',
+                dialogsInBody:true,
+                callbacks: {
+                  onImageUpload: (files) => {
+                      console.log(files);
+                      uploadImage(files,(status,data)=>{
+                        $('#summernote').summernote('insertImage', data.url, function ($image) {
+                                $image.css('width', '100%');
+                                $image.attr('data-filename', data.imageName);
+                            });
+                      })
+                  }
+                }
             });
         });
+
+        // 上传图片
+        function uploadImage(fileList,callback){
+            var formdata = new FormData();
+            // 上传到服务器的字段名称
+            formdata.append("imgs",fileList[0])
+            $.ajax({
+                url: '/image/upload',
+                type: 'POST',
+                cache: false,
+                data: formdata,
+                timeout: 10000,
+                //必须false才会避开jQuery对 formdata 的默认处理 
+                // XMLHttpRequest会对 formdata 进行正确的处理
+                processData: false,
+                //必须false才会自动加上正确的Content-Type 
+                contentType: false,
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: function(data) {
+                    console.log(data)
+                    callback(data.status,data.data);
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    console.log(errorThrown)
+                    callback(0);
+                }
+            })
+        }
         
         layui.use(['form','layer'], function(){
             $ = layui.jquery;

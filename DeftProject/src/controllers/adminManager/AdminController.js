@@ -5,8 +5,6 @@ const adminModel =  require('../../models/adminManager/Admin')
 
 const authCateModel =  require('../../models/adminManager/AuthCate')
 
-const { adminApi, adminPage } = require('../../configure/routerConfig')
-
 const roleModel =  require('../../models/adminManager/Role')
 
  

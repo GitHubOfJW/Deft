@@ -2,9 +2,8 @@
 const BaseController = require('../BaseController');
 
 const productCateModel =  require('../../models/cateManager/ProductCate')
-
-const { adminApi, adminPage } = require('../../configure/routerConfig')
  
+
 class ProductController extends BaseController {
   
    // 状态更新
