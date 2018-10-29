@@ -10,9 +10,13 @@
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="/public/css/font.css">
     <link rel="stylesheet" href="/public/css/xadmin.css">
+    
+    
     <script type="text/javascript" src="/public/js/jquery-3.3.1.min.js"></script>
+    
     <script type="text/javascript" src="/node_modules/layui-src/dist/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="/public/js/xadmin.js"></script>
+     
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
       <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -24,45 +28,46 @@
     <div class="x-body">
         <form action="" method="post" class="layui-form layui-form-pane">
                 <div class="layui-form-item">
-                    <label for="name" class="layui-form-label">
-                        <span class="x-red">*</span>角色名
+                    <label for="title" class="layui-form-label">
+                        <span class="x-red">*</span>文章标题
                     </label>
                     <div class="layui-input-inline">
-                        <input type="text" id="name" name="name" required="" lay-verify="required"
+                        <input type="text" id="title" name="title"  lay-verify="required"
                         autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-form-text">
                     <label class="layui-form-label">
-                        拥有权限
+                        所属分类
                     </label>
                     <table  class="layui-table layui-input-block">
                         <tbody>
-                            [{each cateList cateItem}]
-                            [{if cateItem.auths && cateItem.auths.length}]
-                            <tr>
-                                <td style="width:160px;">
-                                    <input type="checkbox" lay-filter="cate" id="cate[{cateItem.id}]" data-length="[{cateItem.auths.length}]" lay-skin="primary" title="[{cateItem.name}]">
-                                </td>
-                                <td>
-                                    <div class="layui-input-block">
-                                        [{each cateItem.auths authItem}]
-                                        <input name="auth" lay-filter="auth" id="auth[{authItem.id}]" data-cate-id='[{cateItem.id}]' lay-skin="primary" type="checkbox" title="[{authItem.name}]" value="[{authItem.id}]">
-                                        [{/each}]
-                                    </div>
-                                </td>
-                            </tr>
-                            [{/if}]
+                            [{each  cateList cateItem index}]
+                                    [{if cateItem.children &&  cateItem.children.length > 0}]
+                                    <tr>
+                                        <td style="width:160px;">
+                                            [{cateItem.name}]
+                                        </td>
+                                        <td>
+                                            <div class="layui-input-block">
+                                                [{each cateItem.children item idx}]
+                                                <input name="cate_id" lay-skin="primary" type="radio" title="[{item.name}]"  value="[{item.id}]">
+                                                [{/each}]
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    [{/if}]
                             [{/each}]
                         </tbody>
                     </table>
                 </div>
                 <div class="layui-form-item layui-form-text">
                     <label for="desc" class="layui-form-label">
-                        描述
+                        内容
                     </label>
                     <div class="layui-input-block">
-                        <textarea placeholder="请输入内容" id="remark" name="remark" class="layui-textarea"></textarea>
+                        <textarea id="layEditor" placeholder="请输入内容" id="desc" name="content" class="layui-textarea"></textarea>
+                        <!-- <textarea name="content" ay-verify="required"  placeholder="请输入内容" id="summernote"></textarea> -->
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -71,46 +76,85 @@
             </form>
     </div>
     <script>
-         layui.use(['form','layer'], function(){
+
+        // $(document).ready(function() {
+        //     $('#summernote').summernote({
+        //         height:220,
+        //         placeholder: '开始你的文章....',
+        //         dialogsInBody:true,
+        //         callbacks: {
+        //           onImageUpload: (files) => {
+        //               uploadImage(files,(status,data)=>{
+        //                 if(!status){
+        //                     return;
+        //                 }
+        //                 $('#summernote').summernote('insertImage', data.url, function ($image) {
+        //                         $image.css('width', '100%');
+        //                         $image.attr('data-filename', data.imageName);
+        //                 });
+        //               })
+        //           }
+        //         }
+        //     });
+        // });
+
+        // 上传图片
+        function uploadImage(fileList,callback){
+            var formdata = new FormData();
+            // 上传到服务器的字段名称
+            formdata.append("imgs",fileList[0])
+            $.ajax({
+                url: '/image/upload',
+                type: 'POST',
+                cache: false,
+                data: formdata,
+                timeout: 10000,
+                //必须false才会避开jQuery对 formdata 的默认处理 
+                // XMLHttpRequest会对 formdata 进行正确的处理
+                processData: false,
+                //必须false才会自动加上正确的Content-Type 
+                contentType: false,
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: function(data) {
+                    callback(data.status,data.data);
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    callback(0);
+                }
+            })
+        }
+        
+        layui.use(['form','layer','layedit'], function(){
             $ = layui.jquery;
           var form = layui.form
           ,layer = layui.layer;
         
+          var layedit = layui.layedit;
+          layedit.build('layEditor'); //建立编辑器
+
           //自定义验证规则
           form.verify({
-            name: function(value){
+            title: function(value){
               if(value.length < 5){
                 return '名称至少得4个字符啊';
               }
-            }
+            },
+
           });
 
-          form.on('checkbox(cate)', function(data){
-            // 只要有未选中的 则取消全部选中
-            const cateObj = $(data.elem)
-            cateObj.parents('td').next('td').find("input[type='checkbox']").prop('checked',data.elem.checked)
-            form.render('checkbox')
-          }); 
-          
-          form.on('checkbox(auth)', function(data){
-            // 只要有未选中的 则取消全部选中
-            const cateObj = $(`#cate${data.elem.dataset.cateId}`)
-            if(!data.elem.checked){
-                cateObj.prop('checked',false)
-                form.render('checkbox')
-            }else{
-                // 获取所有该分类的权限
-                const totalLength =  cateObj.get(0).dataset.length;
-                const selectedLength = cateObj.parents('td').next('td').find('input:checked').length
-                if(totalLength  == selectedLength){
-                    cateObj.prop('checked',true);
-                    form.render('checkbox')
-                }
-            }
-          });  
 
           //监听提交
           form.on('submit(add)', function(data){
+            if(!data.field.cate_id){
+                layer.msg('请选择分类',{icon:2,shade:0.2,time:500});
+                return false;
+            }else if ($('#summernote').summernote('isEmpty')) {
+                layer.msg('内容不能为空',{icon:2,shade:0.2,time:500});
+                return false;
+            }
+            
             // 弹出提示
             let index = null;
             const id = setTimeout(() => {
@@ -120,32 +164,15 @@
                 }
             }, 1000);
             
-            const authIds = []
-            // console.dir($("input[name='auth']"));
-            const authObjs =  $("input[name='auth']");
-            if(authObjs){
-                for(let i = 0;i < authObjs.length; i ++){
-                    if(authObjs[i].checked){
-                        authIds.push(authObjs[i].value)
-                    }
-                }
-            }
-            
             $.ajax({
-                url:'/api/role/add',
+                url:'/api/article/add',
                 traditional:true,
-                data:{
-                    name:data.field.name,
-                    cateId:data.field.cateId,
-                    remark:data.field.remark,
-                    authIds:authIds
-                },
+                data:data.field,
                 method:'POST',
                 type:'json',
                 success:function(data){
                     layer.close(index);
                     index = " ";
-                    //发异步，把数据提交给php
                     if(!data.status){
                         layer.msg(data.message,{icon:2,shade:0.2,time:500});
                         return;
@@ -156,11 +183,13 @@
                         var index = parent.layer.getFrameIndex(window.name);
                         //关闭当前frame
                         parent.layer.close(index);
+                        $('#summernote').summernote('destroy');
                     });
                 },
                 error:function(err){
                     layer.msg('服务器开小差了',{icon:2,shade:0.2,time:500});
                     layer.close(index);
+                    $('#summernote').summernote('destroy');
                     index = " ";
                 }
             })

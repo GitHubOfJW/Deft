@@ -89,7 +89,7 @@ class ArticleController extends BaseController {
 
     const cateList = cateModel.list(-1,-1,false)
 
-    res.render('article/article-add.html',{
+    res.render('article/article-add1.html',{
       cateList:cateList
     });
   }

@@ -11,6 +11,11 @@ const { adminApi, adminPage } = require('../configure/routerConfig')
 
 class AppDelegate {
 
+  constructor(){
+    this.host = '';
+    this.port = '';
+  }
+
   // 初始化
   configApp(app){
     
@@ -43,6 +48,9 @@ class AppDelegate {
         }
       }
       app.use('/public',express.static('public', options))
+
+      // /public/lib/layui/layui.js  /node_modules/layui-src/dist/layui.js
+      app.use('/node_modules',express.static('node_modules', options))// layui-src
 
       // promoise
       app.use(require('express-promise')());
@@ -118,6 +126,7 @@ class AppDelegate {
          }
       });
   }
+  
 }
 
 module.exports = new AppDelegate();
