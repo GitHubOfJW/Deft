@@ -38,8 +38,9 @@ class UploadController extends BaseController {
 
             const result =  super.handlerResponseData(1,'上传成功',{
               imageName:fileName,
-              url:path.join(UploadUtil.articleDirPath(true),fileName)
+              url:req.domainName + path.join(UploadUtil.articleDirPath(true),fileName)
             });
+            console.log(req.domainName,'看看当前域名')
             res.json(result)
          }
         

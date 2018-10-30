@@ -105,7 +105,6 @@ class RoleController extends BaseController {
 
   // 修改请求
   static roleEdit(req,res){
-    console.log(req.body,'查看body')
     if(req.body.name && req.body.authIds && req.params.id){
       const data =  roleModel.update({
         name:req.body.name,

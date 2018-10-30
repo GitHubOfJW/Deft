@@ -19,7 +19,7 @@ const controllers = {
   UploadController:require('../controllers/uploadManager/UploadController')
 }
 
-console.log(controllers)
+// console.log(controllers)
 
 // 取出所有的控制器配置
 const totalConfigControllers = [];

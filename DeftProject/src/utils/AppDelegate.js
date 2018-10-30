@@ -81,7 +81,7 @@ class AppDelegate {
         saveUninitialized: true
       }));
 
-
+      
       this.authRouter(app)
  
        
