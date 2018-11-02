@@ -24,14 +24,14 @@ const controllers = {
 // 取出所有的控制器配置
 const totalConfigControllers = [];
 for(let controllerKey of Object.keys(adminPage)){
-  // console.log(controllerKey)
+  console.log(controllerKey)
   totalConfigControllers.push({
     configController:adminPage[controllerKey],
     controllerKey:controllerKey
   })
 }
 for(let controllerKey of Object.keys(adminApi)){
-  // console.log(controllerKey)
+  console.log(controllerKey)
   totalConfigControllers.push({
     configController:adminApi[controllerKey],
     controllerKey:controllerKey
@@ -44,7 +44,7 @@ for(let {configController,controllerKey} of totalConfigControllers){
     const type = configController[key].type;
     const method = configController[key].method;
     const path = configController[key].path;
-    // console.log(key,type,method,path);
+    console.log(key,type,method,path);
     switch(type){
       case requestType.PATCH:
         router.patch(configController[key].path,controllers[controllerKey][method]);
