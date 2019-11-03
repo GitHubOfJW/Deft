@@ -31,7 +31,7 @@
       </el-table-column>
       <el-table-column align="center" :label="$t('table.picture')" width="200px">
         <template slot-scope="scope">
-          <img :src="scope.row.pic_url" height="50">
+          <img v-if="scope.row.pic" :src="scope.row.pic.url" height="50">
         </template>
       </el-table-column>
       <el-table-column label="适合年龄" width="200px" align="center">
@@ -59,14 +59,19 @@
           <span>{{ scope.row.is_recommend ? '是':'否' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="编辑完成" width="150px" align="center">
+      <el-table-column label="审核状态" width="150px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.is_finished ? '是':'否' }}</span>
+          <span>{{ scope.row.is_finished ? '已审核':'待审核' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="允许添加作品" width="150px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.is_works ? '是': '否' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="文章页数" width="150px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.content_page || 0 }}</span>
         </template>
       </el-table-column>
       <el-table-column label="作品数量" width="150px" align="center">
@@ -87,6 +92,11 @@
       <el-table-column label="点赞量" width="150px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.support_count || 0 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="作者" width="150px" align="center">
+        <template slot-scope="scope">
+          <span>{{ (scope.row.member || {}).name || '未知' }}</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" :label="$t('table.actions')" align="center" width="250">
@@ -127,10 +137,6 @@
           <el-radio v-model="temp.is_recommend" name="is_recommend" label="1">是</el-radio>
           <el-radio v-model="temp.is_recommend" name="is_recommend" label="0">否</el-radio>
         </el-form-item>
-        <el-form-item label="编辑完成" label-width="90" prop="is_finished">
-          <el-radio v-model="temp.is_finished" name="is_finished" label="1">是</el-radio>
-          <el-radio v-model="temp.is_finished" name="is_finished" label="0">否</el-radio>
-        </el-form-item>
         <el-form-item label="性别" label-width="80" prop="gender">
           <el-radio v-model="temp.gender" name="gender" label="0">通用</el-radio>
           <el-radio v-model="temp.gender" name="gender" label="1">男孩</el-radio>
@@ -170,14 +176,14 @@
       <img width="100%" :src="dialogImageUrl" alt="">
     </el-dialog>
     <!-- 多层嵌套 -->
-    <el-drawer title="富文本列表" direction="ltr" :visible.sync="drawer" size="50%">
+    <!-- <el-drawer :title="editTitle" direction="rtl" :visible.sync="drawer" :before-close="handleClose" size="80%">
       <div>
-        <article-content />
-        <el-drawer title="添加" direction="ltr" :append-to-body="true" :before-close="handleClose" :visible.sync="innerDrawer">
-          <p>_(:зゝ∠)_</p>
-        </el-drawer>
       </div>
-    </el-drawer>
+    </el-drawer> -->
+    <el-dialog :title="editTitle" :visible.sync="drawer" @close="handleClose">
+      <!-- 这里放编辑器组件 -->
+      <article-detail v-if="drawer" :edit="true" :articleid="temp.id" @close="handleClose" />
+    </el-dialog>
   </div>
 </template>
 
@@ -185,20 +191,16 @@
 import { fetchArticleList, fetchAllCate, fetchAlllabel, createArticle, updateArticle, deleteArticleById } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import ArticleContent from '@/components/ArticleContents'
-// import { quillEditor } from 'vue-quill-editor'
-// import 'quill/dist/quill.core.css'
-// import 'quill/dist/quill.snow.css'
-// import 'quill/dist/quill.bubble.css'
+import ArticleDetail from '@/components/ArticleDetail'
 
 export default {
   name: 'Article',
-  components: { Pagination, ArticleContent },
+  components: { Pagination, ArticleDetail },
   directives: { waves },
   data() {
     return {
       drawer: false,
-      innerDrawer: false,
+      editTitle: '',
       tableKey: 0,
       list: null,
       total: 0,
@@ -206,17 +208,6 @@ export default {
       listQuery: {
         page: 1,
         limit: 20
-      },
-      editorOption: {
-        action: '/api/upload/image',
-        name: 'file',
-        accept: 'image/jpg,image/jpeg,image/png'
-      },
-      checkStrictly: false,
-      rolesData: [],
-      defaultProps: {
-        label: 'name',
-        children: 'children'
       },
       cateList: [],
       labelList: [],
@@ -227,7 +218,6 @@ export default {
         id: undefined,
         title: '',
         is_recommend: '0',
-        is_finished: '0',
         min_age: 0,
         gender: '0',
         max_age: 300,
@@ -247,11 +237,10 @@ export default {
         max_age: [{ required: true, message: 'max_age is required', trigger: 'change' }],
         importance: [{ required: true, message: 'importance is required', trigger: 'change' }],
         is_recommend: [{ required: true, message: 'recommend is required', trigger: 'change' }],
-        is_finished: [{ required: true, message: 'finished is required', trigger: 'change' }],
         gender: [{ required: true, message: 'gender is required', trigger: 'change' }],
         is_works: [{ required: true, message: 'works is required', trigger: 'change' }],
         cate_ids: [{ required: true, message: 'category is required', trigger: 'change' }],
-        pic_url: [{ required: true, message: 'picture is required', trigger: 'change' }]
+        pic_id: [{ required: true, message: 'picture is required', trigger: 'change' }]
       }
     }
   },
@@ -260,12 +249,12 @@ export default {
   },
   methods: {
     handleContents(row) {
+      this.temp = row
       this.drawer = true
+      this.editTitle = row.title
     },
-    handleClose(done) {
-      this.$confirm('还有未保存的工作哦确定关闭吗？').then(_ => {
-        done()
-      }).catch(_ => {})
+    handleClose() {
+      this.drawer = false
     },
     tableRowClassName({ row }) {
       return row.is_delete ? 'warning-row' : ''
@@ -291,7 +280,7 @@ export default {
         this.total = response.data.total
         setTimeout(() => {
           this.listLoading = false
-        }, 1 * 1000)
+        }, 1 * 600)
       })
     },
     cateChange(val) {
@@ -360,7 +349,6 @@ export default {
           createArticle(this.temp).then((response) => {
             this.temp.id = response.data.id
             this.temp.is_recommend = this.temp.is_recommend === '1'
-            this.temp.is_finished = this.temp.is_finished === '1'
             this.temp.is_works = this.temp.is_works === '1'
             this.temp.articlecates = this.cateList.filter(cate => this.temp.cate_ids.includes(cate.id))
             this.temp.articlelabels = this.labelList.filter(label => this.temp.label_ids.includes(label.id))
@@ -383,13 +371,14 @@ export default {
         cate_ids: (row.articlecates || []).map(item => item.id),
         label_ids: (row.articlelabels || []).map(item => item.id),
         is_recommend: row.is_recommend ? '1' : '0',
-        is_finished: row.is_finished ? '1' : '0',
         is_works: row.is_finished ? '1' : '0',
-        gender: row.gender + ''
+        gender: row.gender + '',
+        pic_id: row.pic.id,
+        pic_url: row.pic.url
       }) // copy obj
       this.fileList.splice(0, this.fileList.length, {
-        name: row.pic_url.substring(row.pic_url.lastIndexOf('/') + 1),
-        url: row.pic_url
+        name: row.pic.url.substring(row.pic.url.lastIndexOf('/') + 1),
+        url: row.pic.url
       })
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
@@ -408,7 +397,6 @@ export default {
               if (v.id === this.temp.id) {
                 const index = this.list.indexOf(v)
                 this.temp.is_recommend = this.temp.is_recommend === '1'
-                this.temp.is_finished = this.temp.is_finished === '1'
                 this.temp.is_works = this.temp.is_works === '1'
                 this.temp.articlecates = this.cateList.filter(cate => this.temp.cate_ids.includes(cate.id))
                 this.temp.articlelabels = this.labelList.filter(label => this.temp.label_ids.includes(label.id))
@@ -449,9 +437,15 @@ export default {
     },
     handleSuccess(response, file, fileList) {
       this.temp.pic_url = response.data.url
+      this.temp.pic_id = response.data.source_id
+      this.temp.pic = {
+        id: this.temp.pic_id,
+        url: this.temp.pic_url
+      }
       this.fileList.splice(0, this.fileList.length, {
         name: response.data.filename,
-        url: response.data.url
+        url: response.data.url,
+        source_id: response.data.source_id
       })
     },
     handleRemove(file, fileList) {

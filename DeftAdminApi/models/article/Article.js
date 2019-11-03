@@ -15,17 +15,30 @@ Article.init({
       autoIncrement:true,
       comment: '主键'
     },
-    pic_url: {
-      type: Sequelize.STRING,
-      comment: '配图'
+    pic_id: {
+      type: Sequelize.BIGINT,
+      comment: '配图id'
     },
-    video_url:{
-      type: Sequelize.STRING,
-      comment: '视频'
+    video_id:{
+      type: Sequelize.BIGINT,
+      comment: '视频id'
     },
     title: {
       type: Sequelize.STRING(10),
       comment: '标题'
+    },
+    author_id: {
+      type: Sequelize.INTEGER,
+      comment: '作者id'
+    },
+    rich_content: {
+      type: Sequelize.TEXT,
+      comment: '内容'
+    },
+    content_page: {
+      type: Sequelize.TINYINT,
+      defaultValue: 0,
+      comment: '文章页数'
     },
     min_age:{
       type: Sequelize.SMALLINT,
@@ -50,7 +63,11 @@ Article.init({
     is_finished: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
-      comment: '是否完成'
+      comment: '审核状态'
+    },
+    source_uri: {
+      type: Sequelize.STRING,
+      comment: '文章外链'
     },
     is_recommend: {
       type: Sequelize.BOOLEAN,
@@ -81,6 +98,14 @@ Article.init({
       type: Sequelize.BOOLEAN,
       defaultValue: true,
       comment: '是否可以添加作品'
+    },
+    sources: {
+      type: Sequelize.STRING,
+      comment: "资源id集合"
+    },
+    publish_time: {
+      type: Sequelize.DATE,
+      comment: '发布时间'
     },
     sku_count: {
       type: Sequelize.INTEGER,

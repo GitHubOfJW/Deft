@@ -3,7 +3,7 @@
     <el-button :style="{background:color,borderColor:color}" icon="el-icon-upload" size="mini" type="primary" @click=" dialogVisible=true">
       upload
     </el-button>
-    <el-dialog :visible.sync="dialogVisible">
+    <div v-show="dialogVisible" class="uploadView">
       <el-upload
         :multiple="true"
         :file-list="fileList"
@@ -12,7 +12,7 @@
         :on-success="handleSuccess"
         :before-upload="beforeUpload"
         class="editor-slide-upload"
-        action="https://httpbin.org/post"
+        action="/api/upload/image"
         list-type="picture-card"
       >
         <el-button size="small" type="primary">
@@ -25,13 +25,11 @@
       <el-button type="primary" @click="handleSubmit">
         Confirm
       </el-button>
-    </el-dialog>
+    </div>
   </div>
 </template>
 
 <script>
-// import { getToken } from 'api/qiniu'
-
 export default {
   name: 'EditorSlideUpload',
   props: {
@@ -65,9 +63,11 @@ export default {
     handleSuccess(response, file) {
       const uid = file.uid
       const objKeyArr = Object.keys(this.listObj)
+      console.log(response)
       for (let i = 0, len = objKeyArr.length; i < len; i++) {
         if (this.listObj[objKeyArr[i]].uid === uid) {
-          this.listObj[objKeyArr[i]].url = response.files.file
+          this.listObj[objKeyArr[i]].id = response.data.source_id
+          this.listObj[objKeyArr[i]].url = response.data.url
           this.listObj[objKeyArr[i]].hasSuccess = true
           return
         }
@@ -102,6 +102,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+.uploadView {
+  margin-top: 10px;
+  padding:20px;
+  background-color: white;
+  box-shadow: 5px -5px 5px #ccc,5px 5px 5px #ccc,-5px -5px 5px #ccc,-5px 5px 5px #ccc;
+  border-radius: 5px;
+}
 .editor-slide-upload {
   margin-bottom: 20px;
   /deep/ .el-upload--picture-card {

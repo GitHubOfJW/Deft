@@ -2,6 +2,7 @@ const { Member, Sequelize } = require('../models/Member')
 const { RoleRuleRel } = require('../models/permission/RoleRuleRel')
 const { Rule } = require('../models/permission/Rule')
 const path =  require('path')
+const BaseService = require('../service/BaseService')
 const { appInfo, appInfo1} = require('../config')
 const uuidv4 = require('uuid/v4')
 const fs = require('fs')
@@ -69,16 +70,22 @@ module.exports = class IndexController {
   static async upload(ctx, next){
     const destination = ctx.req.file.destination
     const path = destination.substring(destination.indexOf('/public')+'/public'.length)
+    const url = (path + ctx.req.file.filename).replace('//','/')
+    // 添加资源
+    const source = await BaseService.sourceAdd({
+      url: url,
+      mimetype: ctx.req.file.mimetype
+    })
     ctx.body = {
       code: 20000,
       message: '上传成功',
       data: {
         filename:ctx.req.file.filename,
-        url: ctx.state.G.url + (path + ctx.req.file.filename).replace('//','/')
+        url: ctx.state.G.url + url,
+        source_id:source.id
       }
     }
   }
- 
 
   static async miniIndex(ctx, next) {
     const { page = 1 } = ctx.request.body

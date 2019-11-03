@@ -41,12 +41,12 @@
       </el-table-column>
       <el-table-column align="center" label="Icon">
         <template slot-scope="scope">
-          <img :src="scope.row.icon" height="50">
+          <img v-if="scope.row.icon" :src="scope.row.icon.url" height="50">
         </template>
       </el-table-column>
       <el-table-column align="center" :label="$t('table.article_count')">
         <template slot-scope="scope">
-          {{ scope.row.count }}
+          {{ scope.row.count || 0 }}
         </template>
       </el-table-column>
       <el-table-column fixed="right" :label="$t('table.actions')" align="center" width="160" class-name="small-padding fixed-width">
@@ -77,8 +77,8 @@
         <el-form-item :label="$t('table.appIcon')" prop="app_icon">
           <el-input v-model="temp.app_icon" />
         </el-form-item>
-        <el-form-item label="Icon" prop="icon">
-          <el-input type="hidden" value="temp.icon" />
+        <el-form-item label="Icon" prop="icon_id">
+          <el-input type="hidden" value="temp.icon_id" />
           <el-upload ref="upload" :file-list="fileList" action="/api/upload/image" accept="image/jpg,image/jpeg,image/png" multiple list-type="picture-card" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="handleSuccess" :limit="1">
             <i class="el-icon-plus" />
           </el-upload>
@@ -144,7 +144,7 @@ export default {
       rules: {
         name: [{ required: true, message: 'name is required', trigger: 'change' }],
         pinyin: [{ required: true, message: 'name is required', trigger: 'change' }],
-        icon: [{ required: true, message: 'icon is required', trigger: 'change' }]
+        icon_id: [{ required: true, message: 'icon is required', trigger: 'change' }]
       }
     }
   },
@@ -162,7 +162,7 @@ export default {
         this.total = response.data.total
         setTimeout(() => {
           this.listLoading = false
-        }, 1 * 1000)
+        }, 1 * 600)
       })
     },
     handleFilter() {
@@ -212,6 +212,10 @@ export default {
         if (valid) {
           createCate(this.temp).then((response) => {
             this.temp.id = response.data.id
+            this.temp.icon = {
+              id: this.temp.icon_id,
+              url: this.temp.icon_url
+            }
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$forceUpdate()
@@ -227,9 +231,11 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
+      this.temp.icon_id = row.icon.id
+      this.temp.icon_url = row.icon.url
       this.fileList.splice(0, this.fileList.length, {
-        name: row.icon.substring(row.icon.lastIndexOf('/') + 1),
-        url: row.icon
+        name: row.icon.url.substring(row.icon.url.lastIndexOf('/') + 1),
+        url: row.icon.url
       })
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
@@ -281,7 +287,12 @@ export default {
       })
     },
     handleSuccess(response, file, fileList) {
-      this.temp.icon = response.data.url
+      this.temp.icon_id = response.data.source_id
+      this.temp.icon_url = response.data.url
+      this.temp.icon = {
+        id: this.temp.icon_id,
+        url: this.temp.icon_url
+      }
       this.fileList.splice(0, this.fileList.length, {
         name: response.data.filename,
         url: response.data.url

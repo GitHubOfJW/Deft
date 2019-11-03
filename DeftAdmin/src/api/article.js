@@ -24,6 +24,14 @@ export function createCate(data) {
   })
 }
 
+export function detail(data) {
+  return request({
+    url: '/article/detail/' + data.id,
+    method: 'get',
+    data
+  })
+}
+
 export function updateCate(data) {
   return request({
     url: `/article/cate/edit/${data.id}`,

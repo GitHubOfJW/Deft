@@ -19,9 +19,9 @@ ArticleCate.init({
       type: Sequelize.STRING(40),
       comment: '图标名'
     },
-    icon: {
-      type: Sequelize.STRING(100),
-      comment: '图标'
+    icon_id: {
+      type: Sequelize.BIGINT,
+      comment: '图标id'
     },
     name: {
       type: Sequelize.STRING(20),

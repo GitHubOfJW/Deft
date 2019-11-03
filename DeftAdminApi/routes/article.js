@@ -7,6 +7,7 @@ router.post('/add', controller.articleCreated)
 router.put('/edit/:id', controller.articleEdit)
 router.delete('/delete/:id', controller.articleDelete)
 router.put('/recover/:id', controller.articleRecover)
+router.get('/detail/:id', controller.articleDetail)
 
 router.get('/cate/cates', controller.allCates)
 router.get('/cate/list', controller.cateList)
@@ -22,9 +23,4 @@ router.put('/label/edit/:id', controller.labelEdit)
 router.delete('/label/delete/:id', controller.labelDelete)
 router.put('/label/recover/:id', controller.labelRecover)
 
-router.get('/content/list', controller.contentList)
-router.post('/content/add', controller.contentCreated)
-router.put('/content/edit/:id', controller.contentEdit)
-router.delete('/content/delete/:id', controller.contentDelete)
-router.put('/content/recover/:id', controller.contentRecover)
 module.exports = router

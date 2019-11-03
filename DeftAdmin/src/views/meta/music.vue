@@ -231,7 +231,7 @@ export default {
         this.total = response.data.total
         setTimeout(() => {
           this.listLoading = false
-        }, 1 * 1000)
+        }, 1 * 600)
       })
     },
     handleFilter() {

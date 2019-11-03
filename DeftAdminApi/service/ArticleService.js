@@ -3,13 +3,25 @@ const { ArticleCate } = require('../models/article/ArticleCate')
 const { ArticleLabel } = require('../models/article/ArticleLabel')
 const { ArticleLabelRel } =  require('../models/article/ArticleLabelRel')
 const { ArticleCateRel } = require('../models/article/ArticleCateRel')
-const { ArticleContent } = require('../models/article/ArticleContent')
 const { Class } = require('../models/class/Class')
 const { Member } = require('../models/Member')
+const { Source } = require('../models/bases/Source')
 
-ArticleContent.belongsTo(Member,{
+Article.belongsTo(Member,{
   foreignKey: 'author_id',
   constraints: false
+})
+
+ArticleCate.belongsTo(Source,{
+  foreignKey: 'icon_id',
+  constraints: false,
+  as:'icon'
+})
+
+Article.belongsTo(Source,{
+  foreignKey: 'pic_id',
+  constraints: false,
+  as:'pic'
 })
 
 Article.belongsToMany(ArticleLabel,{
@@ -78,6 +90,13 @@ module.exports = class ArticleService {
     //  查询
     const data = await ArticleCate.findAndCountAll({
       where:where,
+      include:[{
+        model: Source,
+        attributes:{
+          include: ['url','id']
+        },
+        as: 'icon'
+      }],
       order:orderby,
       offset: ((page-1) * limit)+0,
       limit: parseInt(limit)
@@ -88,38 +107,73 @@ module.exports = class ArticleService {
 
   // 添加文章
   static async cateAdd(body = {}) {
-    if(body.icon) {
-      body.icon = fileTool.removeFileFlag(body.icon)
-    }
-    const result = await ArticleCate.create(body)
-    return result.id
+    return sequelize.transaction(t => {
+      return (async ()=>{
+        // 累计
+        await Source.update({
+          ref_count: Sequelize.literal('`ref_count` +1')
+        },{
+          where: {
+            id: body.icon_id
+          },
+          transaction:t
+        })
+        // 更新
+        const result = await ArticleCate.create(body,{transaction:t})
+        return result.id
+      })()
+    })
   }
 
   // 修改
   static async cateEdit(body = {},id = 0) {
-    const cate = await ArticleCate.findOne({
-      where: {
-        id: id
-      }
-    })
-    // 旧链接加标记
-    if(cate && cate.icon && body.icon && cate.icon !== body.icon) {
-      fileTool.addFileFlag(cate.icon)
-      body.icon = fileTool.removeFileFlag(body.icon)
-    }
+    return sequelize.transaction(t => {
+      return (async ()=>{
+        const cate = await ArticleCate.findOne({
+          where: {
+            id: id
+          },
+          transaction:t
+        })
+        delete body.createdAt
+        delete body.updatedAt
+        delete body.sort
+        delete body.is_delete
 
-    delete body.createdAt
-    delete body.updatedAt
-    delete body.sort
-    delete body.is_delete
-
-    // 更新
-    const result = await ArticleCate.update(body,{
-      where: {
-        id: id
-      }
+        if(body.icon_id){
+           if(body.icon_id != cate.icon_id){
+            // 新的加
+            await Source.update({
+              ref_count: Sequelize.literal('`ref_count` +1')
+            },{
+              where:{
+                id: body.icon_id
+              },
+              transaction:t
+            })
+            // 旧的减
+            await Source.update({
+              ref_count: Sequelize.literal('`ref_count` -1')
+            },{
+              where: {
+                id: cate.icon_id
+              },
+              transaction: t
+            })
+           }
+        }else{
+          delete body.icon_id
+        }
+    
+        // 更新
+        const result = await ArticleCate.update(body,{
+          where: {
+            id: id
+          }
+        })
+        return result
+      })() 
     })
-    return result
   }
 
   // 删除
@@ -164,6 +218,9 @@ module.exports = class ArticleService {
 
     //  查询
     const data = await Article.findAndCountAll({
+      attributes:{
+        exclude: ['rich_content']
+      },
       where:where,
       include:[{
         model: ArticleCate,
@@ -177,6 +234,12 @@ module.exports = class ArticleService {
           include: ['name','id'],
         },
         as: 'articlelabels'
+      },{
+        model: Member
+      },{
+        model: Source,
+        attributes: ['url','id'],
+        as: 'pic'
       }],
       order:orderby,
       offset: ((page-1) * limit)+0,
@@ -186,19 +249,35 @@ module.exports = class ArticleService {
     return data
   }
 
+  // 获取文章详情
+  static async articleDetail(id = 0){
+    return await Article.findOne({
+      attributes: {
+        include: ['id', 'source_uri', 'rich_content']
+      },
+      where: {
+        id: id
+      }
+    })
+  }
+
   // 添加文章
   static async articleAdd(body = {}) {
     
-    if(body.pic_url) {
-      body.pic_url = fileTool.removeFileFlag(body.pic_url)
-    }
-
     return sequelize.transaction(t => {
       return (async () => {
         // 创建文章
         const add_article = await Article.create(body,{
           transaction:t
         })
+
+        // 更新资源标记
+        await Source.update({ref_count:sequelize.literal('`ref_count` +1')}, {
+          where: {
+            id: body.pic_id
+          }
+        },{transaction:t})
+
         // 更新计数
         await ArticleCate.update({count:sequelize.literal('`count` +1')}, {
           where: {
@@ -260,33 +339,82 @@ module.exports = class ArticleService {
         delete body.is_delete
 
         
-        // 旧链接加标记 这里跟事务有可能不同步，可能会有问题
-        if(edit_article && edit_article.pic_url && body.pic_url && edit_article.pic_url !== body.pic_url) {
-          fileTool.addFileFlag(edit_article.pic_url)
-          body.pic_url = fileTool.removeFileFlag(body.pic_url)
-        }
+        if(body.pic_id){
+          if(body.pic_id != edit_article.pic_id){
+           // 新的加
+           await Source.update({
+             ref_count: Sequelize.literal('`ref_count` +1')
+           },{
+             where:{
+               id: body.pic_id
+             },
+             transaction:t
+           })
+           // 旧的减
+           await Source.update({
+             ref_count: Sequelize.literal('`ref_count` -1')
+           },{
+             where: {
+               id: edit_article.pic_id
+             },
+             transaction: t
+           })
+          }
+       }else{
+         delete body.pic_id
+       }
 
         // 更新计数
-        const ids = edit_article.articlecates.map(item => item.id)
+        if(!body.rich_content){
+          const ids = edit_article.articlecates.map(item => item.id)
 
-        await ArticleCate.update({count:sequelize.literal('`count` -1')}, {
-          where: {
-            id: {
-              [Sequelize.Op.in]: ids
-            }
-          }
-        },{transaction:t})
+          await ArticleCate.update({count:sequelize.literal('`count` -1')}, {
+            where: {
+              id: {
+                [Sequelize.Op.in]: ids
+              }
+            },
+            transaction:t
+          })
 
-        await ArticleCate.update({count:sequelize.literal('`count` +1')}, {
-          where: {
-            id: {
-              [Sequelize.Op.in]: body.cate_ids || []
-            }
-          }
-        },{transaction:t})
+          await ArticleCate.update({count:sequelize.literal('`count` +1')}, {
+            where: {
+              id: {
+                [Sequelize.Op.in]: body.cate_ids || []
+              }
+            },
+            transaction:t
+          })
 
+        }else{
+          body.publish_time = new Date()
+          // 获取复文本中的所有资源id
+          await Source.update({
+            ref_count: Sequelize.literal('`ref_count` -1')
+          },{
+            where: {
+              id: {
+                [Sequelize.Op.in]: (edit_article.sources || '').split(',')
+              }
+            },
+            transaction:t
+          })
+          // 然后在累计文章中的资源
+          const ids = this.getAllDataIds(body.rich_text)
+          await Source.update({
+            ref_count: Sequelize.literal('`ref_count` +1')
+          },{
+            where: {
+              id: {
+                [Sequelize.Op.in]: (edit_article.sources || '').split(',')
+              }
+            },
+            transaction:t
+          })
+        }
+        
         // 更新
-        edit_article.update(body,{ transaction: t })
+        await edit_article.update(body,{ transaction: t })
 
         // 设置文章对应的分类
         if(body.cate_ids){
@@ -417,82 +545,8 @@ module.exports = class ArticleService {
     return result
   }
 
-
-  // 文章内容相关
-
-  // 内容
-  static async contentList({ page = 1, limit = 20, aritcle_id  = 0 }){
-    const where = {
-    }
-    if(aritcle_id > 0 ){
-      where.id =  aritcle_id
-    }
-
-    //  查询
-    const data = await ArticleContent.findAndCountAll({
-      where:where,
-      include:{
-        model: Member,
-        attributes: {
-          include:['name']
-        }
-      },
-      offset: (page - 1) * limit,
-      limit: parseInt(limit)
-    })
-    return data
-  }
-
-  // 添加内容
-  static async contentAdd(body = {}) {
-    const result = await ArticleContent.create(body)
-    return result.id
-  }
-
-  // 修改
-  static async contentEdit(body = {},id = 0) {
-    const content = await ArticleContent.findOne({
-      where: {
-        id: id
-      }
-    })
-    
-    delete body.createdAt
-    delete body.updatedAt
-    delete body.sort
-    delete body.is_delete
-
-    // 更新
-    const result = await ArticleContent.update(body,{
-      where: {
-        id: id
-      }
-    })
-    return result
-  }
-
-  // 删除
-  static async contentDelete(id = 0 ) {
-    // 删除
-    const result = await ArticleContent.update({
-      is_delete: true
-    }, {
-      where: {
-        id: id
-      }
-    })
-    return result
-  }
-
-  // 恢复
-  static async contentRecover(id = 0) {
-    const result = await ArticleContent.update({
-      is_delete: false
-    }, {
-      where: {
-        id:id
-      }
-    })
-    return result
+  // 获取资源id 根据富文本
+  static getAllDataIds(rich_content = ''){
+    return  []
   }
 }

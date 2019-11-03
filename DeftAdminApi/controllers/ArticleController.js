@@ -104,9 +104,21 @@ module.exports = class ArticleController {
     }
   }
 
+  // 文章详情
+  static async articleDetail(ctx, next){
+    console.log(ctx.params)
+    const data =  await ArticleService.articleDetail(ctx.params.id)
+    ctx.body = {
+      code: 20000,
+      message: '获取成功',
+      data: data
+    }
+  }
+
   // 创建
   static async articleCreated(ctx, next) {
     const body = ctx.request.body
+    body.author_id = ctx.session.id
     const id = await ArticleService.articleAdd(body)
     ctx.body = {
       code: 20000,
@@ -120,7 +132,9 @@ module.exports = class ArticleController {
   // 编辑
   static async articleEdit(ctx, next) {
     const { id } =  ctx.params
-    const result = await ArticleService.articleEdit(ctx.request.body, id)
+    const body = ctx.request.body
+    body.author_id = ctx.session.id
+    const result = await ArticleService.articleEdit(body, id)
     ctx.body = {
       code: 20000,
       message: '成功'
@@ -206,66 +220,4 @@ module.exports = class ArticleController {
       message: '成功'
     }
   }
-
-  /// 内容
-  // 列表
-  static async contentList(ctx, next) {
-    // 查找
-    const data = await ArticleService.contentList(ctx.query)
-
-    ctx.body = {
-      code: 20000,
-      message: '获取成功',
-      data: {
-        items:data.rows,
-        total:data.count
-      }
-    }
-  }
-
-  // 创建
-  static async contentCreated(ctx, next) {
-    const body = ctx.request.body
-    // 设置作者编号
-    body.author_id = ctx.session.id
-    const id = await ArticleService.contentAdd(body)
-    ctx.body = {
-      code: 20000,
-      message:'成功',
-      data: {
-        id: id
-      }
-    }
-  }
-
-  // 编辑
-  static async contentEdit(ctx, next) {
-    const { id } =  ctx.params
-    const result = await ArticleService.contentEdit(ctx.request.body, id)
-    ctx.body = {
-      code: 20000,
-      message: '成功'
-    }
-  }
-
-  // 删除
-  static async contentDelete(ctx, next) {
-    const { id } = ctx.params
-    const result  = await ArticleService.contentDelete(id)
-    ctx.body = {
-      code: 20000,
-      message: '成功'
-    }
-  }
-
-  // 恢复
-  static async contentRecover(ctx, next) {
-    const { id } = ctx.params
-    const result = await ArticleService.contentRecover(id)
-    ctx.body = {
-      code: 20000,
-      message: '成功'
-    }
-  }
-
 }
