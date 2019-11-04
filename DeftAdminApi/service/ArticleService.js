@@ -56,8 +56,17 @@ ArticleCate.belongsToMany(Article, {
   constraints: false
 })
 
+ArticleCate.hasMany(ArticleCate, {
+  foreignKey: 'parent_id',
+  as: 'subCates',
+  constraints: false
+})
+ArticleCate.belongsTo(ArticleCate, {
+  foreignKey: 'parent_id',
+  as: 'father',
+  constraints: false
+})
 
-const fileTool = require('../utils/fileTool')
 module.exports = class ArticleService {
 
 
@@ -73,8 +82,23 @@ module.exports = class ArticleService {
     return data
   }
 
+  // 分类
+  static async cateParentList({ page = 1, limit = 20 }){
+
+    //  查询
+    const data = await ArticleCate.findAndCountAll({
+      where: {
+        parent_id: 0
+      },
+      offset: ((page-1) * limit)+0,
+      limit: parseInt(limit)
+    })
+
+    return data
+  }
+
   // 文章分类
-  static async cateList({ page = 1, limit = 20, name = '', path = '', parent_id = 0, sort = '+sort' }){
+  static async cateList({ page = 1, limit = 20, name = '', path = '', sort = '+sort' }){
     const orders = (sort).split(',')
     const orderby = []
     for(let sortItem of orders){
@@ -82,6 +106,7 @@ module.exports = class ArticleService {
     }
 
     const where = {
+      parent_id:0,
       name: {
         [Sequelize.Op.like]: `%${ name }%`,
       }
@@ -96,6 +121,16 @@ module.exports = class ArticleService {
           include: ['url','id']
         },
         as: 'icon'
+      },{
+        model: ArticleCate,
+        include: {
+          model: Source,
+          attributes:{
+            include: ['url','id']
+          },
+          as: 'icon'
+        },
+        as: 'subCates'
       }],
       order:orderby,
       offset: ((page-1) * limit)+0,

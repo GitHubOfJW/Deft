@@ -19,6 +19,65 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
+      <!-- 展开模版开始 -->
+      <el-table-column type="expand">
+        <template slot-scope="scope">
+          <el-table
+            :key="tableKey+'1'"
+            :data="scope.row.subCates"
+            border
+            fit
+            highlight-current-row
+            style="width: 100%;"
+            :header-row-style="subHeaderRowStyle"
+          >
+            <el-table-column :label="$t('table.id')" prop="id" sortable="custom" align="center" width="80">
+              <template slot-scope="innerScope">
+                <span>{{ innerScope.row.id }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('table.name')" width="300px" align="center">
+              <template slot-scope="innerScope">
+                <span>{{ innerScope.row.name }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('table.pinyin')" width="300px" align="center">
+              <template slot-scope="innerScope">
+                <span>{{ innerScope.row.pinyin }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('table.appIcon')" width="150px" align="center">
+              <template slot-scope="innerScope">
+                <span>{{ innerScope.row.app_icon }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="Icon">
+              <template slot-scope="innerScope">
+                <img v-if="innerScope.row.icon" :src="innerScope.row.icon.url" height="50">
+              </template>
+            </el-table-column>
+            <el-table-column align="center" :label="$t('table.article_count')">
+              <template slot-scope="innerScope">
+                {{ innerScope.row.count || 0 }}
+              </template>
+            </el-table-column>
+            <el-table-column fixed="right" :label="$t('table.actions')" align="center" width="160" class-name="small-padding fixed-width">
+              <template slot-scope="{row}">
+                <el-button type="primary" size="mini" @click="handleUpdate(row)">
+                  {{ $t('table.edit') }}
+                </el-button>
+                <el-button v-if="!row.is_delete" size="mini" type="danger" @click="handleDelete(row,'delete')">
+                  {{ $t('table.delete') }}
+                </el-button>
+                <el-button v-else size="mini" type="warning" @click="handleDelete(row,'recover')">
+                  {{ $t('table.recover') }}
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </template>
+      </el-table-column>
+      <!-- 展开模版结束 -->
       <el-table-column :label="$t('table.id')" prop="id" sortable="custom" align="center" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
@@ -74,6 +133,11 @@
         <el-form-item :label="$t('table.pinyin')" prop="pinyin">
           <el-input v-model="temp.pinyin" />
         </el-form-item>
+        <el-form-item label="所属分类" prop="parent_id">
+          <el-select v-model="temp.parent_id" placeholder="请选择">
+            <el-option v-for="item in parentCates" :key="item.id" :label="item.name" :value="item.id" />
+          </el-select>
+        </el-form-item>
         <el-form-item :label="$t('table.appIcon')" prop="app_icon">
           <el-input v-model="temp.app_icon" />
         </el-form-item>
@@ -100,7 +164,7 @@
 </template>
 
 <script>
-import { fetchCateList, createCate, updateCate, deleteCateById } from '@/api/article'
+import { fetchCateList, createCate, updateCate, deleteCateById, fetchAllParentCate } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
@@ -114,6 +178,10 @@ export default {
       list: null,
       total: 0,
       listLoading: true,
+      parentCates: [{
+        id: 0,
+        name: '根分类'
+      }],
       listQuery: {
         page: 1,
         limit: 20
@@ -133,7 +201,9 @@ export default {
         id: undefined,
         name: '',
         icon: '',
-        pinyin: ''
+        pinyin: '',
+        parent_id: undefined,
+        pre_parentId: undefined
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -148,12 +218,39 @@ export default {
       }
     }
   },
+  computed: {
+    subHeaderRowStyle() {
+      return {
+        display: 'none'
+      }
+    }
+  },
   created() {
     this.getList()
   },
   methods: {
     tableRowClassName({ row }) {
       return row.is_delete ? 'warning-row' : ''
+    },
+    getParentList() {
+      // if (this.temp.parent_id === 0) {
+      //   this.parentCates.splice(1, this.parentCates.length)
+      //   return
+      // }
+      fetchAllParentCate().then(response => {
+        if (response.code === 20000) {
+          if (typeof this.temp.parent_id !== 'undefined' && this.temp.parent_id === 0) {
+            this.parentCates.splice(1, this.parentCates.length)
+            for (const item of response.data.items) {
+              if (item.id !== this.temp.id) {
+                this.parentCates.push(item)
+              }
+            }
+          } else {
+            this.parentCates.splice(1, this.parentCates.length, ...response.data.items)
+          }
+        }
+      })
     },
     getList() {
       this.listLoading = true
@@ -194,13 +291,16 @@ export default {
       this.temp = {
         id: undefined,
         name: '',
-        descr: '',
-        big_url: ''
+        icon: '',
+        pinyin: '',
+        parent_id: undefined,
+        pre_parentId: undefined
       }
       this.fileList.splice(0, this.fileList.length)
     },
     handleCreate() {
       this.resetTemp()
+      this.getParentList()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -216,7 +316,15 @@ export default {
               id: this.temp.icon_id,
               url: this.temp.icon_url
             }
-            this.list.unshift(this.temp)
+            if (this.temp.parent_id === 0) {
+              this.list.unshift(this.temp)
+            } else {
+              for (const parentItem of this.list) {
+                if (parentItem.id === this.temp.parent_id) {
+                  parentItem.subCates.unshift(this.temp)
+                }
+              }
+            }
             this.dialogFormVisible = false
             this.$forceUpdate()
             this.$notify({
@@ -231,6 +339,8 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
+      this.temp.pre_parentId = this.temp.parent_id
+      this.getParentList()
       this.temp.icon_id = row.icon.id
       this.temp.icon_url = row.icon.url
       this.fileList.splice(0, this.fileList.length, {
@@ -248,11 +358,49 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           updateCate(tempData).then(() => {
-            for (const v of this.list) {
-              if (v.id === this.temp.id) {
-                const index = this.list.indexOf(v)
-                this.list.splice(index, 1, this.temp)
-                break
+            // 如果上次的ID和这次的一样，找到更换，如果不一样，去掉上次的，新增本次的
+            if (this.temp.pre_parentId === this.temp.parent_id) {
+              // 如果parent_id 是 0 直接遍历更新
+              for (const v of this.list) {
+                if (this.temp.parent_id === 0 && v.id === this.temp.id) {
+                  const index = this.list.indexOf(v)
+                  this.list.splice(index, 1, this.temp)
+                  break
+                } else if (this.temp.parent_id !== 0 && v.id === this.temp.parent_id) {
+                  for (const subV of v.subCates) {
+                    if (subV.id === this.temp.id) {
+                      const index = v.subCates.indexOf(subV)
+                      v.subCates.splice(index, 1, this.temp)
+                      break
+                    }
+                  }
+                }
+              }
+            } else {
+              // 先找到原来的未知，删掉
+              for (const v of this.list) {
+                if (this.temp.pre_parentId === 0 && v.id === this.temp.id) {
+                  const index = this.list.indexOf(v)
+                  this.list.splice(index, 1)
+                  break
+                } else if (this.temp.pre_parentId !== 0 && v.id === this.temp.pre_parentId) {
+                  for (const subV of v.subCates) {
+                    if (subV.id === this.temp.id) {
+                      const index = v.subCates.indexOf(subV)
+                      v.subCates.splice(index, 1)
+                      break
+                    }
+                  }
+                }
+              }
+              // 新增
+              for (const v of this.list) {
+                if (this.temp.parent_id === 0) {
+                  this.list.unshift(this.temp)
+                  break
+                } else if (this.temp.parent_id !== 0 && v.id === this.temp.parent_id) {
+                  v.subCates.unshift(this.temp)
+                }
               }
             }
             this.dialogFormVisible = false

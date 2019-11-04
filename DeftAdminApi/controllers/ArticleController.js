@@ -27,6 +27,19 @@ module.exports = class ArticleController {
       }
     }
   }
+
+  // 分类
+  static async cateParentList(ctx, next){
+    const data = await ArticleService.cateParentList(ctx.query)
+    ctx.body = {
+      code: 20000,
+      message: '获取成功',
+      data: {
+        items: data.rows,
+        total: data.counts
+      }
+    }
+  }
   
   // 分类
   static async cateList(ctx, next) {

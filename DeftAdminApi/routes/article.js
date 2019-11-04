@@ -9,6 +9,7 @@ router.delete('/delete/:id', controller.articleDelete)
 router.put('/recover/:id', controller.articleRecover)
 router.get('/detail/:id', controller.articleDetail)
 
+router.get('/cate/parentCates', controller.cateParentList)
 router.get('/cate/cates', controller.allCates)
 router.get('/cate/list', controller.cateList)
 router.post('/cate/add', controller.cateCreated)

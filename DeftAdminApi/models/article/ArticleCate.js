@@ -31,6 +31,11 @@ ArticleCate.init({
       type: Sequelize.STRING(50),
       comment: '拼音'
     },
+    parent_id: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      comment: '父id'
+    },
     count: {
       type: Sequelize.SMALLINT,
       defaultValue: 0,

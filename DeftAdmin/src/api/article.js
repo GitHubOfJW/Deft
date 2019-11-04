@@ -8,6 +8,14 @@ export function fetchCateList(query = {}) {
   })
 }
 
+export function fetchAllParentCate(query = {}) {
+  return request({
+    url: '/article/cate/parentCates',
+    method: 'get',
+    params: query
+  })
+}
+
 export function fetchAllCate(query = {}) {
   return request({
     url: '/article/cate/cates',
