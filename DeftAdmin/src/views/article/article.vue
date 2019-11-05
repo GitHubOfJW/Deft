@@ -147,9 +147,10 @@
           <el-radio v-model="temp.is_works" name="is_works" label="0">否</el-radio>
         </el-form-item>
         <el-form-item :label="$t('table.cate')" prop="cate_ids">
-          <el-select v-model="temp.cate_ids" multiple filterable placeholder="请选择所属的分类" @change="cateChange">
+          <!-- <el-select v-model="temp.cate_ids" multiple filterable placeholder="请选择所属的分类" @change="cateChange">
             <el-option v-for="item in cateList" :key="item.id" :label="item.name" :value="item.id" />
-          </el-select>
+          </el-select> -->
+          <el-cascader v-model="temp.cate_ids" :props="{ label:'name', value: 'id', children: 'subCates', multiple: true }" :options="cateList" />
         </el-form-item>
         <el-form-item label="文章标签" prop="label_ids">
           <el-select v-model="temp.label_ids" multiple filterable placeholder="请选择">
@@ -211,6 +212,7 @@ export default {
       },
       cateList: [],
       labelList: [],
+      allSubCates:[],
       fileList: [],
       dialogImageUrl: '',
       dialogVisible: false,
@@ -263,6 +265,12 @@ export default {
       fetchAllCate().then(response => {
         this.cateList.splice(0, this.cateList.length)
         this.cateList.push(...response.data.items)
+        this.allSubCates.splice(0,this.allSubCates.length)
+        this.cateList.forEach(item => {
+          item.subCates.forEach(subItem => {
+            this.allSubCates.push(subItem)
+          })
+        })
         this.$forceUpdate()
       })
     },
@@ -282,14 +290,6 @@ export default {
           this.listLoading = false
         }, 1 * 600)
       })
-    },
-    cateChange(val) {
-      for (const item of this.cateList) {
-        if (val === item.id) {
-          this.temp.cate = item
-          break
-        }
-      }
     },
     handleFilter() {
       this.listQuery.page = 1
@@ -350,7 +350,7 @@ export default {
             this.temp.id = response.data.id
             this.temp.is_recommend = this.temp.is_recommend === '1'
             this.temp.is_works = this.temp.is_works === '1'
-            this.temp.articlecates = this.cateList.filter(cate => this.temp.cate_ids.includes(cate.id))
+            this.temp.articlecates = this.allSubCates.filter(cate => this.temp.cate_ids.map(items => items[1]).includes(cate.id))
             this.temp.articlelabels = this.labelList.filter(label => this.temp.label_ids.includes(label.id))
             this.list.unshift(this.temp)
             this.$forceUpdate()
@@ -368,7 +368,7 @@ export default {
     handleUpdate(row) {
       this.temp = Object.assign({}, {
         ...row,
-        cate_ids: (row.articlecates || []).map(item => item.id),
+        cate_ids: [...(row.articlecates || []).map(item => [item.parent_id,item.id])],
         label_ids: (row.articlelabels || []).map(item => item.id),
         is_recommend: row.is_recommend ? '1' : '0',
         is_works: row.is_finished ? '1' : '0',
@@ -398,9 +398,10 @@ export default {
                 const index = this.list.indexOf(v)
                 this.temp.is_recommend = this.temp.is_recommend === '1'
                 this.temp.is_works = this.temp.is_works === '1'
-                this.temp.articlecates = this.cateList.filter(cate => this.temp.cate_ids.includes(cate.id))
+                this.temp.articlecates = this.allSubCates.filter(cate => this.temp.cate_ids.map(items => items[1]).includes(cate.id))
                 this.temp.articlelabels = this.labelList.filter(label => this.temp.label_ids.includes(label.id))
                 this.list.splice(index, 1, this.temp)
+                this.$forceUpdate()
                 break
               }
             }
@@ -449,7 +450,7 @@ export default {
       })
     },
     handleRemove(file, fileList) {
-      console.log(file, fileList)
+      // console.log(file, fileList)
     },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url

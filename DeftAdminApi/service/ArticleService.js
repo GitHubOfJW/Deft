@@ -72,7 +72,28 @@ module.exports = class ArticleService {
 
   // 所有分类
   static async allCates() {
-    const data = await ArticleCate.findAndCountAll()
+    const data = await ArticleCate.findAndCountAll({
+      where: {
+        parent_id:0
+      },
+      include:[{
+        model: Source,
+        attributes:{
+          include: ['url','id']
+        },
+        as: 'icon'
+      },{
+        model: ArticleCate,
+        include: {
+          model: Source,
+          attributes:{
+            include: ['url','id']
+          },
+          as: 'icon'
+        },
+        as: 'subCates'
+      }]
+    })
     return data
   }
 
@@ -175,6 +196,14 @@ module.exports = class ArticleService {
         delete body.sort
         delete body.is_delete
 
+        // 如果之前就是根分类，现在也必须是根分类
+        if(cate.parent_id == 0){
+          delete body.parent_id
+        }else if(body.parent_id == 0) { // 如果之前不是根分类，现在也必须不能是根分类
+          delete body.parent_id
+        }
+        
+        // 累计资源
         if(body.icon_id){
            if(body.icon_id != cate.icon_id){
             // 新的加
@@ -199,12 +228,13 @@ module.exports = class ArticleService {
         }else{
           delete body.icon_id
         }
-    
+
         // 更新
         const result = await ArticleCate.update(body,{
           where: {
             id: id
-          }
+          },
+          transaction: t
         })
         return result
       })() 
@@ -313,21 +343,15 @@ module.exports = class ArticleService {
           }
         },{transaction:t})
 
-        // 更新计数
-        await ArticleCate.update({count:sequelize.literal('`count` +1')}, {
-          where: {
-            id: {
-              [Sequelize.Op.in]: body.cate_ids || []
-            }
-          }
-        },{transaction:t})
-
         // 设置文章对应的分类
         if(body.cate_ids){
           const cates = await ArticleCate.findAll({
             where: {
               id: {
-                [Sequelize.Op.in]: body.cate_ids || []
+                [Sequelize.Op.in]: (body.cate_ids || []).map(item => item[1])
+              },
+              parent_id: {
+                [Sequelize.Op.ne]: 0
               }
             }
           },{transaction: t})
@@ -400,28 +424,7 @@ module.exports = class ArticleService {
        }
 
         // 更新计数
-        if(!body.rich_content){
-          const ids = edit_article.articlecates.map(item => item.id)
-
-          await ArticleCate.update({count:sequelize.literal('`count` -1')}, {
-            where: {
-              id: {
-                [Sequelize.Op.in]: ids
-              }
-            },
-            transaction:t
-          })
-
-          await ArticleCate.update({count:sequelize.literal('`count` +1')}, {
-            where: {
-              id: {
-                [Sequelize.Op.in]: body.cate_ids || []
-              }
-            },
-            transaction:t
-          })
-
-        }else{
+        if(body.rich_content){
           body.publish_time = new Date()
           // 获取复文本中的所有资源id
           await Source.update({
@@ -435,17 +438,18 @@ module.exports = class ArticleService {
             transaction:t
           })
           // 然后在累计文章中的资源
-          const ids = this.getAllDataIds(body.rich_text)
+          const ids = this.getAllDataIds(body.rich_content)
           await Source.update({
             ref_count: Sequelize.literal('`ref_count` +1')
           },{
             where: {
               id: {
-                [Sequelize.Op.in]: (edit_article.sources || '').split(',')
+                [Sequelize.Op.in]: ids || []
               }
             },
             transaction:t
           })
+          body.sources = ids.join(',')
         }
         
         // 更新
@@ -456,7 +460,10 @@ module.exports = class ArticleService {
           const cates = await ArticleCate.findAll({
             where: {
               id: {
-                [Sequelize.Op.in]: body.cate_ids || []
+                [Sequelize.Op.in]: (body.cate_ids || []).map(item => item[1])
+              },
+              parent_id: {
+                [Sequelize.Op.ne]: 0
               }
             }
           },{transaction: t})
@@ -580,8 +587,68 @@ module.exports = class ArticleService {
     return result
   }
 
+  // 计算分类
+  static async computedCatesCount(){
+    // 首先查统计所有子分类
+    return sequelize.transaction(t => {
+      return (async ()=>  {
+        // 获取所有子分类
+        const sub_cates = await ArticleCate.findAll({
+          where: {
+            parent_id: {
+              [Sequelize.Op.ne]: 0
+            }
+          },
+          transaction:t
+        })
+        // 更新
+        for(let subCate of sub_cates) {
+          const count = await ArticleCateRel.count({
+            where:{
+              cate_id: subCate.id
+            },
+            transaction: t
+          })
+          await ArticleCate.update({count: count},{where:{id: subCate.id},transaction:t})
+        }
+        // 更新大分类
+        const cates = await ArticleCate.findAll({
+          where: {
+            parent_id: {
+              [Sequelize.Op.eq]: 0
+            }
+          },
+          transaction:t
+        })
+        // 更新
+        for(let cate of cates) {
+          const sub_data = await ArticleCate.findAll({
+            attributes: [[sequelize.fn('SUM',sequelize.col('count')),'sub_total']]
+          },{
+            where:{
+              parent_id: cate.id
+            },
+            transaction: t
+          })
+          await ArticleCate.update({count: sub_data.sub_total},{where:{id: cate.id},transaction:t})
+        }
+        return true
+      })()
+    })
+  }
+
   // 获取资源id 根据富文本
   static getAllDataIds(rich_content = ''){
-    return  []
+    // data-sourceid="${v.id}"
+    const exg = /data-sourceid="(\d?)"/g
+    const texts = rich_content.match(exg)
+    const ids = []
+    if(texts) {
+      for(let text of texts){
+        const idReg = text.match(/\d+/)
+        ids.push(Number(idReg[0]))
+      }
+    }
+    return  ids
   }
 }

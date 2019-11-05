@@ -6,6 +6,8 @@ const BaseService = require('../service/BaseService')
 const { appInfo, appInfo1} = require('../config')
 const uuidv4 = require('uuid/v4')
 const fs = require('fs')
+const ArticleService = require('../service/ArticleService')
+
 module.exports = class IndexController {
 
   // 检查权限
@@ -163,6 +165,15 @@ module.exports = class IndexController {
       data: data
     }
 
+  }
+
+  // 定时人物
+  static async taskAction(ctx, next){
+    await ArticleService.computedCatesCount()
+    ctx.body = {
+      code: 20000,
+      message: '成功'
+    }
   }
 
   static async streamFile (ctx, next) {
