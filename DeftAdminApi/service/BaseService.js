@@ -4,6 +4,7 @@ const moment =  require('moment')
 const uuid = require('uuid/v4')
 const { VerCode } = require('../models/bases/VerCode')
 const { Source } = require('../models/bases/Source')
+const fileTool = require('../utils/fileTool')
 
 module.exports = class BaseService {
   // 验证验证码
@@ -82,5 +83,41 @@ module.exports = class BaseService {
   // 恢复
   static async sourceRecover(id = 0){
     return Source.update()
+  }
+
+
+  // 定时清理垃圾文件
+  static async sourceDestory(){
+    const destorys = await Source.findAll({
+      where: {
+        ref_count: {
+          [Sequelize.Op.lte]: 0
+        },
+        is_delete: false,
+        createdAt: {
+          [Sequelize.Op.lte]: moment().add(-7,'days').toDate()
+        }
+      }
+    })
+    // 遍历删除
+    for(let item of destorys){
+      fileTool.destorySync(item.url)
+    }
+
+    // 同时清楚数据库表中的数据
+    await Source.update({
+      is_delete: true,
+    },{
+      where: {
+        ref_count: {
+          [Sequelize.Op.lte]: 0
+        },
+        createdAt: {
+          [Sequelize.Op.lte]: moment().add(-7,'days').toDate()
+        }
+      }
+    })
+
+    return true
   }
 }

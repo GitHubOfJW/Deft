@@ -212,7 +212,7 @@ export default {
       },
       cateList: [],
       labelList: [],
-      allSubCates:[],
+      allSubCates: [],
       fileList: [],
       dialogImageUrl: '',
       dialogVisible: false,
@@ -265,7 +265,7 @@ export default {
       fetchAllCate().then(response => {
         this.cateList.splice(0, this.cateList.length)
         this.cateList.push(...response.data.items)
-        this.allSubCates.splice(0,this.allSubCates.length)
+        this.allSubCates.splice(0, this.allSubCates.length)
         this.cateList.forEach(item => {
           item.subCates.forEach(subItem => {
             this.allSubCates.push(subItem)
@@ -368,7 +368,7 @@ export default {
     handleUpdate(row) {
       this.temp = Object.assign({}, {
         ...row,
-        cate_ids: [...(row.articlecates || []).map(item => [item.parent_id,item.id])],
+        cate_ids: [...(row.articlecates || []).map(item => [item.parent_id, item.id])],
         label_ids: (row.articlelabels || []).map(item => item.id),
         is_recommend: row.is_recommend ? '1' : '0',
         is_works: row.is_finished ? '1' : '0',

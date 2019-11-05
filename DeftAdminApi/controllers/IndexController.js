@@ -170,6 +170,7 @@ module.exports = class IndexController {
   // 定时人物
   static async taskAction(ctx, next){
     await ArticleService.computedCatesCount()
+    await BaseService.sourceDestory()
     ctx.body = {
       code: 20000,
       message: '成功'
