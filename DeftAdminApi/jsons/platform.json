@@ -1,0 +1,24 @@
+[{
+  "id": 1,
+  "name": "微信小程序",
+  "key": "miniprogram",
+  "enable": 1
+},
+{
+  "id": 2,
+  "name": "移动app",
+  "key": "application",
+  "enable": 0
+},
+{
+  "id": 3,
+  "name": "h5平台",
+  "key": "html5",
+  "enable": 0
+},
+{
+  "id": 4,
+  "name": "pc平台",
+  "key": "desktop",
+  "enable": 0
+}]

@@ -1,0 +1,1 @@
+<view class="panel _div data-v-3ddc5ca8"><view class="header data-v-3ddc5ca8"><view style="{{'padding-left:'+(titleOffset+'rpx')+';'}}" class="data-v-3ddc5ca8">{{title}}</view></view><view style="{{'padding-left:'+(pLeft+'rpx')+';'+('padding-right:'+(pRight+'rpx')+';')}}" class="data-v-3ddc5ca8"><slot></slot></view></view>

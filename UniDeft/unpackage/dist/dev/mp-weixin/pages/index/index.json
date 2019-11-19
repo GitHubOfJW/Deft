@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "uni-app",
+  "disableScroll": true,
+  "usingComponents": {
+    "auto-menu": "/components/common/AutoMenu",
+    "mescroll-uni": "/node-modules/mescroll-uni/mescroll-uni",
+    "panel": "/components/common/Panel",
+    "article-item": "/pages/index/components/ArticleItem"
+  }
+}

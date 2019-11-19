@@ -1,11 +1,8 @@
 const { Member, Sequelize } = require('../models/Member')
 const { RoleRuleRel } = require('../models/permission/RoleRuleRel')
 const { Rule } = require('../models/permission/Rule')
-const path =  require('path')
 const BaseService = require('../service/BaseService')
 const { appInfo, appInfo1} = require('../config')
-const uuidv4 = require('uuid/v4')
-const fs = require('fs')
 const ArticleService = require('../service/ArticleService')
 
 module.exports = class IndexController {
@@ -167,7 +164,7 @@ module.exports = class IndexController {
 
   }
 
-  // 定时人物
+  // 定时任务
   static async taskAction(ctx, next){
     await ArticleService.computedCatesCount()
     await BaseService.sourceDestory()

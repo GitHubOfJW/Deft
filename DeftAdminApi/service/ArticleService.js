@@ -67,6 +67,11 @@ ArticleCate.belongsTo(ArticleCate, {
   constraints: false
 })
 
+// 小程序获取最新分类
+Article.hasMany(ArticleCateRel, {
+  foreignKey: 'article_id'
+})
+
 module.exports = class ArticleService {
 
 
@@ -119,7 +124,7 @@ module.exports = class ArticleService {
   }
 
   // 文章分类
-  static async cateList({ page = 1, limit = 20, name = '', path = '', sort = '+sort' }){
+  static async cateList({ page = 1, limit = 20, name = '', path = '', sort = '+sort',is_delete = false}){
     const orders = (sort).split(',')
     const orderby = []
     for(let sortItem of orders){
@@ -128,6 +133,7 @@ module.exports = class ArticleService {
 
     const where = {
       parent_id:0,
+      is_delete:is_delete,
       name: {
         [Sequelize.Op.like]: `%${ name }%`,
       }
@@ -268,7 +274,7 @@ module.exports = class ArticleService {
 
 
     // 文章
-  static async articleList({ page = 1, limit = 20, title = '', path = '', parent_id = 0, sort = '+sort' }){
+  static async articleList({ page = 1, limit = 20, title = '', path = '', parent_id = 0, sort = '+sort', is_delete = false}){
     const orders = (sort).split(',')
     const orderby = []
     for(let sortItem of orders){
@@ -276,6 +282,7 @@ module.exports = class ArticleService {
     }
 
     const where = {
+      is_delete: is_delete,
       title: {
         [Sequelize.Op.like]: `%${ title }%`,
       }
@@ -650,5 +657,83 @@ module.exports = class ArticleService {
       }
     }
     return  ids
+  }
+
+
+  /**
+   * 下面是小程序的方法
+   */
+  static getLastest({ page = 1, limit = 20, cate_id = 0}){
+    // 默认为0 如果不传则表示大分类
+    // 如果传要先查一下当前的分类是大分类还是小分类
+    return sequelize.transaction(t => {
+      return (async () => {
+        // 查询分类
+        const cate = await ArticleCate.findOne({
+          where: {
+            id: cate_id
+          },
+          transaction:t
+        })
+        // 根据分类查询文章
+        const article_where = {}
+        if(cate){
+          // 如果是大分类
+          if(cate.parent_id == 0){
+            const cates = await ArticleCate.findAll({
+              where: {
+                parent_id: cate.id
+              },
+              transaction:t
+            })
+            // 查询
+            return await Article.findAndCountAll({
+              include: [{
+                model: ArticleCateRel,
+                scope: {
+                  cate_id: {
+                    [Sequelize.Op.in]: cates.map(cate => cate.id)
+                  }
+                }
+              },{
+                model: Source,
+                as: 'pic'
+              }],
+              order: [[Sequelize.col('id'),'DESC']],
+              offset: (page - 1) * limit,
+              limit: parseInt(limit),
+              transaction:t
+            })
+          }else{ // 如果小小分类
+            return await Article.findAndCountAll({
+              include: [{
+                model: ArticleCateRel,
+                scope: {
+                  cate_id: cate.id
+                }
+              },{
+                model: Source,
+                as: 'pic'
+              }],
+              order: [[Sequelize.col('id'),'DESC']],
+              offset: (page - 1) * limit,
+              limit: parseInt(limit),
+              transaction:t
+            })
+          }
+        }else{
+          return await Article.findAndCountAll({
+            include:[{
+              model: Source,
+              as: 'pic'
+            }],
+            order: [[Sequelize.col('id'),'DESC']],
+            offset: (page - 1) * limit,
+            limit: parseInt(limit),
+            transaction:t
+          })
+        }
+      })()
+    })
   }
 }

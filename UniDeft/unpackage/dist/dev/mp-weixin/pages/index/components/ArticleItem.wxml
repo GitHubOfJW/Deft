@@ -1,0 +1,1 @@
+<view class="article data-v-dc1dd1d6"><image src="{{article.pic.url}}" class="data-v-dc1dd1d6"></image><label class="data-v-dc1dd1d6">{{article.title}}</label></view>

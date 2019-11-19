@@ -1,5 +1,6 @@
 export default {
   route: {
+    banner: 'Banner',
     articleLabel: '文章标签',
     articleCate: '文章分类',
     article: '文章',
@@ -114,6 +115,8 @@ export default {
     imageUploadTips: '由于我在使用时它只有vue@1版本，而且和mockjs不兼容，所以自己改造了一下，如果大家要使用的话，优先还是使用官方版本。'
   },
   table: {
+    url: '链接',
+    router: '路由',
     appIcon: 'app图标',
     picture: '图片',
     calorie: '卡路里',

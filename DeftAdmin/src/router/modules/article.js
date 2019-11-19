@@ -2,12 +2,12 @@
 
 import Layout from '@/layout'
 
-const musicRouter = {
+const articleRouter = {
   path: '/article',
   component: Layout,
   redirect: '/article/labels',
   alwaysShow: true, // will always show the root menu
-  name: 'DietCate',
+  name: 'Articles',
   meta: {
     title: 'article',
     icon: 'list'
@@ -24,7 +24,7 @@ const musicRouter = {
     {
       path: 'cate',
       component: () => import('@/views/article/articleCate'),
-      name: 'DietCate',
+      name: 'ArticleCate',
       meta: {
         title: 'articleCate'
       }
@@ -32,7 +32,7 @@ const musicRouter = {
     {
       path: 'article',
       component: () => import('@/views/article/article'),
-      name: 'Diet',
+      name: 'Article',
       meta: {
         title: 'article'
       }
@@ -40,4 +40,4 @@ const musicRouter = {
   ]
 }
 
-export default musicRouter
+export default articleRouter

@@ -99,6 +99,19 @@ for(let fileName of files){
   }
 }
 
+// mini Routers
+const miniFiles = fs.readdirSync('./routes-mini')
+// 遍历加载路由
+for(let fileName of miniFiles){
+  const js_file = path.join(__dirname,'routes-mini',fileName)
+  if(fs.existsSync){
+    const router = require(js_file)
+    app.use(router.routes(), router.allowedMethods())
+  }else{
+    console.log(js_file,'不存在')
+  }
+}
+
 // error handler
 onerror(app)
 

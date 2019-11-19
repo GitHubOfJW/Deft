@@ -24,7 +24,7 @@ Article.init({
       comment: '视频id'
     },
     title: {
-      type: Sequelize.STRING(10),
+      type: Sequelize.STRING,
       comment: '标题'
     },
     author_id: {
