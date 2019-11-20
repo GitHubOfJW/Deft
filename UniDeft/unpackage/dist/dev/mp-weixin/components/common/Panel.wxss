@@ -31,8 +31,7 @@ panel.data-v-3ddc5ca8 {
   margin-top: 20rpx;
   text-align: left;
   font-size: 30rpx;
-  padding-top: 20rpx;
-  padding-bottom: 20rpx;
+  padding-top: 5px;
 }
 .panel .header.data-v-3ddc5ca8 {
     padding-bottom: 20rpx;

@@ -9,23 +9,47 @@ module.exports =  class HomeController {
     // 获取首页的banner
     const banners = await BannerService.miniBanners()
     // 获取最新上架
-    const latest = await ArticleService.getLastest(1,10)
+    const latest = await ArticleService.getLastest(1,6)
+    // 获取热门推荐
+    const hots = await ArticleService.getHots(1,6)
     // 组织数据
     const datas = []
     datas.push({
       type: 'banner',
       data: banners
     })
+    // 最新上线
     datas.push({
       title: '最新上线',
-      type: 'latest',
+      type: 'panel',
       data: latest.rows
+    })
+    // 热门推荐
+    datas.push({
+      title: '热门推荐',
+      type: 'panel',
+      data: hots.rows
     })
     
     ctx.body = {
       code: 0,
       message: '获取成功',
       data: datas
+    }
+  }
+
+  // 列表数据
+  static async list(ctx, next){
+    // 查询列表
+    const data = await ArticleService.miniArticleList(ctx.query)
+
+    ctx.body = {
+      code: 0,
+      message: '成功',
+      data: {
+        total: data.count,
+        items: data.rows
+      }
     }
   }
 
@@ -41,10 +65,9 @@ module.exports =  class HomeController {
       code: 0,
       message: '获取成功',
       data: {
-        total: data.rows,
+        total: data.count,
         items: data.rows
       }
     }
   }
-  
 }

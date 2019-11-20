@@ -3,6 +3,7 @@
 		<!-- 顶部滚动条 -->
 		<auto-menu :menus="cateMenus"></auto-menu>
 		<mescroll-uni class="contents" top="80" :up="upOptions" :down="downOptions" @down="downCallback" @up="upCallback">
+			<view>
 			<block v-for="(flexItem,index) of flexDatas" :key="index">
 				<!-- swiper -->
 				<swiper class="swiper" v-if="flexItem.type == 'banner'" :indicator-dots="true">
@@ -11,15 +12,21 @@
 					</swiper-item>
 				</swiper>
 				<!-- 最新上线 -->
-				<panel v-if="flexItem.type == 'latest'" :title="flexItem.title" :pLeft="0" :pRight="0">
-					<scroll-view class="latest" :scroll-x="true">
+				<panel v-if="flexItem.type == 'panel'" :title="flexItem.title" :pLeft="0" :pRight="0">
+					<scroll-view class="home_pannel" :scroll-x="true">
 						<block v-for="article in flexItem.data" :key="article.id">
 							<article-item :article="article"></article-item>
 						</block>
 					</scroll-view>
 				</panel>
 			</block>
+			</view>
+			<view class="list">
 			<!-- 下面是下一页 -->
+			<block v-for="article in articles" :key="article.id">
+				<article-cell :article="article"></article-cell>
+			</block>
+			</view>
 		</mescroll-uni>
 	</view>
 </template>
@@ -29,12 +36,15 @@
 	import AutoMenu from '@/components/common/AutoMenu.vue'
 	import Panel from '@/components/common/Panel.vue'
 	import ArticleItem from './components/ArticleItem.vue'
+	import ArticleCell from './components/ArticleCell.vue'
+	
 	export default {
 		components: {
 			AutoMenu: AutoMenu,
 			MescrollUni: MescrollUni,
 			Panel: Panel,
-			ArticleItem: ArticleItem
+			ArticleItem: ArticleItem,
+			ArticleCell: ArticleCell
 		},
 		data() {
 			return {
@@ -44,8 +54,10 @@
 					auto:true
 				},
 				upOptions: {
-					auto: false
-				}
+					auto: true,
+					textNoMore: '无更多数据'
+				},
+				articles: []
 			}
 		},
 		onLoad() {
@@ -78,6 +90,22 @@
 			},
 			// 上拉刷新
 			upCallback(mescroll){
+				console.log('加载更多',mescroll.num)
+				this.$uRequest.get({
+					url: '/mini/home/articles',
+					success: (res) => {
+						if(res.code === 0){
+							this.articles.splice(this.articles.length,0,...res.data.items)
+							mescroll.endBySize(res.data.items.length,res.data.total)
+						}else{
+							mescroll.endErr()
+						}
+					},
+					fail: (err) => {
+						console.log(JSON.stringify(err))
+						mescroll.endErr()
+					}
+				})
 			},
 			// 获取大菜单
 			getMenus(){
@@ -135,15 +163,20 @@
 		}
 		
 		//  最新
-		.latest {
+		.home_pannel {
 			white-space: nowrap;
 			display: flex;
 			flex-direction: row;
 			justify-content: flex-start;
 			flex-wrap: nowrap;
 			width: 100%;
-			padding: 40rpx 0rpx;
+			padding: 20rpx 0rpx;
 			background-color: #fbfbfb;
+		}
+		
+		// 列表
+		.list {
+			padding: 20rpx 30rpx;
 		}
 	}
 </style>

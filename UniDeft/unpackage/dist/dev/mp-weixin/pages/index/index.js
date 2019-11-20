@@ -132,7 +132,16 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;function _toConsumableArray(arr) {return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();}function _nonIterableSpread() {throw new TypeError("Invalid attempt to spread non-iterable instance");}function _iterableToArray(iter) {if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);}function _arrayWithoutHoles(arr) {if (Array.isArray(arr)) {for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {arr2[i] = arr[i];}return arr2;}}var MescrollUni = function MescrollUni() {return Promise.all(/*! import() | node-modules/mescroll-uni/mescroll-uni */[__webpack_require__.e("common/vendor"), __webpack_require__.e("node-modules/mescroll-uni/mescroll-uni")]).then(__webpack_require__.bind(null, /*! mescroll-uni */ 24));};var AutoMenu = function AutoMenu() {return __webpack_require__.e(/*! import() | components/common/AutoMenu */ "components/common/AutoMenu").then(__webpack_require__.bind(null, /*! @/components/common/AutoMenu.vue */ 33));};var Panel = function Panel() {return __webpack_require__.e(/*! import() | components/common/Panel */ "components/common/Panel").then(__webpack_require__.bind(null, /*! @/components/common/Panel.vue */ 40));};var ArticleItem = function ArticleItem() {return __webpack_require__.e(/*! import() | pages/index/components/ArticleItem */ "pages/index/components/ArticleItem").then(__webpack_require__.bind(null, /*! ./components/ArticleItem.vue */ 47));};var _default =
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;function _toConsumableArray(arr) {return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();}function _nonIterableSpread() {throw new TypeError("Invalid attempt to spread non-iterable instance");}function _iterableToArray(iter) {if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);}function _arrayWithoutHoles(arr) {if (Array.isArray(arr)) {for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {arr2[i] = arr[i];}return arr2;}}var MescrollUni = function MescrollUni() {return Promise.all(/*! import() | node-modules/mescroll-uni/mescroll-uni */[__webpack_require__.e("common/vendor"), __webpack_require__.e("node-modules/mescroll-uni/mescroll-uni")]).then(__webpack_require__.bind(null, /*! mescroll-uni */ 24));};var AutoMenu = function AutoMenu() {return __webpack_require__.e(/*! import() | components/common/AutoMenu */ "components/common/AutoMenu").then(__webpack_require__.bind(null, /*! @/components/common/AutoMenu.vue */ 33));};var Panel = function Panel() {return __webpack_require__.e(/*! import() | components/common/Panel */ "components/common/Panel").then(__webpack_require__.bind(null, /*! @/components/common/Panel.vue */ 40));};var ArticleItem = function ArticleItem() {return __webpack_require__.e(/*! import() | pages/index/components/ArticleItem */ "pages/index/components/ArticleItem").then(__webpack_require__.bind(null, /*! ./components/ArticleItem.vue */ 47));};var ArticleCell = function ArticleCell() {return __webpack_require__.e(/*! import() | pages/index/components/ArticleCell */ "pages/index/components/ArticleCell").then(__webpack_require__.bind(null, /*! ./components/ArticleCell.vue */ 54));};var _default =
+
+
+
+
+
+
+
+
+
 
 
 
@@ -168,7 +177,8 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     AutoMenu: AutoMenu,
     MescrollUni: MescrollUni,
     Panel: Panel,
-    ArticleItem: ArticleItem },
+    ArticleItem: ArticleItem,
+    ArticleCell: ArticleCell },
 
   data: function data() {
     return {
@@ -178,8 +188,10 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
         auto: true },
 
       upOptions: {
-        auto: false } };
+        auto: true,
+        textNoMore: '无更多数据' },
 
+      articles: [] };
 
   },
   onLoad: function onLoad() {
@@ -211,15 +223,31 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
     },
     // 上拉刷新
-    upCallback: function upCallback(mescroll) {
+    upCallback: function upCallback(mescroll) {var _this2 = this;
+      console.log('加载更多', mescroll.num);
+      this.$uRequest.get({
+        url: '/mini/home/articles',
+        success: function success(res) {
+          if (res.code === 0) {var _this2$articles;
+            (_this2$articles = _this2.articles).splice.apply(_this2$articles, [_this2.articles.length, 0].concat(_toConsumableArray(res.data.items)));
+            mescroll.endBySize(res.data.items.length, res.data.total);
+          } else {
+            mescroll.endErr();
+          }
+        },
+        fail: function fail(err) {
+          console.log(JSON.stringify(err));
+          mescroll.endErr();
+        } });
+
     },
     // 获取大菜单
-    getMenus: function getMenus() {var _this2 = this;
+    getMenus: function getMenus() {var _this3 = this;
       this.$uRequest.get({
         url: '/mini/home/mainCates',
         success: function success(res) {
-          if (res.code === 0) {var _this2$menus;
-            (_this2$menus = _this2.menus).splice.apply(_this2$menus, [0, _this2.menus.length].concat(_toConsumableArray(res.data.items)));
+          if (res.code === 0) {var _this3$menus;
+            (_this3$menus = _this3.menus).splice.apply(_this3$menus, [0, _this3.menus.length].concat(_toConsumableArray(res.data.items)));
           } else {
 
           }

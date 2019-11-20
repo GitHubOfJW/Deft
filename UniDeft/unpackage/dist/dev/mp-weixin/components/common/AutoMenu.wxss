@@ -43,6 +43,7 @@
 }
 .menus .bottom.data-v-06ed5236 {
     position: relative;
+    color: red !important;
     font-size: 29rpx;
     color: #666666;
 }

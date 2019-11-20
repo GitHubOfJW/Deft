@@ -109,6 +109,7 @@ export default {
 	
 	.bottom {
 		position: relative;
+		color: red !important;
 		@include font_size(29);
 		&:after {
 			content: ' ';

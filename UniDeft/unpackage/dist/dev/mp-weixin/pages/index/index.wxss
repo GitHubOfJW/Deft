@@ -56,7 +56,7 @@
         width: 100%;
         height: 100%;
 }
-.content .latest.data-v-75fa5c46 {
+.content .home_pannel.data-v-75fa5c46 {
     white-space: nowrap;
     display: -webkit-box;
     display: -webkit-flex;
@@ -75,7 +75,10 @@
         -ms-flex-wrap: nowrap;
             flex-wrap: nowrap;
     width: 100%;
-    padding: 40rpx 0rpx;
+    padding: 20rpx 0rpx;
     background-color: #fbfbfb;
+}
+.content .list.data-v-75fa5c46 {
+    padding: 20rpx 30rpx;
 }
 

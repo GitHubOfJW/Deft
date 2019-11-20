@@ -7,8 +7,8 @@
     margin-top: 20rpx;
     text-align: left;
     font-size: 30rpx;
-    padding-top: 20rpx;
-    padding-bottom: 20rpx;
+    padding-top: 5px;
+    // padding-bottom: 10px;
 
     .header {
       padding-bottom: 20rpx;

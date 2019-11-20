@@ -22,7 +22,7 @@
 	.article {
 		display: inline-block;
 		width: 170rpx;
-		padding: 10px;
+		padding: 10px 5px;
 		background-color:#FFFFFF;
 		border-radius: 5px;
 		margin: 0px 5px;
@@ -34,6 +34,7 @@
 			margin-left: 10rpx;
 			width: 150rpx;
 			height: 150rpx;
+			border-radius: 3px;
 		}
 		
 		label {

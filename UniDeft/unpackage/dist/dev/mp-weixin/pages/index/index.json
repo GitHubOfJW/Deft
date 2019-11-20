@@ -5,6 +5,7 @@
     "auto-menu": "/components/common/AutoMenu",
     "mescroll-uni": "/node-modules/mescroll-uni/mescroll-uni",
     "panel": "/components/common/Panel",
-    "article-item": "/pages/index/components/ArticleItem"
+    "article-item": "/pages/index/components/ArticleItem",
+    "article-cell": "/pages/index/components/ArticleCell"
   }
 }
