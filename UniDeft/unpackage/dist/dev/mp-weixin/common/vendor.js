@@ -8551,9 +8551,10 @@ function normalizeComponent (
 /* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;function _classCallCheck(instance, Constructor) {if (!(instance instanceof Constructor)) {throw new TypeError("Cannot call a class as a function");}}function _defineProperties(target, props) {for (var i = 0; i < props.length; i++) {var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);}}function _createClass(Constructor, protoProps, staticProps) {if (protoProps) _defineProperties(Constructor.prototype, protoProps);if (staticProps) _defineProperties(Constructor, staticProps);return Constructor;}var Request = /*#__PURE__*/function () {function Request() {_classCallCheck(this, Request);}_createClass(Request, null, [{ key: "delete",
 
     // delete
-    value: function _delete(_ref) {var url = _ref.url,success = _ref.success,fail = _ref.fail,complete = _ref.complete;
+    value: function _delete(_ref) {var url = _ref.url,data = _ref.data,success = _ref.success,fail = _ref.fail,complete = _ref.complete;
       this.request({
         url: url,
+        data: data,
         method: 'DELETE',
         success: success,
         fail: fail,
@@ -8563,9 +8564,10 @@ function normalizeComponent (
 
 
     // patch
-  }, { key: "patch", value: function patch(_ref2) {var url = _ref2.url,success = _ref2.success,fail = _ref2.fail,complete = _ref2.complete;
+  }, { key: "patch", value: function patch(_ref2) {var url = _ref2.url,data = _ref2.data,success = _ref2.success,fail = _ref2.fail,complete = _ref2.complete;
       this.request({
         url: url,
+        data: data,
         method: 'PATCH',
         success: success,
         fail: fail,
@@ -8575,9 +8577,10 @@ function normalizeComponent (
 
 
     // put
-  }, { key: "put", value: function put(_ref3) {var url = _ref3.url,success = _ref3.success,fail = _ref3.fail,complete = _ref3.complete;
+  }, { key: "put", value: function put(_ref3) {var url = _ref3.url,data = _ref3.data,success = _ref3.success,fail = _ref3.fail,complete = _ref3.complete;
       this.request({
         url: url,
+        data: data,
         method: 'PUT',
         success: success,
         fail: fail,
@@ -8586,10 +8589,11 @@ function normalizeComponent (
     }
 
     // post
-  }, { key: "post", value: function post(_ref4) {var url = _ref4.url,success = _ref4.success,fail = _ref4.fail,complete = _ref4.complete;
+  }, { key: "post", value: function post(_ref4) {var url = _ref4.url,data = _ref4.data,success = _ref4.success,fail = _ref4.fail,complete = _ref4.complete;
       console.log(url);
       this.request({
         url: url,
+        data: data,
         method: 'POST',
         success: success,
         fail: fail,
@@ -8599,9 +8603,10 @@ function normalizeComponent (
 
 
     // get
-  }, { key: "get", value: function get(_ref5) {var url = _ref5.url,success = _ref5.success,fail = _ref5.fail,complete = _ref5.complete;
+  }, { key: "get", value: function get(_ref5) {var url = _ref5.url,data = _ref5.data,success = _ref5.success,fail = _ref5.fail,complete = _ref5.complete;
       this.request({
         url: url,
+        data: data,
         method: 'GET',
         success: success,
         fail: fail,
@@ -8610,11 +8615,12 @@ function normalizeComponent (
     }
 
     // request 
-  }, { key: "request", value: function request(_ref6) {var url = _ref6.url,_ref6$method = _ref6.method,method = _ref6$method === void 0 ? "GET" : _ref6$method,_success = _ref6.success,_fail = _ref6.fail,_complete = _ref6.complete;
+  }, { key: "request", value: function request(_ref6) {var url = _ref6.url,data = _ref6.data,_ref6$method = _ref6.method,method = _ref6$method === void 0 ? "GET" : _ref6$method,_success = _ref6.success,_fail = _ref6.fail,_complete = _ref6.complete;
       var ab_url = 'http://192.168.1.7:3001' + url;
       uni.request({
         url: ab_url,
         method: method,
+        data: data,
         success: function success(res) {
           if (res.statusCode == 200) {
             _success && typeof _success === 'function' && _success(res.data);

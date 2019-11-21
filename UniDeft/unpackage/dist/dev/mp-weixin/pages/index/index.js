@@ -132,32 +132,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;function _toConsumableArray(arr) {return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();}function _nonIterableSpread() {throw new TypeError("Invalid attempt to spread non-iterable instance");}function _iterableToArray(iter) {if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);}function _arrayWithoutHoles(arr) {if (Array.isArray(arr)) {for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {arr2[i] = arr[i];}return arr2;}}var MescrollUni = function MescrollUni() {return Promise.all(/*! import() | node-modules/mescroll-uni/mescroll-uni */[__webpack_require__.e("common/vendor"), __webpack_require__.e("node-modules/mescroll-uni/mescroll-uni")]).then(__webpack_require__.bind(null, /*! mescroll-uni */ 24));};var AutoMenu = function AutoMenu() {return __webpack_require__.e(/*! import() | components/common/AutoMenu */ "components/common/AutoMenu").then(__webpack_require__.bind(null, /*! @/components/common/AutoMenu.vue */ 33));};var Panel = function Panel() {return __webpack_require__.e(/*! import() | components/common/Panel */ "components/common/Panel").then(__webpack_require__.bind(null, /*! @/components/common/Panel.vue */ 40));};var ArticleItem = function ArticleItem() {return __webpack_require__.e(/*! import() | pages/index/components/ArticleItem */ "pages/index/components/ArticleItem").then(__webpack_require__.bind(null, /*! ./components/ArticleItem.vue */ 47));};var ArticleCell = function ArticleCell() {return __webpack_require__.e(/*! import() | pages/index/components/ArticleCell */ "pages/index/components/ArticleCell").then(__webpack_require__.bind(null, /*! ./components/ArticleCell.vue */ 54));};var _default =
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;function _toConsumableArray(arr) {return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();}function _nonIterableSpread() {throw new TypeError("Invalid attempt to spread non-iterable instance");}function _iterableToArray(iter) {if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);}function _arrayWithoutHoles(arr) {if (Array.isArray(arr)) {for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {arr2[i] = arr[i];}return arr2;}}var AutoMenu = function AutoMenu() {return __webpack_require__.e(/*! import() | components/common/AutoMenu */ "components/common/AutoMenu").then(__webpack_require__.bind(null, /*! @/components/common/AutoMenu.vue */ 33));};var HomePage = function HomePage() {return __webpack_require__.e(/*! import() | pages/index/components/HomePage */ "pages/index/components/HomePage").then(__webpack_require__.bind(null, /*! ./components/HomePage */ 68));};var _default =
 
 
 
@@ -175,79 +150,69 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 {
   components: {
     AutoMenu: AutoMenu,
-    MescrollUni: MescrollUni,
-    Panel: Panel,
-    ArticleItem: ArticleItem,
-    ArticleCell: ArticleCell },
+    HomePage: HomePage },
 
   data: function data() {
     return {
       menus: [],
-      flexDatas: [],
-      downOptions: {
-        auto: true },
-
-      upOptions: {
-        auto: true,
-        textNoMore: '无更多数据' },
-
-      articles: [] };
+      mescrolls: {},
+      current: 0 };
 
   },
   onLoad: function onLoad() {
     // 获取菜单
     this.getMenus();
+
   },
   computed: {
     cateMenus: function cateMenus() {
-      return this.menus.map(function (cate) {return cate.name;});
+      return ['全部'].concat(_toConsumableArray(this.menus.map(function (cate) {return cate.name;})));
     } },
 
   methods: {
-    // 下拉刷新
-    downCallback: function downCallback(mescroll) {var _this = this;
-      this.$uRequest.get({
-        url: '/mini/home/index',
-        success: function success(res) {
-          if (res.code === 0) {var _this$flexDatas;
-            (_this$flexDatas = _this.flexDatas).splice.apply(_this$flexDatas, [0, _this.flexDatas.length].concat(_toConsumableArray(res.data)));
-            mescroll.endSuccess(_this.flexDatas.length, true);
-          } else {
-            mescroll.endErr();
-          }
-        },
-        fail: function fail(err) {
-          console.log(JSON.stringify(err));
-          mescroll.endErr();
-        } });
-
+    // 点击顶部的菜单
+    menuTap: function menuTap(index) {
+      this.current = index;
     },
-    // 上拉刷新
-    upCallback: function upCallback(mescroll) {var _this2 = this;
-      console.log('加载更多', mescroll.num);
-      this.$uRequest.get({
-        url: '/mini/home/articles',
-        success: function success(res) {
-          if (res.code === 0) {var _this2$articles;
-            (_this2$articles = _this2.articles).splice.apply(_this2$articles, [_this2.articles.length, 0].concat(_toConsumableArray(res.data.items)));
-            mescroll.endBySize(res.data.items.length, res.data.total);
-          } else {
-            mescroll.endErr();
-          }
-        },
-        fail: function fail(err) {
-          console.log(JSON.stringify(err));
-          mescroll.endErr();
-        } });
+    swiperChange: function swiperChange(e) {
+      this.current = e.detail.current;
+    },
+    animationfinish: function animationfinish() {var _this = this;
+      var timer = setTimeout(function () {
+        clearTimeout(timer);
+        _this.triggerDownScroll(_this.current);
+      }, 200);
+    },
+    // 触发下拉刷新
+    triggerDownScroll: function triggerDownScroll(index) {
+      var mescoll = this.mescrolls[index];
+      if (!mescoll.num) {
+        this.mescrolls[index].triggerDownScroll();
+      }
+    },
+    // 触发下拉刷新
+    triggerUpScroll: function triggerUpScroll(index) {
+      console.log(this.mescrolls);
+      this.mescrolls[index].triggerUpScroll();
+    },
+    // 初始化mescroll
+    initMescrolls: function initMescrolls(_ref)
 
+
+    {var mescroll = _ref.mescroll,pageIndex = _ref.pageIndex;
+      this.mescrolls[pageIndex] = mescroll;
+      if (pageIndex == 0) {
+        this.triggerDownScroll(pageIndex);
+        // this.triggerUpScroll(pageIndex)
+      }
     },
     // 获取大菜单
-    getMenus: function getMenus() {var _this3 = this;
+    getMenus: function getMenus() {var _this2 = this;
       this.$uRequest.get({
         url: '/mini/home/mainCates',
         success: function success(res) {
-          if (res.code === 0) {var _this3$menus;
-            (_this3$menus = _this3.menus).splice.apply(_this3$menus, [0, _this3.menus.length].concat(_toConsumableArray(res.data.items)));
+          if (res.code === 0) {var _this2$menus;
+            (_this2$menus = _this2.menus).splice.apply(_this2$menus, [0, _this2.menus.length].concat(_toConsumableArray(res.data.items)));
           } else {
 
           }

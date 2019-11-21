@@ -191,9 +191,14 @@ var _default2 =
       }
     },
     menuClick: function menuClick(menu, index) {
-      console.log(menu);
       this.scrollLeft = menu.offset;
       this.selectedIndex = index;
+      this.$emit('menuTap', index);
+    } },
+
+  watch: {
+    initIndex: function initIndex(newValue) {
+      this.menuClick(this.menus[newValue], newValue);
     } } };exports.default = _default2;
 
 /***/ }),

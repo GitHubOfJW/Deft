@@ -2,7 +2,7 @@
 <!-- scroll-view -->
   <scroll-view class="menus" :style="{width:containerWidth+'rpx'}" scroll-x="true" :scroll-left="scrollLeft" :scroll-with-animation="true" @scroll="scroll">
       <block v-for="(menu,index) in showMenus" :key="index">
-        <label :style="{width:menu.width+'rpx',height: menu.height}" :class="{bottom: orientation &&  selectedIndex == index }" @click="menuClick(menu,index)">{{menu.name}}</label>
+        <label :style="{width:menu.width+'rpx',height: menu.height}" :class="{bottom: orientation &&  selectedIndex == index }" @tap="menuClick(menu,index)">{{menu.name}}</label>
     </block>
   </scroll-view>
 </template>
@@ -84,11 +84,16 @@ export default {
 	  }
     },
     menuClick(menu,index){
-      console.log(menu)
       this.scrollLeft = menu.offset
 	  this.selectedIndex = index
+	  this.$emit('menuTap',index)
     }
-  } 
+  },
+  watch: {
+	initIndex(newValue){
+		this.menuClick(this.menus[newValue],newValue)
+	}
+  }
 }
 </script>
 

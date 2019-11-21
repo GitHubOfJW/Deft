@@ -691,7 +691,7 @@ module.exports = class ArticleService {
             return await Article.findAndCountAll({
               include: [{
                 model: ArticleCateRel,
-                scope: {
+                where: {
                   cate_id: {
                     [Sequelize.Op.in]: cates.map(cate => cate.id)
                   }
@@ -709,7 +709,7 @@ module.exports = class ArticleService {
             return await Article.findAndCountAll({
               include: [{
                 model: ArticleCateRel,
-                scope: {
+                where: {
                   cate_id: cate.id
                 }
               },{
@@ -767,7 +767,7 @@ module.exports = class ArticleService {
             return await Article.findAndCountAll({
               include: [{
                 model: ArticleCateRel,
-                scope: {
+                where: {
                   cate_id: {
                     [Sequelize.Op.in]: cates.map(cate => cate.id)
                   }
@@ -785,7 +785,7 @@ module.exports = class ArticleService {
             return await Article.findAndCountAll({
               include: [{
                 model: ArticleCateRel,
-                scope: {
+                where: {
                   cate_id: cate.id
                 }
               },{
@@ -842,7 +842,7 @@ module.exports = class ArticleService {
             return await Article.findAndCountAll({
               include: [{
                 model: ArticleCateRel,
-                scope: {
+                where: {
                   cate_id: {
                     [Sequelize.Op.in]: cates.map(cate => cate.id)
                   }
@@ -860,7 +860,7 @@ module.exports = class ArticleService {
             return await Article.findAndCountAll({
               include: [{
                 model: ArticleCateRel,
-                scope: {
+                where: {
                   cate_id: cate.id
                 }
               },{

@@ -1,9 +1,10 @@
 export default class Request {
 	
 	// delete
-	static delete({url,success,fail,complete}){
+	static delete({url,data,success,fail,complete}){
 		this.request({
 			url:url,
+			data,
 			method: 'DELETE',
 			success:success,
 			fail:fail,
@@ -13,9 +14,10 @@ export default class Request {
 	
 	
 	// patch
-	static patch({url,success,fail,complete}){
+	static patch({url,data,success,fail,complete}){
 		this.request({
 			url:url,
+			data:data,
 			method: 'PATCH',
 			success:success,
 			fail:fail,
@@ -25,9 +27,10 @@ export default class Request {
 	
 	
 	// put
-	static put({url,success,fail,complete}){
+	static put({url,data,success,fail,complete}){
 		this.request({
 			url:url,
+			data:data,
 			method: 'PUT',
 			success:success,
 			fail:fail,
@@ -36,10 +39,11 @@ export default class Request {
 	}
 	
 	// post
-	static post({url,success,fail,complete}){
+	static post({url,data,success,fail,complete}){
 		console.log(url)
 		this.request({
 			url:url,
+			data:data,
 			method: 'POST',
 			success:success,
 			fail:fail,
@@ -49,9 +53,10 @@ export default class Request {
 	
 	
 	// get
-	static get({url,success,fail,complete}){
+	static get({url,data,success,fail,complete}){
 		this.request({
 			url:url,
+			data:data,
 			method: 'GET',
 			success:success,
 			fail:fail,
@@ -60,11 +65,12 @@ export default class Request {
 	}
 	
 	// request 
-	static request({url,method = "GET",success,fail,complete}){
+	static request({url,data,method = "GET",success,fail,complete}){
 		const ab_url = 'http://192.168.1.7:3001' + url
 		uni.request({
 			url: ab_url,
 			method:method,
+			data:data,
 			success:(res) => {
 				if(res.statusCode == 200){
 					success && (typeof success === 'function')  && success(res.data)

@@ -6,25 +6,32 @@ module.exports =  class HomeController {
   // 获取首页数据
   static async home(ctx, next){
 
-    // 获取首页的banner
-    const banners = await BannerService.miniBanners()
-    // 获取最新上架
-    const latest = await ArticleService.getLastest(1,6)
-    // 获取热门推荐
-    const hots = await ArticleService.getHots(1,6)
-    // 组织数据
+    const { page = 1, limit = 6, cate_id  = 0} = ctx.query
+
+
     const datas = []
-    datas.push({
-      type: 'banner',
-      data: banners
-    })
+    if(cate_id == 0){
+      // 获取首页的banner
+      const banners = await BannerService.miniBanners()
+      datas.push({
+        type: 'banner',
+        data: banners
+      })
+    }else{
+      // 查询所在分类
+    }
+
+    // 获取最新上架
+    const latest = await ArticleService.getLastest({page,limit,cate_id})
     // 最新上线
     datas.push({
       title: '最新上线',
       type: 'panel',
       data: latest.rows
     })
-    // 热门推荐
+
+    // 获取热门推荐
+    const hots = await ArticleService.getHots({page,limit,cate_id})
     datas.push({
       title: '热门推荐',
       type: 'panel',
