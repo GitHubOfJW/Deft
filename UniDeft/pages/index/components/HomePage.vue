@@ -4,6 +4,8 @@
 		<mescroll-uni :up="upOptions" :down="downOptions" @down="downCallback" @up="upCallback" @init="initMescrolls">
 			<view class="center_content">
 				<block v-for="(flexItem,index) of flexDatas" :key="index">
+					<!-- 分类 -->
+					<sub-category v-if="flexItem.type==='category'" :categories="flexItem.data" :total="flexDatas.total"></sub-category>
 					<!-- swiper -->
 					<swiper class="home_swiper" v-if="flexItem.type == 'banner'" :indicator-dots="true">
 						<swiper-item class="home_swiper-item" v-for="(banner) in flexItem.data" :key="banner.id">
@@ -35,13 +37,15 @@
 	import Panel from '@/components/common/Panel.vue'
 	import ArticleItem from './ArticleItem.vue'
 	import ArticleCell from './ArticleCell.vue'
+	import SubCategory from './SubCategory.vue'
 
 	export default {
 		components: {
 			MescrollUni: MescrollUni,
 			Panel: Panel,
 			ArticleItem: ArticleItem,
-			ArticleCell: ArticleCell
+			ArticleCell: ArticleCell,
+			SubCategory: SubCategory
 		},
 		props: {
 			pageIndex: {

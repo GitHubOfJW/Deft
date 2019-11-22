@@ -815,7 +815,7 @@ module.exports = class ArticleService {
   }
 
   // 列表
-  static miniArticleList({ page = 1, limit = 20, cate_id = 0}){
+  static async miniArticleList({ page = 1, limit = 20, cate_id = 0}){
     // 默认为0 如果不传则表示大分类
     // 如果传要先查一下当前的分类是大分类还是小分类
     return sequelize.transaction(t => {
@@ -887,5 +887,24 @@ module.exports = class ArticleService {
         }
       })()
     })
+  }
+
+  // 查询分类列表
+  static async getSubCates({ page = 1, limit = 10000, cate_id}) {
+    const data = await ArticleCate.findAndCountAll({
+      include:[{
+        model: Source,
+        attributes:{
+          include: ['url','id']
+        },
+        as: 'icon'
+      }],
+      where: {
+        parent_id: cate_id
+      },
+      offset:(page - 1) * limit,
+      limit: parseInt(limit)
+    })
+    return data
   }
 }

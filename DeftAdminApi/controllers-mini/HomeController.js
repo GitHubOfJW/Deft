@@ -19,6 +19,12 @@ module.exports =  class HomeController {
       })
     }else{
       // 查询所在分类
+      const subCatesData = await ArticleService.getSubCates({ page, limit: 9, cate_id})
+      datas.push({
+        type: 'category',
+        data: subCatesData.rows,
+        total: subCatesData.total
+      })
     }
 
     // 获取最新上架

@@ -6,7 +6,7 @@
 		<view class="info">
 			<label class="name">{{article.title}}</label>
 			<label class="desc">{{article.title}}</label>
-			<label class="other">阅读：{{article.view_count}} 作品：{{article.works_count}} 收藏：{{article.collect_count}}</label>
+			<label class="other">阅读({{article.view_count}}) 作品({{article.works_count}}) 收藏({{article.collect_count}})</label>
 		</view>
 	</view>
 </template>
