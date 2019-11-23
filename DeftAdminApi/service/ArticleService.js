@@ -645,7 +645,7 @@ module.exports = class ArticleService {
   }
 
   // 获取资源id 根据富文本
-  static getAllDataIds(rich_content = ''){
+  static async getAllDataIds(rich_content = ''){
     // data-sourceid="${v.id}"
     const exg = /data-sourceid="(\d?)"/g
     const texts = rich_content.match(exg)
@@ -664,17 +664,14 @@ module.exports = class ArticleService {
    * 下面是小程序的方法
    */
   // 最新上架
-  static getLastest({ page = 1, limit = 20, cate_id = 0}){
+  static async getLastest({ page = 1, limit = 20, cate_id = 0}){
     // 默认为0 如果不传则表示大分类
     // 如果传要先查一下当前的分类是大分类还是小分类
-    return sequelize.transaction(t => {
-      return (async () => {
         // 查询分类
         const cate = await ArticleCate.findOne({
           where: {
             id: cate_id
           },
-          transaction:t
         })
         // 根据分类查询文章
         const article_where = {}
@@ -684,11 +681,10 @@ module.exports = class ArticleService {
             const cates = await ArticleCate.findAll({
               where: {
                 parent_id: cate.id
-              },
-              transaction:t
+              }
             })
             // 查询
-            return await Article.findAndCountAll({
+            return await Article.findAll({
               include: [{
                 model: ArticleCateRel,
                 where: {
@@ -702,11 +698,10 @@ module.exports = class ArticleService {
               }],
               order: [[Sequelize.col('id'),'DESC']],
               offset: (page - 1) * limit,
-              limit: parseInt(limit),
-              transaction:t
+              limit: parseInt(limit)
             })
           }else{ // 如果小小分类
-            return await Article.findAndCountAll({
+            return await Article.findAll({
               include: [{
                 model: ArticleCateRel,
                 where: {
@@ -718,39 +713,32 @@ module.exports = class ArticleService {
               }],
               order: [[Sequelize.col('id'),'DESC']],
               offset: (page - 1) * limit,
-              limit: parseInt(limit),
-              transaction:t
+              limit: parseInt(limit)
             })
           }
         }else{
-          return await Article.findAndCountAll({
+          return await Article.findAll({
             include:[{
               model: Source,
               as: 'pic'
             }],
             order: [[Sequelize.col('id'),'DESC']],
             offset: (page - 1) * limit,
-            limit: parseInt(limit),
-            transaction:t
+            limit: parseInt(limit)
           })
         }
-      })()
-    })
   }
   
 
   // 热门推荐
-  static getHots({ page = 1, limit = 20, cate_id = 0}){
+  static async getHots({ page = 1, limit = 20, cate_id = 0}){
     // 默认为0 如果不传则表示大分类
     // 如果传要先查一下当前的分类是大分类还是小分类
-    return sequelize.transaction(t => {
-      return (async () => {
         // 查询分类
         const cate = await ArticleCate.findOne({
           where: {
             id: cate_id
-          },
-          transaction:t
+          }
         })
         // 根据分类查询文章
         const article_where = {}
@@ -760,11 +748,10 @@ module.exports = class ArticleService {
             const cates = await ArticleCate.findAll({
               where: {
                 parent_id: cate.id
-              },
-              transaction:t
+              }
             })
             // 查询
-            return await Article.findAndCountAll({
+            return await Article.findAll({
               include: [{
                 model: ArticleCateRel,
                 where: {
@@ -778,11 +765,10 @@ module.exports = class ArticleService {
               }],
               order: [[Sequelize.col('works_count'),'DESC'],[Sequelize.col('collect_count'),'DESC']],
               offset: (page - 1) * limit,
-              limit: parseInt(limit),
-              transaction:t
+              limit: parseInt(limit)
             })
           }else{ // 如果小小分类
-            return await Article.findAndCountAll({
+            return await Article.findAll({
               include: [{
                 model: ArticleCateRel,
                 where: {
@@ -794,38 +780,31 @@ module.exports = class ArticleService {
               }],
               order: [[Sequelize.col('works_count'),'DESC'],[Sequelize.col('collect_count'),'DESC']],
               offset: (page - 1) * limit,
-              limit: parseInt(limit),
-              transaction:t
+              limit: parseInt(limit)
             })
           }
         }else{
-          return await Article.findAndCountAll({
+          return await Article.findAll({
             include:[{
               model: Source,
               as: 'pic'
             }],
             order: [[Sequelize.col('works_count'),'DESC'],[Sequelize.col('collect_count'),'DESC']],
             offset: (page - 1) * limit,
-            limit: parseInt(limit),
-            transaction:t
+            limit: parseInt(limit)
           })
         }
-      })()
-    })
   }
 
   // 列表
   static async miniArticleList({ page = 1, limit = 20, cate_id = 0}){
     // 默认为0 如果不传则表示大分类
     // 如果传要先查一下当前的分类是大分类还是小分类
-    return sequelize.transaction(t => {
-      return (async () => {
         // 查询分类
         const cate = await ArticleCate.findOne({
           where: {
             id: cate_id
-          },
-          transaction:t
+          }
         })
         // 根据分类查询文章
         const article_where = {}
@@ -835,8 +814,7 @@ module.exports = class ArticleService {
             const cates = await ArticleCate.findAll({
               where: {
                 parent_id: cate.id
-              },
-              transaction:t
+              }
             })
             // 查询
             return await Article.findAndCountAll({
@@ -853,8 +831,7 @@ module.exports = class ArticleService {
               }],
               order: [[Sequelize.col('works_count'),'DESC'],[Sequelize.col('collect_count'),'DESC']],
               offset: (page - 1) * limit,
-              limit: parseInt(limit),
-              transaction:t
+              limit: parseInt(limit)
             })
           }else{ // 如果小小分类
             return await Article.findAndCountAll({
@@ -869,8 +846,7 @@ module.exports = class ArticleService {
               }],
               order: [[Sequelize.col('works_count'),'DESC'],[Sequelize.col('collect_count'),'DESC']],
               offset: (page - 1) * limit,
-              limit: parseInt(limit),
-              transaction:t
+              limit: parseInt(limit)
             })
           }
         }else{
@@ -881,16 +857,19 @@ module.exports = class ArticleService {
             }],
             order: [[Sequelize.col('works_count'),'DESC'],[Sequelize.col('collect_count'),'DESC']],
             offset: (page - 1) * limit,
-            limit: parseInt(limit),
-            transaction:t
+            limit: parseInt(limit)
           })
         }
-      })()
-    })
   }
 
   // 查询分类列表
-  static async getSubCates({ page = 1, limit = 10000, cate_id}) {
+  static async getSubCates({ page = 1, limit = 10000, cate_id = 0}) {
+    const cate  = await ArticleCate.findOne({
+      where: {
+        id: cate_id
+      }
+    })
+    
     const data = await ArticleCate.findAndCountAll({
       include:[{
         model: Source,
@@ -900,11 +879,12 @@ module.exports = class ArticleService {
         as: 'icon'
       }],
       where: {
-        parent_id: cate_id
+        parent_id: cate.parent_id == 0 ? cate_id : cate.parent_id
       },
       offset:(page - 1) * limit,
       limit: parseInt(limit)
     })
+    
     return data
   }
 }

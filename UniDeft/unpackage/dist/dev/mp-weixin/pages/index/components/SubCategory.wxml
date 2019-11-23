@@ -1,1 +1,0 @@
-<view class="menus data-v-52a142ca"><block wx:for="{{categories}}" wx:for-item="menu" wx:for-index="index" wx:key="index"><view class="menu data-v-52a142ca"><image src="{{menu.icon.url}}" mode="aspectFit" class="data-v-52a142ca"></image><label class="data-v-52a142ca">{{menu.name}}</label></view></block></view>

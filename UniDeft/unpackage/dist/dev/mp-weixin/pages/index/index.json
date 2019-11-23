@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "uni-app",
-  "disableScroll": true,
-  "usingComponents": {
-    "auto-menu": "/components/common/AutoMenu",
-    "home-page": "/pages/index/components/HomePage"
-  }
-}

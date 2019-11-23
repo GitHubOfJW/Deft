@@ -28,7 +28,6 @@
 		onLoad() {
 			// 获取菜单
 			this.getMenus()
-
 		},
 		computed: {
 			cateMenus() {
@@ -67,10 +66,6 @@
 				pageIndex
 			}) {
 				this.mescrolls[pageIndex] = mescroll
-				if (pageIndex == 0) {
-					this.triggerDownScroll(pageIndex)
-					// this.triggerUpScroll(pageIndex)
-				}
 			},
 			// 获取大菜单
 			getMenus() {
@@ -79,6 +74,10 @@
 					success: (res) => {
 						if (res.code === 0) {
 							this.menus.splice(0, this.menus.length, ...res.data.items)
+							// 菜单获取完毕后，触发第一个
+							if(this.current == 0){
+								this.triggerDownScroll(0)
+							}
 						} else {
 
 						}

@@ -1,6 +1,6 @@
 <template>
 <!-- scroll-view -->
-  <scroll-view class="menus" :style="{width:containerWidth+'rpx'}" scroll-x="true" :scroll-left="scrollLeft" :scroll-with-animation="true" @scroll="scroll">
+  <scroll-view class="menus" :style="{width:containerWidth+'rpx'}" scroll-x="true" :scroll-left="scrollLeft" scroll-with-animation="true" @scroll="scroll">
       <block v-for="(menu,index) in showMenus" :key="index">
         <label :style="{width:menu.width+'rpx',height: menu.height}" :class="{bottom: orientation &&  selectedIndex == index }" @tap="menuClick(menu,index)">{{menu.name}}</label>
     </block>
@@ -38,7 +38,8 @@ export default {
   data(){
     return {
       scrollLeft:0,
-	  selectedIndex: this.initIndex
+	  selectedIndex: this.initIndex,
+	  oldScrollLeft: 0
     }
   },
   computed: {
@@ -49,7 +50,6 @@ export default {
       let currentPos = 0
       const systemInfo = wx.getSystemInfoSync();
       const oneRpx =  systemInfo.windowWidth / 750
-      console.log(oneRpx)
       if(this.orientation){
         for(let menu of this.menus) {
           // 获取到字数 算出宽度
@@ -63,7 +63,6 @@ export default {
 		  }
           // 累计位置
           currentPos = currentPos + width
-
           showMenus.push({
             name: menu,
             offset: offset * oneRpx,
@@ -72,26 +71,28 @@ export default {
           })
         }
       }
-
       return showMenus
-        
     }
+  },
+  mounted(){
+	  
   },
   methods: {
     scroll(e){
 	  if(this.orientation){
-		  this.scrollLeft = e.detail.scrollLeft
+		  this.oldScrollLeft = e.detail.scrollLeft
 	  }
     },
     menuClick(menu,index){
-      this.scrollLeft = menu.offset
-	  this.selectedIndex = index
-	  this.$emit('menuTap',index)
-    }
-  },
-  watch: {
-	initIndex(newValue){
-		this.menuClick(this.menus[newValue],newValue)
+	  this.scrollLeft = this.oldScrollLeft
+	  this.$nextTick(()=>{
+	  	this.scrollLeft = menu.offset
+		this.selectedIndex = index
+		this.$emit('menuTap',index)
+	  })
+    },
+	scrollToIndex(index){
+		this.menuClick(this.showMenus[index],index)
 	}
   }
 }
