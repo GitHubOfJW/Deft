@@ -2,6 +2,7 @@
 const { Sequelize,sequelize,force} = require('../../utils/dbConnect')
 
 const Model = Sequelize.Model
+const moment = require('moment')
 
 class Article extends Model {
 
@@ -32,7 +33,7 @@ Article.init({
       comment: '作者id'
     },
     rich_content: {
-      type: Sequelize.TEXT,
+      type: Sequelize.TEXT('long'),
       comment: '内容'
     },
     content_page: {
@@ -78,6 +79,16 @@ Article.init({
       type: Sequelize.INTEGER,
       defaultValue: 0,
       comment: '点赞量'
+    },
+    unsupport_count: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      comment: '倒彩'
+    },
+    share_count: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      comment: '分享量'
     },
     collect_count: {
       type: Sequelize.INTEGER,

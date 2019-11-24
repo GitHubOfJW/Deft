@@ -1,5 +1,5 @@
 <template>
-	<view class="article">
+	<view class="article" @tap="articleTap">
 		<image :src="article.pic.url"></image>
 		<label>{{article.title}}</label>
 	</view>
@@ -10,9 +10,16 @@
 		props: {
 			article: {
 				type: Object,
-				default: function(){
+				default: function() {
 					return {}
 				}
+			}
+		},
+		methods: {
+			articleTap() {
+				uni.navigateTo({
+					url: '/pages/article/article?article_id=' + this.article.id
+				})
 			}
 		}
 	}
@@ -23,12 +30,12 @@
 		display: inline-block;
 		width: 170rpx;
 		padding: 10px 5px;
-		background-color:#FFFFFF;
+		background-color: #FFFFFF;
 		border-radius: 5px;
 		margin: 0px 5px;
 		text-align: center;
 		// box-shadow: 5px 5px 5px #f5f5f5,5px -5px 5px #f5f5f5,-5px 5px 5px #f5f5f5,-5px -5px 5px #f5f5f5;
-		
+
 		image {
 			display: block;
 			margin-left: 10rpx;
@@ -36,14 +43,16 @@
 			height: 150rpx;
 			border-radius: 3px;
 		}
-		
+
 		label {
-			margin-top:10px;
+			margin-top: 10px;
 			display: block;
 			width: 100%;
-			@include  font-size(25);
+			@include font-size(25);
 			text-overflow: ellipsis;
+			white-space: nowrap;
 			overflow: hidden;
+			
 		}
 	}
 </style>

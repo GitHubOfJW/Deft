@@ -65,7 +65,7 @@ export default class Request {
 	}
 	
 	// request 
-	static request({url,data,method = "GET",success,fail,complete}){
+	static request({url,data={},method = "GET",success,fail,complete}){
 		const ab_url = 'http://localhost:3001' + url
 		uni.request({
 			url: ab_url,

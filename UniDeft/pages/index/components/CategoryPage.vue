@@ -71,7 +71,7 @@
 			// 上拉刷新
 			upCallback(mescroll) {
 				this.$uRequest.get({
-					url: '/mini/home/articles',
+					url: '/mini/article/articles',
 					data: {
 						page: mescroll.num,
 						limit: mescroll.size,

@@ -110,7 +110,7 @@
 			// 上拉刷新
 			upCallback(mescroll) {
 				this.$uRequest.get({
-					url: '/mini/home/articles',
+					url: '/mini/article/articles',
 					data: {
 						cate_id: this.cateId,
 						page: mescroll.num,

@@ -432,6 +432,14 @@ module.exports = class ArticleService {
 
         // 更新计数
         if(body.rich_content){
+          // 图片的
+          body.rich_content = body.rich_content.replace(/ style="display: block; max-width: 100%; height: auto; margin-bottom: 10px;"/g,'').replace(/<img/g,'<img style="display:block;max-width:100%;height:auto;margin-bottom:10px;"')
+          // h标签的
+          body.rich_content = body.rich_content.replace(/<\/h\d/g,'</p')
+          // p标签
+          body.rich_content = body.rich_content.replace(/ style="font-size:14px;margin-top:10px;margin-top:10px"/g,'').replace(/<h\d/g,'<p style="font-size:14px;margin-top:10px;margin-top:10px"')
+          body.rich_content = body.rich_content.replace(/ style="font-size:14px;margin-top:10px;margin-top:10px"/g,'').replace(/<p/g,'<p style="font-size:14px;margin-top:10px;margin-top:10px"')
+          body.is_finished = false
           body.publish_time = new Date()
           // 获取复文本中的所有资源id
           await Source.update({
@@ -645,7 +653,7 @@ module.exports = class ArticleService {
   }
 
   // 获取资源id 根据富文本
-  static async getAllDataIds(rich_content = ''){
+  static getAllDataIds(rich_content = ''){
     // data-sourceid="${v.id}"
     const exg = /data-sourceid="(\d?)"/g
     const texts = rich_content.match(exg)
@@ -685,6 +693,9 @@ module.exports = class ArticleService {
             })
             // 查询
             return await Article.findAll({
+              attributes: {
+                exclude: ['rich_content']
+              },
               include: [{
                 model: ArticleCateRel,
                 where: {
@@ -702,6 +713,9 @@ module.exports = class ArticleService {
             })
           }else{ // 如果小小分类
             return await Article.findAll({
+              attributes: {
+                exclude: ['rich_content']
+              },
               include: [{
                 model: ArticleCateRel,
                 where: {
@@ -718,6 +732,9 @@ module.exports = class ArticleService {
           }
         }else{
           return await Article.findAll({
+            attributes: {
+              exclude: ['rich_content']
+            },
             include:[{
               model: Source,
               as: 'pic'
@@ -746,12 +763,18 @@ module.exports = class ArticleService {
           // 如果是大分类
           if(cate.parent_id == 0){
             const cates = await ArticleCate.findAll({
+              attributes: {
+                exclude: ['rich_content']
+              },
               where: {
                 parent_id: cate.id
               }
             })
             // 查询
             return await Article.findAll({
+              attributes: {
+                exclude: ['rich_content']
+              },
               include: [{
                 model: ArticleCateRel,
                 where: {
@@ -769,6 +792,9 @@ module.exports = class ArticleService {
             })
           }else{ // 如果小小分类
             return await Article.findAll({
+              attributes: {
+                exclude: ['rich_content']
+              },
               include: [{
                 model: ArticleCateRel,
                 where: {
@@ -785,6 +811,9 @@ module.exports = class ArticleService {
           }
         }else{
           return await Article.findAll({
+            attributes: {
+              exclude: ['rich_content']
+            },
             include:[{
               model: Source,
               as: 'pic'
@@ -818,6 +847,9 @@ module.exports = class ArticleService {
             })
             // 查询
             return await Article.findAndCountAll({
+              attributes: {
+                exclude: ['rich_content']
+              },
               include: [{
                 model: ArticleCateRel,
                 where: {
@@ -835,6 +867,9 @@ module.exports = class ArticleService {
             })
           }else{ // 如果小小分类
             return await Article.findAndCountAll({
+              attributes: {
+                exclude: ['rich_content']
+              },
               include: [{
                 model: ArticleCateRel,
                 where: {
@@ -851,6 +886,9 @@ module.exports = class ArticleService {
           }
         }else{
           return await Article.findAndCountAll({
+            attributes: {
+              exclude: ['rich_content']
+            },
             include:[{
               model: Source,
               as: 'pic'
@@ -886,5 +924,35 @@ module.exports = class ArticleService {
     })
     
     return data
+  }
+
+  // 获取文章详情
+  static async miniArticleDetail(id){
+    const article = await Article.findOne({
+      include:[{
+        model: Source,
+        attributes:{
+          include: ['url','id']
+        },
+        as: 'pic'
+      },{
+        model: ArticleCate,
+        attributes: {
+          include: ['name','id']
+        },
+        as: 'articlecates'
+      }],
+      where: {
+        id: id
+      }
+    })
+    return article
+  }
+
+  // 添加阅读记录
+  static async read(id){
+    return await Article.increment('view_count',{by:1,where:{
+      id: id
+    }})
   }
 }

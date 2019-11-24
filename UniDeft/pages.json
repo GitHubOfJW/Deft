@@ -13,7 +13,6 @@
 		{
 			"path": "pages/index/category",
 			"style": {
-				"navigationBarTitleText": "分类",
 				"disableScroll": true, // 禁止滚动, 解决scroll-view在Android小程序卡顿的问题
 				"app-plus": {
 					"bounce": "none" // 取消iOS回弹,避免和下拉刷新冲突
@@ -22,12 +21,17 @@
 		}
 	    ,{
             "path" : "pages/article/article",
-            "style" : {}
+            "style": {
+				"navigationBarTitleText": "详情",
+            	"app-plus": {
+            		"bounce": "none" // 取消iOS回弹,避免和下拉刷新冲突
+            	}
+            }
         }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
+		"navigationBarTitleText": "巧匠",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
 	}

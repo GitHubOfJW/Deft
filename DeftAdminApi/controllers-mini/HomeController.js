@@ -59,20 +59,6 @@ module.exports =  class HomeController {
     }
   }
 
-  // 列表数据
-  static async list(ctx, next){
-    // 查询列表
-    const data = await ArticleService.miniArticleList(ctx.query)
-    ctx.body = {
-      code: 0,
-      message: '成功',
-      data: {
-        total: data.count,
-        items: data.rows
-      }
-    }
-  }
-
   // 获取菜单
   static async mainMenus(ctx, next){
     // 获取主菜单

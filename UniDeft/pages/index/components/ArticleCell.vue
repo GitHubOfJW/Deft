@@ -1,5 +1,5 @@
 <template>
-	<view class="cell">
+	<view class="cell" @tap="articleTap">
 		<view class="pic">
 			<image :src="article.pic.url" mode="aspectFill"></image>
 		</view>
@@ -19,6 +19,13 @@
 				default: function(){
 					return {}
 				}
+			}
+		},
+		methods: {
+			articleTap(){
+				uni.navigateTo({
+					url: '/pages/article/article?article_id=' + this.article.id
+				})
 			}
 		}
 	}
