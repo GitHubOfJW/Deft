@@ -39,7 +39,6 @@
           <span>{{ scope.row.router }}</span>
         </template>
       </el-table-column>
-     
       <el-table-column fixed="right" :label="$t('table.actions')" align="center" width="160" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">

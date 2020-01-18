@@ -19,7 +19,6 @@
 		},
 		computed: {
 			time(){
-				console.log(this.article)
 				if(this.article.publish_time){
 					return moment.utc(this.article.publish_time).format('YYYY/MM/DD')
 				}

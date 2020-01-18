@@ -27,8 +27,31 @@
             		"bounce": "none" // 取消iOS回弹,避免和下拉刷新冲突
             	}
             }
-        }
+        },
+		// profile
+		{
+			"path":"pages/profile/profile",
+			"style": {
+				"navigationBarTitleText":"我的"
+			}
+		}
     ],
+	"tabBar":{
+		"color":"#bfbfbf",
+		"selectedColor":"#1ab5da",
+		"backgroundColor":"#FFFFFF",
+		"list":[{
+			"pagePath":"pages/index/index",
+			"iconPath":"static/icons/tabbar/home.png",
+			"selectedIconPath":"static/icons/tabbar/home_selected.png",
+			"text":"首页"
+		},{
+			"pagePath":"pages/profile/profile",
+			"iconPath":"static/icons/tabbar/profile.png",
+			"selectedIconPath":"static/icons/tabbar/profile_selected.png",
+			"text":"我的"
+		}]
+	},
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "巧匠",

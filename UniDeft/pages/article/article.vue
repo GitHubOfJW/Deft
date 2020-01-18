@@ -61,9 +61,9 @@
 					success: (res) => {
 						if (res.code === 0) {
 							this.article = res.data
-							uni.setNavigationBarTitle({
-								title: this.article.title
-							})
+							// uni.setNavigationBarTitle({
+							// 	title: this.article.title
+							// })
 						} else {
 				
 						}
